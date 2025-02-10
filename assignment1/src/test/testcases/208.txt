@@ -1,0 +1,4 @@
+func (c c) Add(x int, c int) {
+        }
+         
+            

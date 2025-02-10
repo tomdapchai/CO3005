@@ -1,0 +1,1 @@
+if,(,b,==,2,),{,fmt,.,Println,(,b,),;,},else,if,(,x,==,1,),{,fmt,.,Println,(,x,),;,},<EOF>
