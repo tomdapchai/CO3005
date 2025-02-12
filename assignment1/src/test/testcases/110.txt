@@ -1,1 +1,1 @@
-return x+y+z;;;;
+return a*b;;

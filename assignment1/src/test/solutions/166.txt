@@ -1,1 +1,1 @@
-type,Calculator,interface,{,Subtract,(,a,,,b,float,,,c,int,),float,;,SayHello,(,name,string,),;,},<EOF>
+type,Machine,interface,{,Multiply,(,x,,,y,int,,,z,float,),int,;,Greet,(,title,string,),;,},<EOF>

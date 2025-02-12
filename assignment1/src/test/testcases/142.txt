@@ -1,1 +1,2 @@
-import "fmt" fmt.Println("Hello"
+package main
+import "os" os.Open("file.txt")

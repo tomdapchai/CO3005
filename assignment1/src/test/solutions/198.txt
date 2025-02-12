@@ -1,1 +1,1 @@
-var,msg,=,Unclosed string: hello\n
+string,m,=,Unclosed string: "voila\n

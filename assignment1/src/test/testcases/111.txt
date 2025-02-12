@@ -1,1 +1,1 @@
-struct type float person, {}
+struct type int Person, {}

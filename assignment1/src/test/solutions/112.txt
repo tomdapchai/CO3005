@@ -1,1 +1,1 @@
-var,<EOF>
+test,<EOF>

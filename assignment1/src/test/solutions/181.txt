@@ -1,1 +1,1 @@
-Illegal escape in string: \t\y
+Illegal escape in string: "\t\b

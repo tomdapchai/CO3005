@@ -1,2 +1,2 @@
-var x = "this is test\nstring
+var a = "string test\nabc
 func abc ()

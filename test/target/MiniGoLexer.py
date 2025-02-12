@@ -481,6 +481,7 @@ class MiniGoLexer(Lexer):
                     self.RPAREN, self.RBRACKET, self.RBRACE, self.STRING, self.INT, self.FLOAT, self.BOOLEAN, self.NIL, self.TRUE, self.FALSE,
                     self.RETURN, self.CONTINUE, self.BREAK
                 ]:
+                    self.type = self.SEMICOLON
                     self.text = ';'
                 else:
                     self.skip()

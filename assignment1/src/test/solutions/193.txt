@@ -1,1 +1,1 @@
-func,test,(,),{,var,x,=,"",Unclosed string: string without end
+var,fun,(,),{,int,a,=,"",Unclosed string: "no close

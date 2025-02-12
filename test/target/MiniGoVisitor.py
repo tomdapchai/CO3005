@@ -34,6 +34,11 @@ class MiniGoVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by MiniGoParser#eos.
+    def visitEos(self, ctx:MiniGoParser.EosContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by MiniGoParser#expr.
     def visitExpr(self, ctx:MiniGoParser.ExprContext):
         return self.visitChildren(ctx)
@@ -324,18 +329,13 @@ class MiniGoVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by MiniGoParser#compositeType.
-    def visitCompositeType(self, ctx:MiniGoParser.CompositeTypeContext):
-        return self.visitChildren(ctx)
-
-
     # Visit a parse tree produced by MiniGoParser#arrayType.
     def visitArrayType(self, ctx:MiniGoParser.ArrayTypeContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by MiniGoParser#userDefineType.
-    def visitUserDefineType(self, ctx:MiniGoParser.UserDefineTypeContext):
+    # Visit a parse tree produced by MiniGoParser#compositeType.
+    def visitCompositeType(self, ctx:MiniGoParser.CompositeTypeContext):
         return self.visitChildren(ctx)
 
 

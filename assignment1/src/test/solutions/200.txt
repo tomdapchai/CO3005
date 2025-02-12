@@ -1,1 +1,1 @@
-Unclosed string: test with \t\"\n\\
+Unclosed string: "working on \t\"\n\\

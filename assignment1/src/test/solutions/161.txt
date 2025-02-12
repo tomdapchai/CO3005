@@ -1,1 +1,1 @@
-type,Person,struct,{,name,string,;,age,int,;,},;,var,x,int,=,10,;,<EOF>
+type,Animal,struct,{,species,string,;,weight,float,;,},;,var,y,float,=,20,;,<EOF>

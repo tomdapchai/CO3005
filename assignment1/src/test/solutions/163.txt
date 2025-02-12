@@ -1,1 +1,1 @@
-func,main,(,),int,{,var,x,string,=,"",;,},;,<EOF>
+func,start,(,),bool,{,var,z,float,=,5.5,;,},;,<EOF>

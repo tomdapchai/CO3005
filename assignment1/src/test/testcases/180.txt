@@ -1,1 +1,1 @@
-t = 1?true:false
+condition ? val1 : val2

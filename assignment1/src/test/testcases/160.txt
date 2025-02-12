@@ -1,1 +1,1 @@
-foo = bar && || !baz
+val = x || y && !z

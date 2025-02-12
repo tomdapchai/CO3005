@@ -1,1 +1,1 @@
-a := map[int]string{1: "one", 2: "two",,}
+arr := map[string]int{"a": 100, "b": 200,,}

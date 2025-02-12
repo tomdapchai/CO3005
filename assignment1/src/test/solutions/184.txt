@@ -1,1 +1,1 @@
-"\n\t",+,+,Illegal escape in string: @@\f
+"\n\t",*,Illegal escape in string: "$\f

@@ -1,1 +1,1 @@
-/* This part is skipped as comment */ var // Next comment
+/* Nested comment bla bla bla skipped */ test // Line comment

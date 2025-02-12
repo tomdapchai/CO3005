@@ -1,5 +1,5 @@
 
-arr := [3]int{10, 20, 30}
-for _, value := range arr {
- // value: 10, 20, 30
+nums := [4]float{1.1, 2.2, 3.3, 4.4}
+for key, item := range nums {
+ // item: 1.1, 2.2, 3.3, 4.4
 }

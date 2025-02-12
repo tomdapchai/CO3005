@@ -1,3 +1,3 @@
 
-for index, value := range arr 
+for pos, num := range list 
 {}

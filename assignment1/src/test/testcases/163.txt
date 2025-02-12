@@ -1,4 +1,4 @@
 
-func main() int {
-    var x string = ""
+func start() bool {
+    var z float = 5.5
 }

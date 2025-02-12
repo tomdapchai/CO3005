@@ -1,1 +1,1 @@
-type functions interface {}
+type inter interface {}

@@ -1,1 +1,1 @@
-Illegal escape in string: @@\f
+Illegal escape in string: "$\f

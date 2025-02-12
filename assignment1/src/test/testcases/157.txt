@@ -1,1 +1,1 @@
-a := make(chan<-int, -1)
+ch := make(chan<-string, 2)

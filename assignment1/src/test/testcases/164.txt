@@ -1,1 +1,1 @@
-func id() {}
+func compute() {}

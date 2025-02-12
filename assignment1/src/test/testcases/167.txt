@@ -1,5 +1,5 @@
-if (b == 2) {fmt.Println(b)
-	
-} else if (x == 1) {
-	fmt.Println(x)
+if (a != 5) {fmt.Output(a)
+    
+} else if (y != 3) {
+    fmt.Output(y)
 }

@@ -1,1 +1,1 @@
-type,functions,interface,{,},<EOF>
+type,inter,interface,{,},<EOF>

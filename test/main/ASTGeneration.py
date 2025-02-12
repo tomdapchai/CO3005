@@ -780,8 +780,6 @@ class ASTGeneration(MiniGoVisitor):
             return self.visit(ctx.primitiveType())
         elif ctx.compositeType():
             return self.visit(ctx.compositeType())
-        elif ctx.userDefineType():
-            return self.visit(ctx.userDefineType())
         return self.visit(ctx.arrayType())
 
 
@@ -800,7 +798,7 @@ class ASTGeneration(MiniGoVisitor):
 
     # Visit a parse tree produced by MiniGoParser#compositeType.
     def visitCompositeType(self, ctx:MiniGoParser.CompositeTypeContext):
-        return self.visitChildren(ctx)
+        return ClassType(Id(ctx.ID().getText()))
 
 
     # Visit a parse tree produced by MiniGoParser#arrayType.
@@ -810,12 +808,6 @@ class ASTGeneration(MiniGoVisitor):
         for i in range(len(indices)):
             indices[i] = indices[i].value
         return ArrayType(self.visit(ctx.types()), indices)
-
-
-    # Visit a parse tree produced by MiniGoParser#userDefineType.
-    def visitUserDefineType(self, ctx:MiniGoParser.UserDefineTypeContext):
-        #return StructType(Id(ctx.ID().getText()))
-        return ClassType(Id(ctx.ID().getText()))
 
 
     # Visit a parse tree produced by MiniGoParser#array_decl.
@@ -943,7 +935,7 @@ class ASTGeneration(MiniGoVisitor):
 
     # Visit a parse tree produced by MiniGoParser#method_decl.
     def visitMethod_decl(self, ctx:MiniGoParser.Method_declContext):
-        return FunctionDecl(name=Id(ctx.ID(1).getText()), returnType=(self.visit(ctx.types()) if ctx.types() else VoidType()), methodReceiver=VariablesDecl(Id(ctx.ID(0).getText()), self.visit(ctx.userDefineType()), None), param=(self.visit(ctx.param_decl()) if ctx.param_decl() else []), stmts=self.visit(ctx.block()))
+        return FunctionDecl(name=Id(ctx.ID(1).getText()), returnType=(self.visit(ctx.types()) if ctx.types() else VoidType()), methodReceiver=VariablesDecl(Id(ctx.ID(0).getText()), self.visit(ctx.compositeType()), None), param=(self.visit(ctx.param_decl()) if ctx.param_decl() else []), stmts=self.visit(ctx.block()))
         
 
     # Visit a parse tree produced by MiniGoParser#block.

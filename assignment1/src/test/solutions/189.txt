@@ -1,1 +1,1 @@
-Illegal escape in string: \u
+Illegal escape in string: "\a

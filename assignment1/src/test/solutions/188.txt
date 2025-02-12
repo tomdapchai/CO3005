@@ -1,1 +1,1 @@
-Illegal escape in string: \",\t\,
+Illegal escape in string: "\",\t\.

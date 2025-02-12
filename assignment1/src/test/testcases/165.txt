@@ -1,1 +1,1 @@
-var 12int=intx = ""
+var 34float=inty = "abc"

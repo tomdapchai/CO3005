@@ -1,1 +1,1 @@
-Illegal escape in string: \i
+Illegal escape in string: "\i

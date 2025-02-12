@@ -1,1 +1,1 @@
-var,12,int,=,intx,=,"",;,<EOF>
+var,34,float,=,inty,=,"abc",;,<EOF>

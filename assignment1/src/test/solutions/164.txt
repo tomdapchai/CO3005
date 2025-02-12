@@ -1,1 +1,1 @@
-func,id,(,),{,},;,<EOF>
+func,compute,(,),{,},;,<EOF>

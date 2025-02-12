@@ -480,8 +480,8 @@ class MiniGoLexer(Lexer):
                     self.RPAREN, self.RBRACKET, self.RBRACE, self.STRING, self.INT, self.FLOAT, self.BOOLEAN, self.NIL, self.TRUE, self.FALSE,
                     self.RETURN, self.CONTINUE, self.BREAK
                 ]:
-                    self.text = ';'
                     self.type = self.SEMICOLON
+                    self.text = ';'
                 else:
                     self.skip()
 
@@ -495,7 +495,7 @@ class MiniGoLexer(Lexer):
     def ILLEGAL_ESCAPE_action(self, localctx:RuleContext , actionIndex:int):
         if actionIndex == 2:
 
-                        raise IllegalEscape(self.text[1:]);
+                        raise IllegalEscape(self.text);
                     
      
 
@@ -503,11 +503,11 @@ class MiniGoLexer(Lexer):
         if actionIndex == 3:
 
                 if (len(self.text) >= 2 and self.text[-1] == '\n' and self.text[-2] == '\r'):
-                    raise UncloseString(self.text[1:-2])
+                    raise UncloseString(self.text[0:-2])
                 elif (self.text[-1] == '\n'):
-                    raise UncloseString(self.text[1:-1])
+                    raise UncloseString(self.text[0:-1])
                 else:
-                    raise UncloseString(self.text[1:])
+                    raise UncloseString(self.text)
 
      
 

@@ -73,8 +73,8 @@ NEWLINE: '\r'?'\n'
         self.RPAREN, self.RBRACKET, self.RBRACE, self.STRING, self.INT, self.FLOAT, self.BOOLEAN, self.NIL, self.TRUE, self.FALSE,
         self.RETURN, self.CONTINUE, self.BREAK
     ]:
-        self.text = ';'
         self.type = self.SEMICOLON
+        self.text = ';'
     else:
         self.skip()
 };
@@ -157,9 +157,9 @@ WS : [ \t\r\f]+ -> skip ; // skip spaces, tabs
 
 // string
 fragment DOUBTED_QUOTE: '"';
-STRING_LIT: '"' (~[\n\\"] | '\\' [rnt"\\] | '\'"')* '"' {
+STRING_LIT: '"' (~[\n\\"] | '\\' [rnt"\\] | '\'"')* '"' /* {
     self.text = self.text[1:-1]
-};
+} */;
 
 // comment
 LINE_COMMENT: '//' ~[\r\n]* -> skip;
@@ -172,16 +172,16 @@ ERROR_CHAR: . {raise ErrorToken(self.text)};
 ILLEGAL_ESCAPE 
     :  '"' ( '\\' [ntr"\\] | ~["\\\r\n] )* '\\' ~[ntr"\\]
         {
-            raise IllegalEscape(self.text[1:]);
+            raise IllegalEscape(self.text);
         }
     ;
 UNCLOSE_STRING: '"' (~[\n\\"] | '\\' [rnt"\\] | '\'"')* (EOF | '\n') {
     if (len(self.text) >= 2 and self.text[-1] == '\n' and self.text[-2] == '\r'):
-        raise UncloseString(self.text[1:-2])
+        raise UncloseString(self.text[0:-2])
     elif (self.text[-1] == '\n'):
-        raise UncloseString(self.text[1:-1])
+        raise UncloseString(self.text[0:-1])
     else:
-        raise UncloseString(self.text[1:])
+        raise UncloseString(self.text)
 };
 
 
@@ -229,6 +229,8 @@ newlines: NEWLINE
 		| newlines NEWLINE
 		;
 
+eos: SEMICOLON | NEWLINE;
+
 expr: logical_expr ;
 
 logical_expr: logical_expr (AND | OR) equality_expr | equality_expr ;
@@ -250,12 +252,12 @@ atom_arr_access: atom_arr_access LBRACKET index_expr RBRACKET | atom;
 atom: atom_value
     | LPAREN expr RPAREN
     | ID
-	| function_call (SEMICOLON | NEWLINE)?
+	| function_call eos?
     | array_literal
     | struct_literal
-    | assignment_stmt (SEMICOLON | NEWLINE)
-	| struct_field_access (SEMICOLON | NEWLINE)?
-	| struct_field_access_no_func (SEMICOLON | NEWLINE)?
+    | assignment_stmt eos
+	| struct_field_access eos?
+	| struct_field_access_no_func eos?
     | array_access
     ;
 
@@ -319,7 +321,7 @@ signed_tail:
             | signed_tail NOT
             ;
 
-array_literal: array_literal_tail3 types LBRACE array_literal_tail RBRACE ;
+array_literal: array_literal_tail3 (primitiveType | compositeType) LBRACE array_literal_tail RBRACE ;
 array_literal_tail: (expr | atom_list ) (COMMA array_literal_tail )? ;
 array_literal_tail3: LBRACKET index_expr RBRACKET array_literal_tail3?; // for multi dimensions
 
@@ -335,21 +337,20 @@ struct_field_access
 
 struct_field_access_no_func: struct_field_access_no_func DOT (ID | array_access) | ID | array_access;
 
-stmt_primary: function_call (SEMICOLON | NEWLINE)
-    | array_access (SEMICOLON | NEWLINE)
-    | struct_field_access (SEMICOLON | NEWLINE)
-    | struct_field_access_no_func (SEMICOLON | NEWLINE)
+stmt_primary: (function_call
+    | array_access 
+    | struct_field_access 
+    | struct_field_access_no_func 
     | if_stmt 
-    | for_stmt
-    | assignment_stmt (SEMICOLON | NEWLINE)
+    | for_stmt 
+    | assignment_stmt) eos 
     ;
 
 stmt_in_block: decl // removed expr for testing
     | stmt_primary
-    | break_stmt (SEMICOLON | NEWLINE) // for testing purpose
-    | continue_stmt (SEMICOLON | NEWLINE) // for testing purpose
-    | return_stmt (SEMICOLON | NEWLINE) // for testing purpose
-    | NEWLINE
+    | (break_stmt // for testing purpose
+    | continue_stmt // for testing purpose
+    | return_stmt) eos // for testing purpose
     ;
 
 /* loop_stmt: stmt_in_block
@@ -363,6 +364,7 @@ func_stmt: stmt_in_block
 
 stmt_list: stmt_in_block
 		| stmt_list stmt_in_block
+        | stmt_list NEWLINE
 		;
 
 /* loop_stmt_list:
@@ -389,8 +391,8 @@ assignment_expr: lhs (ASSIGN | SHORT_ASSIGN) (expr | struct_literal) ; // redund
 lhs: ID | array_access | struct_field_access_no_func;
 
 if_stmt: IF LPAREN expr RPAREN newlines? block if_stmt_tail ;
-if_stmt_tail: ( newlines? ELSE IF LPAREN expr RPAREN newlines? block if_stmt_tail )? 
-            | ( newlines? ELSE newlines? block )?
+if_stmt_tail: ( ELSE IF LPAREN expr RPAREN newlines? block if_stmt_tail )? 
+            | ( ELSE newlines? block )?
             ;
 
 for_stmt: FOR for_init SEMICOLON expr SEMICOLON for_update newlines? block
@@ -411,23 +413,22 @@ var_decl_no_init: VAR ID types;
 short_decl: (lhs | (ID dimensions types)) SHORT_ASSIGN expr ;
 const_decl: CONST ID ASSIGN expr ;
 
-types: primitiveType | compositeType | userDefineType | arrayType;
+types: primitiveType | compositeType | compositeType | arrayType;
 primitiveType: INT | FLOAT | STRING | BOOLEAN ;
-compositeType: STRUCT | INTERFACE ;
 arrayType: array_access_tail types;
-userDefineType: ID ;
+compositeType: ID ;
 
-array_decl: VAR ID dimensions types (ASSIGN array_init)? ;
+array_decl: VAR ID dimensions (primitiveType | compositeType) (ASSIGN array_init)? ;
 dimensions: LBRACKET INT_LIT RBRACKET dimensions? ;
 array_init: LBRACE array_init_tail RBRACE | expr ;
 array_init_tail: ( (expr | atom_list) (COMMA array_init_tail)? )?  ;
 
 struct_decl: TYPE ID STRUCT LBRACE newlines? field_decl_list RBRACE ;
-field_decl_list:  (field_decl | struct_decl | interface_decl | method_decl | NEWLINE ) field_decl_list?;
-field_decl: ID types (SEMICOLON | NEWLINE) NEWLINE?;
+field_decl_list:  ((field_decl | struct_decl | interface_decl | method_decl) eos | NEWLINE ) field_decl_list?;
+field_decl: ID types;
 
 interface_decl: TYPE ID INTERFACE LBRACE newlines? method_in_decl RBRACE ;
-method_in_decl: ((ID LPAREN param_decl? RPAREN types? (SEMICOLON | NEWLINE)) | NEWLINE) method_in_decl?; // inside interface
+method_in_decl: ((ID LPAREN param_decl? RPAREN types? eos) | NEWLINE) method_in_decl?; // inside interface
 
 // for declaring params in interface
 param_decl: (ID param_decl_tail types) (COMMA param_decl)? ;
@@ -440,7 +441,7 @@ param_decl_tail: (COMMA ID param_decl_tail)? ;
 
 function_call: ID LPAREN expr_list? RPAREN | built_in_function_call ;
 func_decl: FUNC ID LPAREN param_decl? RPAREN types? block  ;
-method_decl: FUNC LPAREN ID userDefineType RPAREN ID LPAREN param_decl? RPAREN types? block ;
+method_decl: FUNC LPAREN ID compositeType RPAREN ID LPAREN param_decl? RPAREN types? block ;
 
 // block
 block: LBRACE NEWLINE? stmt_list RBRACE ;

@@ -15,12 +15,16 @@ class ParserSuite(unittest.TestCase):
     def test_001(self):
         """Literal"""
         self.assertTrue(TestParser.test("""
-        type Person struct {
-            func (p Person) Greet() string {
-                return "Hello, " + p.name
-            }
-            c c
-            func (c c) Add(x, y int, b float) {return ;}  
-            value int;                            
-        }      
-""","successful", inspect.stack()[0].function))
+                                    func Add() {
+                                        
+
+
+                                        a := 1;
+
+
+                                        var b = 2; var c = 3;
+
+                                        func Add(x, y int) int {
+                                            return x + y;
+                                        }
+                                    };""","successful", inspect.stack()[0].function))

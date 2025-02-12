@@ -1,6 +1,6 @@
-type Person struct {
-    name string
-    age int
+type Animal struct {
+    species string
+    weight float
 }
 
-var x int = 10;
+var y float = 20;

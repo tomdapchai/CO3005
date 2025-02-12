@@ -1,1 +1,1 @@
-for,index,,,value,:=,range,arr,;,{,},;,<EOF>
+for,pos,,,num,:=,range,list,;,{,},;,<EOF>

@@ -1,1 +1,1 @@
-for,i,,,v,:=,range,arr,{,},<EOF>
+for,a,,,b,:=,range,arr,[,],<EOF>

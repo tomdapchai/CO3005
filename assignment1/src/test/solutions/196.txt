@@ -1,1 +1,1 @@
-a,"\"",test,<EOF>
+b,"\"",TAM,<EOF>

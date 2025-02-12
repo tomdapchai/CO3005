@@ -1,1 +1,1 @@
-import,"fmt",fmt,.,Println,(,"Hello",<EOF>
+package,main,;,import,"os",os,.,Open,(,"file.txt",),<EOF>

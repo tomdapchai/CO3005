@@ -1,1 +1,1 @@
-return,x,+,y,+,z,;,;,;,;,<EOF>
+return,a,*,b,;,;,<EOF>

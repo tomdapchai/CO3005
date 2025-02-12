@@ -1,1 +1,1 @@
-func#main!(){fmt.Println("Hello"}
+interface ITest { Method() int; }

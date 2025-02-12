@@ -1,1 +1,1 @@
-var,text,=,Unclosed string: str
+int,VTT,=,Unclosed string: "array

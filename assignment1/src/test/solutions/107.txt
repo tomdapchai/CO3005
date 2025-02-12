@@ -1,1 +1,1 @@
-if,If,else,Else,<EOF>
+if,else,If,Else,<EOF>
