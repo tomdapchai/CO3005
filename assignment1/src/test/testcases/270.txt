@@ -1,0 +1,13 @@
+
+        type Rectangle struct {
+            width int;
+            height int;
+        }
+
+        func (r Rectangle) area() int {
+            return r.width * r.height;
+        }
+
+        var rect Rectangle = Rectangle{width: 10, height: 5};
+        var rectArea int = rect.area();
+        

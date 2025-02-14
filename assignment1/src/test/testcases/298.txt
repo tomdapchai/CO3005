@@ -1,0 +1,21 @@
+
+        type Person struct {
+            name string;
+            age int;
+        }
+
+        func (c Person) SayHello() {
+                fmt.Println("Hello, my name is " + c.name);
+            }
+
+        var p Person = Person{name: "Alice", age: 25};
+        func tmp() {
+        if (p.age > 18) {
+            for i := 0; i < p.age; i += 1 {
+                // Some action
+                counter := counter + 1;
+            }
+        }
+        }
+        
+        

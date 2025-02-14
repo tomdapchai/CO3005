@@ -1,0 +1,4 @@
+
+        func Add() {
+            for i, v := range 10 {}
+        }

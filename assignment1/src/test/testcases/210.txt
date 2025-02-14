@@ -1,0 +1,7 @@
+
+        type Calculator interface {
+            Add(x, y int) int;
+            Subtract(a int, b, c int) string
+            SayHello(name string)
+        }
+        

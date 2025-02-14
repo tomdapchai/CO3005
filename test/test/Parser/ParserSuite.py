@@ -16,15 +16,5 @@ class ParserSuite(unittest.TestCase):
         """Literal"""
         self.assertTrue(TestParser.test("""
                                     func Add() {
-                                        
-
-
-                                        a := 1;
-
-
-                                        var b = 2; var c = 3;
-
-                                        func Add(x, y int) int {
-                                            return x + y;
-                                        }
-                                    };""","successful", inspect.stack()[0].function))
+                                        1 + 1 += 2;       
+                                    }""","Error on line 3 col 40: 1", inspect.stack()[0].function))

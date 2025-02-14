@@ -1,0 +1,5 @@
+
+        type Wrong {
+            Add(x, y int) int;
+        }
+        

@@ -1,4 +1,5 @@
-func (c c) Add(x int, c int) {
+func (c c) Add(x, c int) {
+            var a int;
         }
          
             

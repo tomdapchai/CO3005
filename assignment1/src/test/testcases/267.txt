@@ -1,0 +1,4 @@
+
+       var arr = [3]int{1, 2, 3};
+       var sum int = arr[0] + arr[1] + arr[2];
+       

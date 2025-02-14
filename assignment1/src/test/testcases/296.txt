@@ -1,0 +1,11 @@
+
+        var x int = 0;
+        func tmp() {
+        if (x < 10) {
+            for i := 0; i < 5; i += 1 {
+                x := x + 1;
+            }
+        }
+        }
+        
+        

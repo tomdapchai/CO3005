@@ -1,0 +1,5 @@
+func main() {
+            for if (true) {}; i+=1 {
+                a := i;
+            }
+        };

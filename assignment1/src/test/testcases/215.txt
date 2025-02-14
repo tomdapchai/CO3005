@@ -1,0 +1,5 @@
+
+        type Invalid interface {
+            Compute int (x, y);
+        }
+        

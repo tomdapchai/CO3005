@@ -1,0 +1,9 @@
+
+        func Add() {
+        if (arr[0] > 0) { 
+        arr[0] := arr[0] * 2; 
+        }
+        else {
+            arr[0] := 0;
+        }
+        }

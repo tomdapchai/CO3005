@@ -196,11 +196,11 @@ program_list
 
 decl_or_stmt
     : decl                  // Base case: declaration
-    | stmt_primary          // Base case: statement
+    /* | stmt_primary          // Base case: statement */
     | decl_or_stmt NEWLINE  // Allow newlines after decl/stmt
     | decl_or_stmt decl     // Add another declaration
-    | decl_or_stmt stmt_primary     // Add another statement
-    | expr // testing part 1 task 3
+    /* | decl_or_stmt stmt_primary     // Add another statement
+    | expr eos // testing part 1 task 3 */
     ;
             
 
@@ -210,9 +210,9 @@ decl: (struct_decl
     | var_decl 
     | array_decl
     | var_decl_no_init
-    | short_decl 
+    /* | short_decl  */
     | func_decl 
-    | method_decl) (SEMICOLON | newlines);
+    | method_decl) eos;
 
 /* decl_in_block: (struct_decl 
     | interface_decl
@@ -229,15 +229,15 @@ newlines: NEWLINE
 		| newlines NEWLINE
 		;
 
-eos: SEMICOLON | NEWLINE;
+eos: SEMICOLON | newlines;
 
-expr: logical_expr ;
+expr: logical_or_expr ;
 
-logical_expr: logical_expr (AND | OR) equality_expr | equality_expr ;
+logical_or_expr: logical_or_expr OR logical_and_expr | logical_and_expr ;
 
-equality_expr: equality_expr (EQ | NEQ) relational_expr | relational_expr ;
+logical_and_expr: logical_and_expr AND relational_expr | relational_expr ;
 
-relational_expr: relational_expr (LT | LE | GT | GE) additive_expr | additive_expr ;
+relational_expr: relational_expr (EQ | NEQ | LT | LE | GT | GE) additive_expr | additive_expr ;
 
 additive_expr: additive_expr (ADD | SUB) multiplicative_expr | multiplicative_expr ;
 
@@ -252,12 +252,12 @@ atom_arr_access: atom_arr_access LBRACKET index_expr RBRACKET | atom;
 atom: atom_value
     | LPAREN expr RPAREN
     | ID
-	| function_call eos?
+	| function_call
     | array_literal
     | struct_literal
-    | assignment_stmt eos
-	| struct_field_access eos?
-	| struct_field_access_no_func eos?
+    //| assignment_stmt eos
+	| struct_field_access
+	| struct_field_access_no_func
     | array_access
     ;
 
@@ -267,12 +267,13 @@ atom_value: number
     | NIL
     | STRING_LIT;
 
-atom_list: LPAREN expr_list RPAREN 
-            | LBRACE expr_list RBRACE ;
-expr_list : expr
-            | struct_literal
-            | atom_list
-            |(expr | struct_literal | atom_list) COMMA expr_list  // Recursive case: expr followed by comma and another expr_list
+
+arr_allow_lit: int_number | FLOAT_LIT | STRING_LIT | TRUE | FALSE | NIL | struct_literal | ID;
+
+arr_init_list: LBRACE arr_init_list_body RBRACE ;
+arr_init_list_body :  arr_allow_lit
+            | arr_init_list
+            |(arr_allow_lit | arr_init_list) COMMA arr_init_list_body  
           ;
 
 literal: array_literal | struct_literal;
@@ -286,13 +287,13 @@ array_access_tail:
     LBRACKET index_expr RBRACKET array_access_tail? ;
 
 // Index-specific expressions (no FLOAT_LIT allowed)
-index_expr: logical_index_expr ;
+index_expr: logical_index_or_expr ;
 
-logical_index_expr: logical_index_expr (AND | OR) equality_index_expr | equality_index_expr ;
+logical_index_or_expr: logical_index_or_expr OR logical_index_and_expr | logical_index_and_expr ;
 
-equality_index_expr: equality_index_expr (EQ | NEQ) relational_index_expr | relational_index_expr ;
+logical_index_and_expr: logical_index_and_expr (AND | OR) relational_index_expr | relational_index_expr ;
 
-relational_index_expr: relational_index_expr (LT | LE | GT | GE) additive_index_expr | additive_index_expr ;
+relational_index_expr: relational_index_expr (EQ | NEQ | LT | LE | GT | GE) additive_index_expr | additive_index_expr ;
 
 additive_index_expr: additive_index_expr (ADD | SUB) multiplicative_index_expr | multiplicative_index_expr;
 
@@ -307,6 +308,8 @@ primary_index_expr: // here is what can be before and inside the []
                   | LPAREN index_expr RPAREN
                   | array_literal
                   | struct_literal
+                  | struct_field_access
+                  | struct_field_access_no_func
                   ;
 
 
@@ -316,13 +319,11 @@ secondary_index_expr: ID // this is for what before the []
                       ;
 
 signed_tail: 
-            | signed_tail ADD
-            | signed_tail SUB
-            | signed_tail NOT
+            | SUB signed_tail
+            | NOT signed_tail
             ;
 
-array_literal: array_literal_tail3 (primitiveType | compositeType) LBRACE array_literal_tail RBRACE ;
-array_literal_tail: (expr | atom_list ) (COMMA array_literal_tail )? ;
+array_literal: array_literal_tail3 (primitiveType | compositeType) arr_init_list ;
 array_literal_tail3: LBRACKET index_expr RBRACKET array_literal_tail3?; // for multi dimensions
 
 // struct
@@ -333,23 +334,27 @@ struct_literal_tail2: ( COMMA field_init struct_literal_tail2 )? ;
 field_init: ID COLON expr ;
 
 struct_field_access
-    : struct_field_access DOT (ID | function_call | array_access) | ID | function_call | array_access;
+    : struct_field_access_head DOT (ID | function_call | array_access);
 
-struct_field_access_no_func: struct_field_access_no_func DOT (ID | array_access) | ID | array_access;
+struct_field_access_head: struct_field_access_head DOT (ID | function_call | array_access) | ID | function_call | array_access;
 
-stmt_primary: (function_call
-    | array_access 
+struct_field_access_no_func: struct_field_access_no_func_head DOT (ID | array_access);
+
+struct_field_access_no_func_head: struct_field_access_no_func_head DOT (ID | array_access) | ID | array_access;
+
+stmt_in_block: (array_access 
     | struct_field_access 
     | struct_field_access_no_func 
+    | const_decl 
+    | var_decl 
+    | array_decl
+    | var_decl_no_init
+    | break_stmt // for testing purpose
+    | continue_stmt // for testing purpose
     | if_stmt 
     | for_stmt 
-    | assignment_stmt) eos 
-    ;
-
-stmt_in_block: decl // removed expr for testing
-    | stmt_primary
-    | (break_stmt // for testing purpose
-    | continue_stmt // for testing purpose
+    | assignment_stmt
+    | function_call
     | return_stmt) eos // for testing purpose
     ;
 
@@ -376,7 +381,8 @@ func_stmt_list:
 		; */
 
 assignment_stmt: lhs assignment_operator expr;
-assignment_operator: ASSIGN
+assignment_stmt_scalar: ID assignment_operator expr ;
+assignment_operator: SHORT_ASSIGN
                    | ADD_ASSIGN
                    | SUB_ASSIGN
                    | MUL_ASSIGN
@@ -395,13 +401,13 @@ if_stmt_tail: ( ELSE IF LPAREN expr RPAREN newlines? block if_stmt_tail )?
             | ( ELSE newlines? block )?
             ;
 
-for_stmt: FOR for_init SEMICOLON expr SEMICOLON for_update newlines? block
-        | FOR ID COMMA ID SHORT_ASSIGN RANGE atom newlines? block
-        | FOR expr newlines? block
+for_stmt: FOR for_init SEMICOLON expr SEMICOLON for_update block
+        | FOR ID COMMA ID SHORT_ASSIGN RANGE atom block
+        | FOR expr block
         ;
 
-for_init: short_decl | var_decl | array_decl | func_decl  ; // equivalent to short_decl
-for_update: assignment_stmt | short_decl ;
+for_init: var_decl | assignment_stmt_scalar  ; 
+for_update: assignment_stmt_scalar;
 for_condition: expr ; // redundant
 
 return_stmt: RETURN expr? ;
@@ -410,21 +416,20 @@ break_stmt: BREAK ;
 
 var_decl: VAR ID types? ASSIGN expr ;
 var_decl_no_init: VAR ID types;
-short_decl: (lhs | (ID dimensions types)) SHORT_ASSIGN expr ;
+//short_decl: (lhs | (ID dimensions types)) SHORT_ASSIGN expr ;
 const_decl: CONST ID ASSIGN expr ;
 
-types: primitiveType | compositeType | compositeType | arrayType;
+types: primitiveType | compositeType | arrayType;
 primitiveType: INT | FLOAT | STRING | BOOLEAN ;
 arrayType: array_access_tail types;
 compositeType: ID ;
 
 array_decl: VAR ID dimensions (primitiveType | compositeType) (ASSIGN array_init)? ;
 dimensions: LBRACKET INT_LIT RBRACKET dimensions? ;
-array_init: LBRACE array_init_tail RBRACE | expr ;
-array_init_tail: ( (expr | atom_list) (COMMA array_init_tail)? )?  ;
+array_init: arr_init_list | expr ;
 
 struct_decl: TYPE ID STRUCT LBRACE newlines? field_decl_list RBRACE ;
-field_decl_list:  ((field_decl | struct_decl | interface_decl | method_decl) eos | NEWLINE ) field_decl_list?;
+field_decl_list:  ((field_decl | struct_decl | interface_decl) eos | NEWLINE ) field_decl_list?;
 field_decl: ID types;
 
 interface_decl: TYPE ID INTERFACE LBRACE newlines? method_in_decl RBRACE ;
@@ -439,7 +444,9 @@ param_decl_tail: (COMMA ID param_decl_tail)? ;
 
 // declare params like x, y int, z float
 
-function_call: ID LPAREN expr_list? RPAREN | built_in_function_call ;
+param_call_list: expr (COMMA param_call_list)?; // aka arr_init_list_body
+
+function_call: ID LPAREN param_call_list? RPAREN | built_in_function_call ;
 func_decl: FUNC ID LPAREN param_decl? RPAREN types? block  ;
 method_decl: FUNC LPAREN ID compositeType RPAREN ID LPAREN param_decl? RPAREN types? block ;
 

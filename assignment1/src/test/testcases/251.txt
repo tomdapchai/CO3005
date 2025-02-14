@@ -1,0 +1,4 @@
+
+    func main() {
+    p := Person{name: "Alice", age: 30};
+    }

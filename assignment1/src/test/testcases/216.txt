@@ -1,0 +1,5 @@
+
+        struct Calculator interface {
+            Add(x, y int) int;
+        }
+        

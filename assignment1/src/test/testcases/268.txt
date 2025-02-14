@@ -1,0 +1,15 @@
+
+        type Person struct {
+            name string;
+            age int;
+        }
+
+        func main() {
+        var people [2]Person;
+        people[0] := Person{name: "Alice", age: 30};
+        people[1] := Person{name: "Bob", age: 25};
+
+        var aliceAge int = people[0].age;
+        }
+        
+        

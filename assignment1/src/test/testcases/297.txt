@@ -1,0 +1,11 @@
+
+        var arr = [3]int{1, 2, 3};
+        func tmp() {
+            for _, value := range arr {
+            if (value > 1) {
+                value := value * 2;
+            }
+        }
+        }
+        
+        

@@ -1,0 +1,8 @@
+func Add() {
+        if (z < 0) { z := -z; } else if (z > 0) { 
+        z += 1 
+        } else { 
+        z := 0 
+        }
+        }
+        

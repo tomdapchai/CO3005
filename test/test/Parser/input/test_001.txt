@@ -1,14 +1,4 @@
 
                                     func Add() {
-                                        
-
-
-                                        a := 1;
-
-
-                                        var b = 2; var c = 3;
-
-                                        func Add(x, y int) int {
-                                            return x + y;
-                                        }
-                                    };
+                                        1 + 1 += 2;       
+                                    }

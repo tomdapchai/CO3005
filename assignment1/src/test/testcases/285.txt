@@ -1,0 +1,6 @@
+
+        func Add() {
+            if (person.age > 18) {
+          person.isAdult := true; 
+          };
+        }

@@ -1,0 +1,1 @@
+var arr4 = [true]int{1, 2, 3}[1];

@@ -17,8 +17,4 @@ from TestUtils import TestLexer
 class LexerSuite(unittest.TestCase):
     def test_001(self):
         """Keywords"""
-        self.assertTrue(TestLexer.test("""for i := 0
-                    i < 10
-                    i += 1 {
-                    return
-                }""", "for,i,:=,0,;,i,<,10,;,i,+=,1,{,return,;,},<EOF>", inspect.stack()[0].function))
+        self.assertTrue(TestLexer.test("""/* /* a */""", "Illegal escape in string: \" this is \\ ", inspect.stack()[0].function))

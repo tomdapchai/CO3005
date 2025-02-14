@@ -1,0 +1,8 @@
+
+        func multiply(x int, y int) int {
+            return x * y;
+        }
+
+        const FACTOR = 2;
+        var result int = multiply(5, 10) * FACTOR;
+        

@@ -138,27 +138,27 @@ class ASTGeneration(MiniGoVisitor):
 
 
     # Visit a parse tree produced by MiniGoParser#logical_expr.
-    def visitLogical_expr(self, ctx: MiniGoParser.Logical_exprContext):
-        """Visit logical expression (AND/OR operations - version 1)."""
-        if ctx.logical_expr():  # Check if there's a left logical_expr
-            left = self.visit(ctx.logical_expr())  # Visit the left side
-            op = ctx.AND().getText() if ctx.AND() else ctx.OR().getText()  # Get the operator
-            right = self.visit(ctx.equality_expr())  # Visit the right side (higher precedence)
-            return BinaryOp(op, left, right)
+    # def visitLogical_expr(self, ctx: MiniGoParser.Logical_exprContext):
+    #     """Visit logical expression (AND/OR operations - version 1)."""
+    #     if ctx.logical_expr():  # Check if there's a left logical_expr
+    #         left = self.visit(ctx.logical_expr())  # Visit the left side
+    #         op = ctx.AND().getText() if ctx.AND() else ctx.OR().getText()  # Get the operator
+    #         right = self.visit(ctx.equality_expr())  # Visit the right side (higher precedence)
+    #         return BinaryOp(op, left, right)
         
-        # If no left logical_expr, just visit the equality_expr
-        return self.visit(ctx.equality_expr())
+    #     # If no left logical_expr, just visit the equality_expr
+    #     return self.visit(ctx.equality_expr())
     
-    def visitEquality_expr(self, ctx: MiniGoParser.Equality_exprContext):
-        """Visit equality expression (EQ/NEQ operations)."""
-        if ctx.equality_expr():  # Check if there's a left equality_expr
-            left = self.visit(ctx.equality_expr())  # Visit the left side
-            op = ctx.EQ().getText() if ctx.EQ() else ctx.NEQ().getText()  # Get the operator
-            right = self.visit(ctx.relational_expr())  # Visit the right side (higher precedence)
-            return BinaryOp(op, left, right)
+    # def visitEquality_expr(self, ctx: MiniGoParser.Equality_exprContext):
+    #     """Visit equality expression (EQ/NEQ operations)."""
+    #     if ctx.equality_expr():  # Check if there's a left equality_expr
+    #         left = self.visit(ctx.equality_expr())  # Visit the left side
+    #         op = ctx.EQ().getText() if ctx.EQ() else ctx.NEQ().getText()  # Get the operator
+    #         right = self.visit(ctx.relational_expr())  # Visit the right side (higher precedence)
+    #         return BinaryOp(op, left, right)
         
-        # If no left equality_expr, just visit the relational_expr
-        return self.visit(ctx.relational_expr())
+    #     # If no left equality_expr, just visit the relational_expr
+    #     return self.visit(ctx.relational_expr())
 
     def visitRelational_expr(self, ctx: MiniGoParser.Relational_exprContext):
         """Visit relational expression (LT/LE/GT/GE operations)."""
@@ -260,8 +260,6 @@ class ASTGeneration(MiniGoVisitor):
             return self.visit(ctx.array_literal())
         elif ctx.struct_literal():
             return self.visit(ctx.struct_literal())
-        elif ctx.assignment_stmt():
-            return self.visit(ctx.assignment_stmt())
         elif ctx.struct_field_access():
             return self.visit(ctx.struct_field_access())
         elif ctx.array_access():
@@ -285,26 +283,26 @@ class ASTGeneration(MiniGoVisitor):
 
 
     # Visit a parse tree produced by MiniGoParser#atom_list.
-    def visitAtom_list(self, ctx: MiniGoParser.Atom_listContext):
-        """Visit atom list (parenthesized or braced expression list)."""
-        # Visit the expression list within the braces/parentheses
-        return self.visit(ctx.expr_list())
+    # def visitAtom_list(self, ctx: MiniGoParser.Atom_listContext):
+    #     """Visit atom list (parenthesized or braced expression list)."""
+    #     # Visit the expression list within the braces/parentheses
+    #     return self.visit(ctx.expr_list())
 
-    def visitExpr_list(self, ctx: MiniGoParser.Expr_listContext):
-        """Visit expression list."""
-        expressions = []
+    # def visitExpr_list(self, ctx: MiniGoParser.Expr_listContext):
+    #     """Visit expression list."""
+    #     expressions = []
         
-        # Handle the first expression or struct_init
-        if ctx.expr():
-            expressions.append(self.visit(ctx.expr()))
-        elif ctx.struct_literal():
-            expressions.append(self.visit(ctx.struct_literal()))
+    #     # Handle the first expression or struct_init
+    #     if ctx.expr():
+    #         expressions.append(self.visit(ctx.expr()))
+    #     elif ctx.struct_literal():
+    #         expressions.append(self.visit(ctx.struct_literal()))
         
-        # If there's a recursive expr_list after the comma, visit it
-        if ctx.expr_list():
-            expressions.extend(self.visit(ctx.expr_list()))
+    #     # If there's a recursive expr_list after the comma, visit it
+    #     if ctx.expr_list():
+    #         expressions.extend(self.visit(ctx.expr_list()))
         
-        return expressions
+    #     return expressions
 
 
     # Visit a parse tree produced by MiniGoParser#literal.
@@ -351,24 +349,24 @@ class ASTGeneration(MiniGoVisitor):
         """Top-level index expression."""
         return self.visit(ctx.logical_index_expr())
 
-    def visitLogical_index_expr(self, ctx: MiniGoParser.Logical_index_exprContext):
-        """Visit logical index expression (AND/OR operations)."""
-        if ctx.logical_index_expr():
-            left = self.visit(ctx.logical_index_expr())
-            op = ctx.AND().getText() if ctx.AND() else ctx.OR().getText()
-            right = self.visit(ctx.logical_index_tail())
-            return BinaryOp(op, left, right)
+    # def visitLogical_index_expr(self, ctx: MiniGoParser.Logical_index_exprContext):
+    #     """Visit logical index expression (AND/OR operations)."""
+    #     if ctx.logical_index_expr():
+    #         left = self.visit(ctx.logical_index_expr())
+    #         op = ctx.AND().getText() if ctx.AND() else ctx.OR().getText()
+    #         right = self.visit(ctx.logical_index_tail())
+    #         return BinaryOp(op, left, right)
         
-        return self.visit(ctx.equality_index_expr())
+    #     return self.visit(ctx.equality_index_expr())
 
-    def visitEquality_index_expr(self, ctx: MiniGoParser.Equality_index_exprContext):
-        if ctx.equality_index_expr():
-            left = self.visit(ctx.equality_index_expr())
-            op = ctx.EQ().getText() if ctx.EQ() else ctx.NEQ().getText()
-            right = self.visit(ctx.relational_index_expr())
-            return BinaryOp(op, left, right)
+    # def visitEquality_index_expr(self, ctx: MiniGoParser.Equality_index_exprContext):
+    #     if ctx.equality_index_expr():
+    #         left = self.visit(ctx.equality_index_expr())
+    #         op = ctx.EQ().getText() if ctx.EQ() else ctx.NEQ().getText()
+    #         right = self.visit(ctx.relational_index_expr())
+    #         return BinaryOp(op, left, right)
         
-        return self.visit(ctx.relational_index_expr())
+    #     return self.visit(ctx.relational_index_expr())
 
     def visitRelational_index_expr(self, ctx: MiniGoParser.Relational_index_exprContext):
         if ctx.relational_index_expr():
@@ -470,27 +468,27 @@ class ASTGeneration(MiniGoVisitor):
 
         return ArrayLiteral(typ, dimensions, values)
 
-    def visitArray_literal_tail(self, ctx: MiniGoParser.Array_literal_tailContext):
-        """Visit array literal tail (list of values)."""
-        values = []
+    # def visitArray_literal_tail(self, ctx: MiniGoParser.Array_literal_tailContext):
+    #     """Visit array literal tail (list of values)."""
+    #     values = []
         
-        # Handle the first value - could be either an expr or atom_list
-        first_child = ctx.getChild(0)
-        if isinstance(first_child, MiniGoParser.Atom_listContext):
-            # If it's an atom_list, recursively visit it
-            first_value = self.visit(first_child)
-            values.append(first_value)
-        else:
-            # If it's a single expression
-            expr = self.visit(first_child)
-            values.append(expr)
+    #     # Handle the first value - could be either an expr or atom_list
+    #     first_child = ctx.getChild(0)
+    #     if isinstance(first_child, MiniGoParser.Atom_listContext):
+    #         # If it's an atom_list, recursively visit it
+    #         first_value = self.visit(first_child)
+    #         values.append(first_value)
+    #     else:
+    #         # If it's a single expression
+    #         expr = self.visit(first_child)
+    #         values.append(expr)
 
-        # Recursively process the tail if it exists
-        if ctx.array_literal_tail():
-            tail_values = self.visit(ctx.array_literal_tail())
-            values.extend(tail_values)
+    #     # Recursively process the tail if it exists
+    #     if ctx.array_literal_tail():
+    #         tail_values = self.visit(ctx.array_literal_tail())
+    #         values.extend(tail_values)
 
-        return values
+    #     return values
 
     def visitArray_literal_tail3(self, ctx: MiniGoParser.Array_literal_tail3Context):
         """Visit array literal tail3 (multi-dimensional brackets)."""
@@ -836,7 +834,7 @@ class ASTGeneration(MiniGoVisitor):
 
 
     # Visit a parse tree produced by MiniGoParser#array_init_tail.
-    def visitArray_init_tail(self, ctx:MiniGoParser.Array_init_tailContext):
+    """ def visitArray_init_tail(self, ctx:MiniGoParser.Array_init_tailContext):
         init = []
         if ctx.expr():
             init.append(self.visit(ctx.expr()))
@@ -844,7 +842,7 @@ class ASTGeneration(MiniGoVisitor):
             init.append(self.visit(ctx.atom_list()))
         if ctx.array_init_tail():
             init.extend(self.visit(ctx.array_init_tail()))
-        return init
+        return init """
 
 
     # Visit a parse tree produced by MiniGoParser#struct_decl.

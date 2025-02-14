@@ -1,0 +1,19 @@
+
+        
+            type Calculator interface {
+            Add(x int) int;
+        }
+
+        type MyCalc struct {
+            value int;
+        }
+
+        func (c MyCalc) Add(x int) int {
+            c.value += x;
+            return c.value;
+
+        var calc Calculator = MyCalc{value: 0};
+        calc.Add(5);
+        }
+        
+        

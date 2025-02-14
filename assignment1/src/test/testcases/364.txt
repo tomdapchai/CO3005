@@ -1,0 +1,9 @@
+var a int
+        
+        const b = 1
+        
+        func main() {
+            a := 1
+            b := 2
+        }
+        

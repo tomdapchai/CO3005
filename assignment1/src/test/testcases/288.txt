@@ -1,0 +1,7 @@
+var arr = [3]int{1, 2, 3}; 
+        func Add() {
+        for index, value := range arr { 
+         x := x + value;
+           }
+        }
+           
