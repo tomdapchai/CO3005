@@ -164,6 +164,11 @@ class MiniGoVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by MiniGoParser#signed_index_expr.
+    def visitSigned_index_expr(self, ctx:MiniGoParser.Signed_index_exprContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by MiniGoParser#primary_index_expr.
     def visitPrimary_index_expr(self, ctx:MiniGoParser.Primary_index_exprContext):
         return self.visitChildren(ctx)
@@ -341,6 +346,11 @@ class MiniGoVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by MiniGoParser#compositeType.
     def visitCompositeType(self, ctx:MiniGoParser.CompositeTypeContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MiniGoParser#array_decl_with_init.
+    def visitArray_decl_with_init(self, ctx:MiniGoParser.Array_decl_with_initContext):
         return self.visitChildren(ctx)
 
 

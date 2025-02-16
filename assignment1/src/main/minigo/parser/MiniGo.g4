@@ -209,6 +209,7 @@ decl: (struct_decl
     | const_decl 
     | var_decl 
     | array_decl
+    | array_decl_with_init
     | var_decl_no_init
     /* | short_decl  */
     | func_decl 
@@ -273,7 +274,7 @@ arr_allow_lit: int_number | FLOAT_LIT | STRING_LIT | TRUE | FALSE | NIL | struct
 arr_init_list: LBRACE arr_init_list_body RBRACE ;
 arr_init_list_body :  arr_allow_lit
             | arr_init_list
-            |(arr_allow_lit | arr_init_list) COMMA arr_init_list_body  
+            | (arr_allow_lit | arr_init_list) COMMA arr_init_list_body  
           ;
 
 literal: array_literal | struct_literal;
@@ -297,14 +298,15 @@ relational_index_expr: relational_index_expr (EQ | NEQ | LT | LE | GT | GE) addi
 
 additive_index_expr: additive_index_expr (ADD | SUB) multiplicative_index_expr | multiplicative_index_expr;
 
-multiplicative_index_expr: multiplicative_index_expr (MUL | DIV | MOD) primary_index_expr | primary_index_expr  ;
+multiplicative_index_expr: multiplicative_index_expr (MUL | DIV | MOD) primary_index_expr | signed_index_expr  ;
+
+signed_index_expr: signed_tail primary_index_expr ;
 
 primary_index_expr: // here is what can be before and inside the []
                     secondary_index_expr 
                     // below are for what inside the []
                   | array_access
                   | int_number
-                  | signed_tail int_number
                   | LPAREN index_expr RPAREN
                   | array_literal
                   | struct_literal
@@ -348,6 +350,7 @@ stmt_in_block: (array_access
     | const_decl 
     | var_decl 
     | array_decl
+    | array_decl_with_init
     | var_decl_no_init
     | break_stmt // for testing purpose
     | continue_stmt // for testing purpose
@@ -406,7 +409,7 @@ for_stmt: FOR for_init SEMICOLON expr SEMICOLON for_update block
         | FOR expr block
         ;
 
-for_init: var_decl | assignment_stmt_scalar  ; 
+for_init: var_decl | assignment_stmt_scalar | array_decl_with_init  ; 
 for_update: assignment_stmt_scalar;
 for_condition: expr ; // redundant
 
@@ -414,8 +417,8 @@ return_stmt: RETURN expr? ;
 continue_stmt: CONTINUE ;
 break_stmt: BREAK ;
 
-var_decl: VAR ID types? ASSIGN expr ;
-var_decl_no_init: VAR ID types;
+var_decl: VAR ID (primitiveType | compositeType)? ASSIGN expr ;
+var_decl_no_init: VAR ID (primitiveType | compositeType);
 //short_decl: (lhs | (ID dimensions types)) SHORT_ASSIGN expr ;
 const_decl: CONST ID ASSIGN expr ;
 
@@ -424,9 +427,10 @@ primitiveType: INT | FLOAT | STRING | BOOLEAN ;
 arrayType: array_access_tail types;
 compositeType: ID ;
 
-array_decl: VAR ID dimensions (primitiveType | compositeType) (ASSIGN array_init)? ;
-dimensions: LBRACKET INT_LIT RBRACKET dimensions? ;
-array_init: arr_init_list | expr ;
+array_decl_with_init: VAR ID dimensions (primitiveType | compositeType) ASSIGN array_init ;
+array_decl: VAR ID dimensions (primitiveType | compositeType) ;
+dimensions: LBRACKET (int_number | ID) RBRACKET dimensions? ;
+array_init: array_literal | expr ;
 
 struct_decl: TYPE ID STRUCT LBRACE newlines? field_decl_list RBRACE ;
 field_decl_list:  ((field_decl | struct_decl | interface_decl) eos | NEWLINE ) field_decl_list?;

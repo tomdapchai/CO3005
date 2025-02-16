@@ -887,6 +887,19 @@ q := Person{};
         expect = "successful"
         self.assertTrue(TestParser.checkParser(input, expect, 300))
 
-    
+    def test_301(self): 
+        input = """
+        const MAX = 10;
+        var arr [5]int;
+        var a2 [MAX]string;
+        
+        func main() {
+            arr := [MAX]int{1, 2, 3}
+            arr[v+x-y*(23%11/0+0o123||(b&&(!c)))] /= 23;
+        }
+        
+        """
+        expect = """successful"""
+        self.assertTrue(TestParser.checkParser(input,expect,301))
     
     
