@@ -1,11 +1,11 @@
 
-        const MAX = 10;
+        const TEST = 10;
         var arr [5]int;
-        var a2 [MAX]string;
+        var a2 [TEST]string;
         
         func main() {
-            arr := [MAX]int{1, 2, 3}
-            arr[v+x-y*(23%11/0+0o123||(b&&(!c)))] /= 23;
+            arr := [TEST]int{1, 2, 3}
+            arr[a+b-c*(11%11+0o111||(d&&(!c)))] /= 23;
         }
         
         
