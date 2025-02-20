@@ -400,8 +400,9 @@ assignment_expr: lhs (ASSIGN | SHORT_ASSIGN) (expr | struct_literal) ; // redund
 lhs: ID | array_access | struct_field_access_no_func;
 
 if_stmt: IF LPAREN expr RPAREN newlines? block if_stmt_tail ;
-if_stmt_tail: ( ELSE IF LPAREN expr RPAREN newlines? block if_stmt_tail )? 
-            | ( ELSE newlines? block )?
+if_stmt_tail:  ELSE IF LPAREN expr RPAREN newlines? block if_stmt_tail 
+            |  ELSE newlines? block 
+            |
             ;
 
 for_stmt: FOR for_init SEMICOLON expr SEMICOLON for_update block
@@ -424,16 +425,16 @@ const_decl: CONST ID ASSIGN expr ;
 
 types: primitiveType | compositeType | arrayType;
 primitiveType: INT | FLOAT | STRING | BOOLEAN ;
-arrayType: array_access_tail types;
+arrayType: dimensions (primitiveType | compositeType);
 compositeType: ID ;
 
-array_decl_with_init: VAR ID dimensions (primitiveType | compositeType) ASSIGN array_init ;
-array_decl: VAR ID dimensions (primitiveType | compositeType) ;
+array_decl_with_init: VAR ID arrayType ASSIGN array_init ;
+array_decl: VAR ID arrayType ;
 dimensions: LBRACKET (int_number | ID) RBRACKET dimensions? ;
 array_init: array_literal | expr ;
 
 struct_decl: TYPE ID STRUCT LBRACE newlines? field_decl_list RBRACE ;
-field_decl_list:  ((field_decl | struct_decl | interface_decl) eos | NEWLINE ) field_decl_list?;
+field_decl_list:  (field_decl eos | NEWLINE ) field_decl_list?;
 field_decl: ID types;
 
 interface_decl: TYPE ID INTERFACE LBRACE newlines? method_in_decl RBRACE ;
@@ -441,7 +442,7 @@ method_in_decl: ((ID LPAREN param_decl? RPAREN types? eos) | NEWLINE) method_in_
 
 // for declaring params in interface
 param_decl: (ID param_decl_tail types) (COMMA param_decl)? ;
-param_decl_tail: (COMMA ID param_decl_tail)? ;
+param_decl_tail: COMMA ID param_decl_tail | ;
 
 // for declaring params in function and method (outside interface)
 //param_decl: ID types (COMMA param_decl)? ;

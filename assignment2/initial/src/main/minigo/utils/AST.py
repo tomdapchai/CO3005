@@ -1,7 +1,7 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod, ABCMeta
 from dataclasses import dataclass
-from typing import List
+from typing import List, Tuple
 from Visitor import Visitor
 
 
@@ -91,7 +91,7 @@ class ConstDecl(Decl,BlockMember):
 @dataclass
 class FuncDecl(Decl):
     name: str
-    params: List[VarDecl]
+    params: List[ParamDecl]
     retType: Type # VoidType if there is no return type
     body: Block
 
@@ -419,7 +419,7 @@ def nested2Str(dat: NestedList):
 
 @dataclass
 class ArrayLiteral(Literal):
-    dimens:List[int]
+    dimens:List[Expr]
     eleType: Type
     value: NestedList
 
