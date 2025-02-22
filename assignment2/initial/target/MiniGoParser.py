@@ -227,14 +227,14 @@ def serializedATN():
         buf.write("\2\2\u01a1\u019f\3\2\2\2\u01a1\u01a2\3\2\2\2\u01a2=\3")
         buf.write("\2\2\2\u01a3\u01a1\3\2\2\2\u01a4\u01a5\b \1\2\u01a5\u01a6")
         buf.write("\5@!\2\u01a6\u01ac\3\2\2\2\u01a7\u01a8\f\4\2\2\u01a8\u01a9")
-        buf.write("\t\4\2\2\u01a9\u01ab\5B\"\2\u01aa\u01a7\3\2\2\2\u01ab")
-        buf.write("\u01ae\3\2\2\2\u01ac\u01aa\3\2\2\2\u01ac\u01ad\3\2\2\2")
-        buf.write("\u01ad?\3\2\2\2\u01ae\u01ac\3\2\2\2\u01af\u01b0\5F$\2")
-        buf.write("\u01b0\u01b1\5B\"\2\u01b1A\3\2\2\2\u01b2\u01be\5D#\2\u01b3")
-        buf.write("\u01be\5\60\31\2\u01b4\u01be\5,\27\2\u01b5\u01b6\7?\2")
-        buf.write("\2\u01b6\u01b7\5\64\33\2\u01b7\u01b8\7@\2\2\u01b8\u01be")
-        buf.write("\3\2\2\2\u01b9\u01be\5H%\2\u01ba\u01be\5L\'\2\u01bb\u01be")
-        buf.write("\5T+\2\u01bc\u01be\5X-\2\u01bd\u01b2\3\2\2\2\u01bd\u01b3")
+        buf.write("\t\4\2\2\u01a9\u01ab\5@!\2\u01aa\u01a7\3\2\2\2\u01ab\u01ae")
+        buf.write("\3\2\2\2\u01ac\u01aa\3\2\2\2\u01ac\u01ad\3\2\2\2\u01ad")
+        buf.write("?\3\2\2\2\u01ae\u01ac\3\2\2\2\u01af\u01b0\5F$\2\u01b0")
+        buf.write("\u01b1\5B\"\2\u01b1A\3\2\2\2\u01b2\u01be\5D#\2\u01b3\u01be")
+        buf.write("\5\60\31\2\u01b4\u01be\5,\27\2\u01b5\u01b6\7?\2\2\u01b6")
+        buf.write("\u01b7\5\64\33\2\u01b7\u01b8\7@\2\2\u01b8\u01be\3\2\2")
+        buf.write("\2\u01b9\u01be\5H%\2\u01ba\u01be\5L\'\2\u01bb\u01be\5")
+        buf.write("T+\2\u01bc\u01be\5X-\2\u01bd\u01b2\3\2\2\2\u01bd\u01b3")
         buf.write("\3\2\2\2\u01bd\u01b4\3\2\2\2\u01bd\u01b5\3\2\2\2\u01bd")
         buf.write("\u01b9\3\2\2\2\u01bd\u01ba\3\2\2\2\u01bd\u01bb\3\2\2\2")
         buf.write("\u01bd\u01bc\3\2\2\2\u01beC\3\2\2\2\u01bf\u01c3\7%\2\2")
@@ -2925,10 +2925,6 @@ class MiniGoParser ( Parser ):
             return self.getTypedRuleContext(MiniGoParser.Multiplicative_index_exprContext,0)
 
 
-        def primary_index_expr(self):
-            return self.getTypedRuleContext(MiniGoParser.Primary_index_exprContext,0)
-
-
         def MUL(self):
             return self.getToken(MiniGoParser.MUL, 0)
 
@@ -2984,7 +2980,7 @@ class MiniGoParser ( Parser ):
                         self._errHandler.reportMatch(self)
                         self.consume()
                     self.state = 423
-                    self.primary_index_expr() 
+                    self.signed_index_expr() 
                 self.state = 428
                 self._errHandler.sync(self)
                 _alt = self._interp.adaptivePredict(self._input,27,self._ctx)

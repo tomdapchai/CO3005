@@ -36,8 +36,8 @@ class ASTGeneration(MiniGoVisitor):
             nodes.append(self.visit(ctx.decl()))
 
         # Ignore newlines
-        if ctx.NEWLINE():
-            pass
+        # if ctx.NEWLINE():
+        #     pass
         
         return nodes
         
@@ -69,7 +69,7 @@ class ASTGeneration(MiniGoVisitor):
         if ctx.method_decl():
             return self.visit(ctx.method_decl())
         # Fallback to visiting all children if none found (though unlikely)
-        return self.visitChildren(ctx)
+        # return self.visitChildren(ctx)
 
 
     # Visit a parse tree produced by MiniGoParser#decl_in_block.
@@ -237,6 +237,8 @@ class ASTGeneration(MiniGoVisitor):
                 if isinstance(arr.arr, MethCall):
                     arr.arr.receiver = res
                     return ArrayCell(arr.arr, arr.idx)
+                elif isinstance(arr.arr, FuncCall):
+                    return ArrayCell(arr=MethCall(receiver=res,metName=arr.arr.funName, args=arr.arr.args), idx=arr.idx)
                 return ArrayCell(FieldAccess(receiver=self.visit(ctx.field_access()), field=getArrName(arr)), arr.idx)
 
 
@@ -245,11 +247,12 @@ class ASTGeneration(MiniGoVisitor):
         if ctx.getChildCount() == 1:
             return self.visit(ctx.atom())
         else:
-            return ArrayCell(self.visit(ctx.atom_arr_access()), self.visit(ctx.index_expr()))
+            return ArrayCell(self.visit(ctx.atom_arr_access()), [self.visit(ctx.index_expr())])
 
 
     # Visit a parse tree produced by MiniGoParser#atom.
     def visitAtom(self, ctx:MiniGoParser.AtomContext):
+        
         if ctx.atom_value():
             return self.visit(ctx.atom_value())
         elif ctx.ID():
@@ -314,7 +317,7 @@ class ASTGeneration(MiniGoVisitor):
             if ctx.arr_allow_lit():
                 return [self.visit(ctx.arr_allow_lit())]
             else:
-                return [self.visit(ctx.array_literal())]
+                return [self.visit(ctx.arr_init_list())]
         else:
             first = self.visit(ctx.getChild(0))
             rest = self.visit(ctx.arr_init_list_body())
@@ -352,11 +355,11 @@ class ASTGeneration(MiniGoVisitor):
 
     #* int_number: INT_LIT | HEX_LIT | OCT_LIT | BIN_LIT;
     def visitInt_number(self, ctx:MiniGoParser.Int_numberContext):
-        if ctx.INT_LIT:
+        if ctx.INT_LIT():
             return IntLiteral(int(ctx.INT_LIT().getText()))
-        elif ctx.HEX_LIT:
+        elif ctx.HEX_LIT():
             return IntLiteral(int(ctx.HEX_LIT().getText(), 16))
-        elif ctx.OCT_LIT:
+        elif ctx.OCT_LIT():
             return IntLiteral(int(ctx.OCT_LIT().getText(), 8))
         else:
             return IntLiteral(int(ctx.BIN_LIT().getText(), 2))
@@ -370,22 +373,24 @@ class ASTGeneration(MiniGoVisitor):
 
     def visitArray_access(self, ctx: MiniGoParser.Array_accessContext):
         """Visit array access."""
+        print("Hello")
         base = self.visit(ctx.secondary_index_expr())
         indices = self.visit(ctx.array_access_tail())  # Get the list of indices
+        print("indices: ", indices)
 
         if indices:  # If there are indices, build the nested ArrayCell structure
-            current = ArrayCell(arr=base, idx=indices[0])
+            """ current = ArrayCell(arr=base, idx=indices[0])
             for i in range(1, len(indices)):
                 current = ArrayCell(arr=current, idx=indices[i])
-            return current
+            return current """
+            return ArrayCell(arr=base, idx=indices)
         else:
             return base  # No indices, just the base
 
     def visitArray_access_tail(self, ctx: MiniGoParser.Array_access_tailContext):
         """Visit array access tail and return a list of indices."""
-        if not ctx.index_expr():
-            return [] # if there is no index_expr return empty list
         index_expr = self.visit(ctx.index_expr())
+        print("index: ", index_expr)
         if ctx.array_access_tail():
             tail_indices = self.visit(ctx.array_access_tail())
             return [index_expr] + tail_indices  # Combine current index with tail indices
@@ -471,10 +476,10 @@ class ASTGeneration(MiniGoVisitor):
                 op = ctx.DIV().getText()
             elif ctx.MOD():
                 op = ctx.MOD().getText()
-            right = self.visit(ctx.primary_index_expr())
+            right = self.visit(ctx.signed_index_expr())
             return BinaryOp(op, left, right)
         
-        return self.visit(ctx.primary_index_expr())
+        return self.visit(ctx.signed_index_expr())
     
     # Visit a parse tree produced by MiniGoParser#signed_index_expr.
     def visitSigned_index_expr(self, ctx:MiniGoParser.Signed_index_exprContext):
@@ -524,8 +529,6 @@ class ASTGeneration(MiniGoVisitor):
         if operators is None:
             operators = []
 
-        if ctx.ADD():
-            operators.append('+')
         elif ctx.SUB():
             operators.append('-')
         elif ctx.NOT():
@@ -634,9 +637,12 @@ class ASTGeneration(MiniGoVisitor):
             return FieldAccess(receiver=head, field=ctx.ID().getText())
         else:
             arr = self.visit(ctx.array_access())
+            print("arr: ", arr)
             if isinstance(arr.arr, MethCall):
                 arr.arr.receiver = head
                 return ArrayCell(arr.arr, arr.idx)
+            elif isinstance(arr.arr, FuncCall):
+                return ArrayCell(arr=MethCall(receiver=head,metName=arr.arr.funName, args=arr.arr.args), idx=arr.idx)
             return ArrayCell(arr=FieldAccess(receiver=head, field=getArrName(arr)), idx=arr.idx)
 
     def visitStruct_field_access_head(self, ctx: MiniGoParser.Struct_field_access_headContext):
@@ -655,10 +661,12 @@ class ASTGeneration(MiniGoVisitor):
                 return FieldAccess(receiver=self.visit(ctx.struct_field_access_head()), field=ctx.ID().getText())
             else:
                 arr = self.visit(ctx.array_access())
-                res = self.visit(ctx.struct_field_access_head())
+                head = self.visit(ctx.struct_field_access_head())
                 if isinstance(arr.arr, MethCall):
-                    arr.arr.obj = res
+                    arr.arr.receiver = head
                     return ArrayCell(arr.arr, arr.idx)
+                elif isinstance(arr.arr, FuncCall):
+                    return ArrayCell(arr=MethCall(receiver=head,metName=arr.arr.funName, args=arr.arr.args), idx=arr.idx)
                 return ArrayCell(FieldAccess(receiver=self.visit(ctx.struct_field_access_head()), field=getArrName(arr)), arr.idx)
                 
     def visitStruct_field_access_no_func(self, ctx: MiniGoParser.Struct_field_access_no_funcContext):
@@ -894,7 +902,9 @@ class ASTGeneration(MiniGoVisitor):
         """ if ctx.types():
             return VariablesDecl(Id(ctx.ID().getText()), self.visit(ctx.types()), self.visit(ctx.expr()))
         return VariablesDecl(Id(ctx.ID().getText()), None, self.visit(ctx.expr())) """
+        print("expr: ", self.visit(ctx.expr()))
         if ctx.primitiveType() or ctx.compositeType():
+            print("var init: ", self.visit(ctx.expr()))
             return VarDecl(varName=ctx.ID().getText(), varType=self.visit(ctx.getChild(2)), varInit=self.visit(ctx.expr()))
         else:
             return VarDecl(varName=ctx.ID().getText(), varType=None, varInit=self.visit(ctx.expr()))
@@ -933,7 +943,7 @@ class ASTGeneration(MiniGoVisitor):
     # Visit a parse tree produced by MiniGoParser#compositeType.
     def visitCompositeType(self, ctx:MiniGoParser.CompositeTypeContext):
         # return ClassType(Id(ctx.ID().getText()))
-        return
+        return Id(ctx.ID().getText())
 
 
     # Visit a parse tree produced by MiniGoParser#arrayType.
@@ -991,7 +1001,7 @@ class ASTGeneration(MiniGoVisitor):
 
     # Visit a parse tree produced by MiniGoParser#struct_decl.
     def visitStruct_decl(self, ctx:MiniGoParser.Struct_declContext):
-        return StructType(name=ctx.ID().getText(), elements=self.visit(ctx.field_decl_list()), methods=None)
+        return StructType(name=ctx.ID().getText(), elements=self.visit(ctx.field_decl_list()), methods=[])
 
 
     # Visit a parse tree produced by MiniGoParser#field_decl_list.
@@ -1006,7 +1016,7 @@ class ASTGeneration(MiniGoVisitor):
 
     # Visit a parse tree produced by MiniGoParser#field_decl.
     def visitField_decl(self, ctx:MiniGoParser.Field_declContext):
-        return Tuple(ctx.ID().getText(), self.visit(ctx.types()))
+        return [ctx.ID().getText(), self.visit(ctx.types())]
 
 
     # Visit a parse tree produced by MiniGoParser#interface_decl.
@@ -1070,8 +1080,8 @@ class ASTGeneration(MiniGoVisitor):
     # Visit a parse tree produced by MiniGoParser#function_call.
     def visitFunction_call(self, ctx:MiniGoParser.Function_callContext):
         if not ctx.built_in_function_call():
-            if ctx.expr_list():
-                return FuncCall(funName=ctx.ID().getText(), args=self.visit(ctx.expr_list()))
+            if ctx.param_call_list():
+                return FuncCall(funName=ctx.ID().getText(), args=self.visit(ctx.param_call_list()))
             return FuncCall(funName=ctx.ID().getText(), args=[])
         return self.visit(ctx.built_in_function_call())
 
@@ -1161,7 +1171,12 @@ class ASTGeneration(MiniGoVisitor):
 def getArrName(arr: ArrayCell):
         while isinstance(arr, ArrayCell):
             arr = arr.arr
-        return arr.name
+        if isinstance(arr, Id):
+            return arr.name
+        elif isinstance(arr, FuncCall):
+            return arr.funName
+        elif isinstance(arr, MethCall):
+            return arr.metName
 
     
 

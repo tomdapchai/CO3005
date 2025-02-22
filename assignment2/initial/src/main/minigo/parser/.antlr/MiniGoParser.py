@@ -187,7 +187,7 @@ def serializedATN():
         10,2,0,0,411,412,7,1,0,0,412,414,3,60,30,0,413,410,1,0,0,0,414,417,
         1,0,0,0,415,413,1,0,0,0,415,416,1,0,0,0,416,59,1,0,0,0,417,415,1,
         0,0,0,418,419,6,30,-1,0,419,420,3,62,31,0,420,426,1,0,0,0,421,422,
-        10,2,0,0,422,423,7,2,0,0,423,425,3,64,32,0,424,421,1,0,0,0,425,428,
+        10,2,0,0,422,423,7,2,0,0,423,425,3,62,31,0,424,421,1,0,0,0,425,428,
         1,0,0,0,426,424,1,0,0,0,426,427,1,0,0,0,427,61,1,0,0,0,428,426,1,
         0,0,0,429,430,3,68,34,0,430,431,3,64,32,0,431,63,1,0,0,0,432,444,
         3,66,33,0,433,444,3,46,23,0,434,444,3,42,21,0,435,436,5,61,0,0,436,
@@ -2643,10 +2643,6 @@ class MiniGoParser ( Parser ):
             return self.getTypedRuleContext(MiniGoParser.Multiplicative_index_exprContext,0)
 
 
-        def primary_index_expr(self):
-            return self.getTypedRuleContext(MiniGoParser.Primary_index_exprContext,0)
-
-
         def MUL(self):
             return self.getToken(MiniGoParser.MUL, 0)
 
@@ -2696,7 +2692,7 @@ class MiniGoParser ( Parser ):
                         self._errHandler.reportMatch(self)
                         self.consume()
                     self.state = 423
-                    self.primary_index_expr() 
+                    self.signed_index_expr() 
                 self.state = 428
                 self._errHandler.sync(self)
                 _alt = self._interp.adaptivePredict(self._input,27,self._ctx)

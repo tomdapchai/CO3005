@@ -1,1 +1,5 @@
-func main() {};
+func main() {
+        var a int = a.c().b(1,2)[4];
+        b()[1]
+        }
+        

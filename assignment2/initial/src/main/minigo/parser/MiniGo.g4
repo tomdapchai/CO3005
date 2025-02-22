@@ -298,7 +298,7 @@ relational_index_expr: relational_index_expr (EQ | NEQ | LT | LE | GT | GE) addi
 
 additive_index_expr: additive_index_expr (ADD | SUB) multiplicative_index_expr | multiplicative_index_expr;
 
-multiplicative_index_expr: multiplicative_index_expr (MUL | DIV | MOD) primary_index_expr | signed_index_expr  ;
+multiplicative_index_expr: multiplicative_index_expr (MUL | DIV | MOD) signed_index_expr | signed_index_expr  ;
 
 signed_index_expr: signed_tail primary_index_expr ;
 
