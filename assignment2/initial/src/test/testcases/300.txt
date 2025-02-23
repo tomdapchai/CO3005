@@ -1,5 +1,6 @@
-func main() {
-        var a int = a.c().b(1,2)[4];
-        b()[1]
-        }
-        
+
+                type A interface {
+                    Add(x,y int, z float);
+                    test(a [2]Bike);
+                }
+                

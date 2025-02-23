@@ -399,9 +399,9 @@ assignment_expr: lhs (ASSIGN | SHORT_ASSIGN) (expr | struct_literal) ; // redund
 // LHS for assignments (no function calls allowed)
 lhs: ID | array_access | struct_field_access_no_func;
 
-if_stmt: IF LPAREN expr RPAREN newlines? block if_stmt_tail ;
-if_stmt_tail:  ELSE IF LPAREN expr RPAREN newlines? block if_stmt_tail 
-            |  ELSE newlines? block 
+if_stmt: IF LPAREN expr RPAREN block if_stmt_tail ;
+if_stmt_tail:  ELSE IF LPAREN expr RPAREN  block if_stmt_tail 
+            |  ELSE block 
             |
             ;
 

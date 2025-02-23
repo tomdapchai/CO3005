@@ -1,1 +1,1 @@
-Program([FuncDecl(main,[],VoidType,Block([VarDecl(a,IntType,ArrayCell(MethodCall(MethodCall(Id(a),c,[]),b,[IntLiteral(1),IntLiteral(2)]),[IntLiteral(4)])),ArrayCell(FuncCall(b,[]),[IntLiteral(1)])]))])
+Program([InterfaceType(A,[Prototype(Add,[IntType,IntType,FloatType],VoidType),Prototype(test,[ArrayType(Id(Bike),[IntLiteral(2)])],VoidType)])])

@@ -5,12 +5,14 @@ from AST import *
 class ASTGenSuite(unittest.TestCase):
     def test_simple_program(self):
         """Simple program: int main() {} """
-        input = """func main() {
-        var a int = a.c().b(1,2)[4];
-        b()[1]
-        }
-        """
-        expect = str(Program([FuncDecl("main",[],VoidType(),Block([VarDecl("x",IntType(),None)]))]))
+        input = """
+                type A interface {
+                    Add(x,y int, z float);
+                    test(a [2]Bike);
+                }
+                """
+        expect = str(Program([InterfaceType("A",[Prototype("Add",[IntType(),IntType(),FloatType()],VoidType()),Prototype("test",[ArrayType([IntLiteral(2)],Id("Bike"))],VoidType())])]))
+        print(expect)
         self.assertTrue(TestAST.checkASTGen(input,expect,300))
 
     def test_more_complex_program(self):

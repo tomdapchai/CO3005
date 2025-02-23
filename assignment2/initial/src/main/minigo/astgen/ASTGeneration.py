@@ -280,7 +280,7 @@ class ASTGeneration(MiniGoVisitor):
         elif ctx.FALSE():
             return BooleanLiteral(False)
         elif ctx.STRING_LIT():
-            return StringLiteral(ctx.STRING_LIT().getText())
+            return StringLiteral(ctx.STRING_LIT().getText().replace("""\"""", ""))
         elif ctx.NIL():
             return NilLiteral()
         else:
@@ -293,7 +293,7 @@ class ASTGeneration(MiniGoVisitor):
         elif ctx.FLOAT_LIT():
             return FloatLiteral(float(ctx.FLOAT_LIT().getText()))
         elif ctx.STRING_LIT():
-            return StringLiteral(ctx.STRING_LIT().getText())
+            return StringLiteral(ctx.STRING_LIT().getText().replace("""\"""", ""))
         elif ctx.TRUE():
             return BooleanLiteral(True)
         elif ctx.FALSE():
@@ -515,7 +515,7 @@ class ASTGeneration(MiniGoVisitor):
         if ctx.ID():
             return Id(ctx.ID().getText())
         elif ctx.STRING_LIT():
-            return StringLiteral(ctx.STRING_LIT().getText())
+            return StringLiteral(ctx.STRING_LIT().getText().replace("""\"""", ""))
         else:
             return self.visit(ctx.function_call())
 
@@ -573,7 +573,7 @@ class ASTGeneration(MiniGoVisitor):
         if not ctx.index_expr():
             return []
         dimensions = []
-        dimensions.append(self.visit(ctx.index_expr()).value)
+        dimensions.append(self.visit(ctx.index_expr()))
         if ctx.array_literal_tail3():
             dimensions.extend(self.visit(ctx.array_literal_tail3()))
         return dimensions
@@ -620,7 +620,7 @@ class ASTGeneration(MiniGoVisitor):
     def visitField_init(self, ctx: MiniGoParser.Field_initContext):
         """Visit field initialization."""
         # Create Id for field name
-        field_name = Id(ctx.ID().getText())
+        field_name = ctx.ID().getText()
         
         # Visit the expression for the field value
         field_value = self.visit(ctx.expr())
@@ -813,13 +813,11 @@ class ASTGeneration(MiniGoVisitor):
     # Visit a parse tree produced by MiniGoParser#if_stmt.
     # Missing else if in AST - gonna ask teacher later
     def visitIf_stmt(self, ctx:MiniGoParser.If_stmtContext):
-        # Get the main if condition
         condition = self.visit(ctx.expr())
         
         # Get the main if block
         then_block = self.visit(ctx.block())
         
-        # Visit if_stmt_tail to get elif and else parts
         else_block = None
         if ctx.if_stmt_tail():
             else_block = self.visit(ctx.if_stmt_tail())
@@ -828,32 +826,24 @@ class ASTGeneration(MiniGoVisitor):
 
     def visitIf_stmt_tail(self, ctx:MiniGoParser.If_stmt_tailContext):
         if not ctx.getChildCount():
-            return None, None
+            return None
             
         # Check if this is an else-if branch
         if ctx.ELSE() and ctx.IF():
-            # Get the elif condition and block
             condition = self.visit(ctx.expr())
             block = self.visit(ctx.block())
             
             # Recursively visit the rest of the tail
-            next_elif_list, else_block = self.visit(ctx.if_stmt_tail())
+            else_block = self.visit(ctx.if_stmt_tail())
             
-            # If this is the first elif, create new list
-            if next_elif_list is None:
-                elif_list = [(condition, block)]
-            else:
-                # Add this elif to the front of existing list
-                elif_list = [(condition, block)] + next_elif_list
-                
-            return elif_list, else_block
+            return Block([If(condition, block, else_block)])
             
         # This must be the else branch
         elif ctx.ELSE():
             else_block = self.visit(ctx.block())
-            return None, else_block
+            return else_block
             
-        return None, None
+        return None
 
 
     # Visit a parse tree produced by MiniGoParser#for_stmt.
@@ -1034,7 +1024,7 @@ class ASTGeneration(MiniGoVisitor):
                 # takes only the type out
                 for i in range(len(params_list)):
                     params_list[i] = params_list[i].parType
-            methods.append(Prototype(name=ctx.ID().getText(), retType=(self.visit(ctx.types()) if ctx.types() else VoidType()), params=params_list, stmts=[]))
+            methods.append(Prototype(name=ctx.ID().getText(), retType=(self.visit(ctx.types()) if ctx.types() else VoidType()), params=params_list))
         if ctx.method_in_decl():
             methods.extend(self.visit(ctx.method_in_decl()))
         return methods
