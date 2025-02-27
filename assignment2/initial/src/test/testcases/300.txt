@@ -1,6 +1,1 @@
-
-                type A interface {
-                    Add(x,y int, z float);
-                    test(a [2]Bike);
-                }
-                
+func main() {x := 1+2; };

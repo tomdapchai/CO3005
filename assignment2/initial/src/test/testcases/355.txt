@@ -1,0 +1,21 @@
+
+        func mergeSort(arr [100]int) {
+            n := len(arr);
+            if (n < 2) {
+                return;
+            }
+            mid := n / 2;
+            left := [mid]int{1,2,3};
+            remain := n - mid;
+            right := [remain]int{1,2,3};
+            for i := 0; i < mid; i += 1 {
+                left[i] := arr[i];
+            }
+            for i := mid; i < n; i += 1 {
+                right[i - mid] := arr[i];
+            }
+            mergeSort(left);
+            mergeSort(right);
+            merge(arr, left, right);
+        }
+        

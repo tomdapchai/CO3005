@@ -1,0 +1,1 @@
+Program([FuncDecl(foo,[],IntType,Block([Return(IntLiteral(5))])),FuncDecl(bar,[ParDecl(a,IntType),ParDecl(b,FloatType)],FloatType,Block([Return(BinaryOp(Id(a),+,Id(b)))])),FuncDecl(main,[],VoidType,Block([FuncCall(putInt,[FuncCall(foo,[])]),FuncCall(putFloat,[FuncCall(bar,[IntLiteral(5),FloatLiteral(5.5)])])]))])

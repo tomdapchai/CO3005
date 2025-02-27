@@ -1,0 +1,5 @@
+
+        func compare(a int, b int) boolean{
+            return a && b || a || b && !a;
+        }
+        

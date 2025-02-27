@@ -1,0 +1,18 @@
+
+        type Person struct {
+            name string;
+            age int;
+            grades [5]Subject;
+        }
+        func (p Person) printInfo() {
+            putString(p.name);
+            putInt(p.age);
+        }
+        func main() {
+            p := Person{name: "John", age: 25};
+            p.printInfo();
+            putString(p.name);
+            putInt(p.age);
+            putFloat(p.grades[0].score);
+        }
+        

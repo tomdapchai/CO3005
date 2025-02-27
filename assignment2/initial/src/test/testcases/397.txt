@@ -1,0 +1,11 @@
+
+        func smartFunc(){
+            if (true){
+                putString("Hello");
+            } else if (false){
+                putString("World");
+            } else {
+                putString("Goodbye");
+            }
+        }
+        

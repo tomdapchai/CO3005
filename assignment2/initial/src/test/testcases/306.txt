@@ -1,0 +1,6 @@
+
+        var a boolean;
+        var b boolean = true;
+        var c = a && b;
+        var e = !a;
+        

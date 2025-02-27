@@ -1,0 +1,13 @@
+
+        func foo() {
+            putString("Hello");
+        }
+        func bar(a int, b float) {
+            putInt(a);
+            putFloat(b);
+        }
+        func main(){
+            foo();
+            bar(5, 5.5);
+        }
+        

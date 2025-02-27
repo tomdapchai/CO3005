@@ -1,0 +1,1 @@
+Program([FuncDecl(main,[],VoidType,Block([ForEach(Id(idx),Id(val),Id(arr),Block([FuncCall(putInt,[Id(idx)]),FuncCall(putInt,[Id(val)])])),ForEach(Id(_),Id(val),Id(arr),Block([FuncCall(putInt,[Id(val)])]))]))])

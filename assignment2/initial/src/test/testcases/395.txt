@@ -1,0 +1,6 @@
+
+        const a = 5;
+        const z = a + 5;
+        const y = z + 5;
+        const x = y + 5;
+        

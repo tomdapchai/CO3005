@@ -1,0 +1,6 @@
+
+        func main() {
+            var flag bool = false;
+            putBool(flag);
+        }
+        

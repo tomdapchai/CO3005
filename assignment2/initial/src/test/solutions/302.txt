@@ -1,1 +1,1 @@
-Program([StructType(Person,[(name,StringType),(age,IntType)],[])])
+Program([FuncDecl(main,[],VoidType,Block([VarDecl(b,IntType)])),VarDecl(x,IntType)])

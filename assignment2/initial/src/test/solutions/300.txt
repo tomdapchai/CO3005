@@ -1,1 +1,1 @@
-Program([InterfaceType(A,[Prototype(Add,[IntType,IntType,FloatType],VoidType),Prototype(test,[ArrayType(Id(Bike),[IntLiteral(2)])],VoidType)])])
+Program([FuncDecl(main,[],VoidType,Block([Assign(Id(x),BinaryOp(IntLiteral(1),+,IntLiteral(2)))]))])

@@ -1,0 +1,1 @@
+Program([FuncDecl(complexFunc,[ParDecl(a,BoolType),ParDecl(b,IntType),ParDecl(c,FloatType)],FloatType,Block([Return(BinaryOp(BinaryOp(Id(b),*,Id(c)),/,FloatLiteral(1.0)))]))])

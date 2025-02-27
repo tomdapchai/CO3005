@@ -1,0 +1,21 @@
+
+        func quickSort(arr [100]int, low int, high int) {
+            if (low < high) {
+                pi := partition(arr, low, high);
+                quickSort(arr, low, pi - 1);
+                quickSort(arr, pi + 1, high);
+            }
+        }
+        func partition(arr [100]int, low int, high int) int {
+            pivot := arr[high];
+            i := low - 1;
+            for j := low; j < high; j += 1 {
+                if (arr[j] < pivot) {
+                    i += 1;
+                    swap(arr, i, j);
+                }
+            }
+            swap(arr, i + 1, high);
+            return i + 1;
+        }
+        

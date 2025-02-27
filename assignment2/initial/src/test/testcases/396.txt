@@ -1,0 +1,8 @@
+
+        func main (){
+            a := !true;
+            b := !false;
+            c := !a;
+            d := !b;
+        }
+        

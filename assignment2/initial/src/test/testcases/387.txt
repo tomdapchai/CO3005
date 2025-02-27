@@ -1,0 +1,10 @@
+
+        // full call stmt
+        func main(){
+            foo(1,2,3);
+            bar(1.0,2.0,3.0);
+            hello("Hello","World");
+            something(true,false);
+            nillfunc(nil)
+        }
+        

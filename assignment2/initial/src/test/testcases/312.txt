@@ -1,0 +1,9 @@
+
+        type Person interface {
+            getName() string;
+            getAge() int;
+            getGrade() float
+            printInfo()
+            setAge(age int) 
+        }
+        

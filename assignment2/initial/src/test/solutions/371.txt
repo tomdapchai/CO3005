@@ -1,0 +1,1 @@
+Program([FuncDecl(main,[],VoidType,Block([Assign(Id(a),IntLiteral(5)),Assign(Id(b),IntLiteral(5)),Assign(Id(c),IntLiteral(5)),Assign(Id(d),IntLiteral(5)),Assign(Id(e),IntLiteral(5))]))])

@@ -1,0 +1,11 @@
+
+        var a float;
+        var b float = 5.5;
+        var c = a + b;
+        var d = a > b;
+        var e = a < b;
+        var f = a >= b;
+        var g = a <= b;
+        var h = a != b;
+        var i = a == b;
+        

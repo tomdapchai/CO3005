@@ -219,8 +219,8 @@ class Assign(Stmt):
 @dataclass
 class If(Stmt):
     expr:Expr
-    thenStmt:Block
-    elseStmt:Block # None if there is no else
+    thenStmt:Stmt
+    elseStmt:Stmt # None if there is no else
 
     def __str__(self):
         return "If(" + str(self.expr) + "," + str(self.thenStmt) + ("" if (self.elseStmt is None) else "," + str(self.elseStmt)) + ")"

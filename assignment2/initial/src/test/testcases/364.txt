@@ -1,0 +1,6 @@
+
+        func foo() {
+            
+            return x+y;
+        }
+        

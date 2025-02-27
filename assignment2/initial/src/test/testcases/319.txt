@@ -1,0 +1,7 @@
+
+        func foo() {
+            if (x > 10) {
+                putString("x is greater than 10");
+            }
+        }
+        

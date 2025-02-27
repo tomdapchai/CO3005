@@ -1,0 +1,1 @@
+Program([FuncDecl(main,[],VoidType,Block([Assign(Id(x),IntLiteral(5)),Assign(Id(y),IntLiteral(10)),Assign(Id(z),BinaryOp(Id(x),+,Id(y)))]))])

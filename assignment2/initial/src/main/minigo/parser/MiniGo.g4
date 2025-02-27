@@ -259,7 +259,7 @@ atom: atom_value
     //| assignment_stmt eos
 	| struct_field_access
 	| struct_field_access_no_func
-    | array_access
+    
     ;
 
 atom_value: number
@@ -406,7 +406,7 @@ if_stmt_tail:  ELSE IF LPAREN expr RPAREN  block if_stmt_tail
             ;
 
 for_stmt: FOR for_init SEMICOLON expr SEMICOLON for_update block
-        | FOR ID COMMA ID SHORT_ASSIGN RANGE atom block
+        | FOR ID COMMA ID SHORT_ASSIGN RANGE (atom | array_access) block
         | FOR expr block
         ;
 

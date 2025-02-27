@@ -1,0 +1,6 @@
+
+        var a[5]int;
+        var b[3][3] int;
+        var c[3][3][3] float;
+        var d[3][3][3] Person;
+        

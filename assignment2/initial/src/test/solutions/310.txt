@@ -1,0 +1,1 @@
+Program([VarDecl(a,ArrayType(IntType,[IntLiteral(5)])),VarDecl(b,ArrayType(IntType,[IntLiteral(3),IntLiteral(3)])),VarDecl(c,ArrayType(FloatType,[IntLiteral(3),IntLiteral(3),IntLiteral(3)])),VarDecl(d,ArrayType(Id(Person),[IntLiteral(3),IntLiteral(3),IntLiteral(3)]))])

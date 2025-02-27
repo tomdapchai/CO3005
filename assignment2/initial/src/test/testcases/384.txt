@@ -1,0 +1,7 @@
+
+        func main(){
+            for abc*def{
+                putString("Hello");
+            }
+        }
+        

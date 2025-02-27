@@ -1,0 +1,1 @@
+Program([FuncDecl(main,[],VoidType,Block([MethodCall(Id(a),foo,[]),MethodCall(Id(b),bar,[]),MethodCall(Id(c),hello,[]),MethodCall(Id(d),something,[]),MethodCall(Id(e),nillfunc,[])]))])

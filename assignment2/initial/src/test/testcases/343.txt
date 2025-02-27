@@ -1,0 +1,5 @@
+
+        func boolLLLL() boolean{
+            return a || a && a || a || a && !a > b <= c;
+        }
+        

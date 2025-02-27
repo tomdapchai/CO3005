@@ -1,0 +1,6 @@
+
+        func main() {
+            foo(foo(1,2), foo(4,5));
+            goo(goo(goo(goo(goo(goo(1))))));
+        }
+        

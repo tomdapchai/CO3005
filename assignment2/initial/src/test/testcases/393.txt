@@ -1,0 +1,10 @@
+
+        func ifStmt(){
+            if (true){
+                putString("Hello");
+                if (foo()){
+                    putString("World");
+                }
+            }
+        }
+        

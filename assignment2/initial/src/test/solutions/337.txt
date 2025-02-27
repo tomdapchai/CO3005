@@ -1,0 +1,1 @@
+Program([FuncDecl(main,[],VoidType,Block([FuncCall(foo,[StringLiteral("abc"),IntLiteral(5),FloatLiteral(5.5),BooleanLiteral(true),Nil,BooleanLiteral(false),StructLiteral(Person,[(name,StringLiteral("John")),(age,IntLiteral(25))])])]))])

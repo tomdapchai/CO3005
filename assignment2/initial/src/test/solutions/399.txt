@@ -1,0 +1,1 @@
+Program([FuncDecl(lastTestcase,[],VoidType,Block([If(BooleanLiteral(true),Block([If(BooleanLiteral(false),Block([If(BooleanLiteral(true),Block([If(BooleanLiteral(false),Block([FuncCall(putString,[StringLiteral("Hello")])]))]))]))]))]))])

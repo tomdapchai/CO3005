@@ -1,0 +1,7 @@
+
+        func main(){
+            for true{
+                putString("Hello");
+            }
+        }
+        

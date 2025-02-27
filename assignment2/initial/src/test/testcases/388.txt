@@ -1,0 +1,11 @@
+
+        /* comment*/
+        func main(){
+            // call method
+            a.foo();
+            b.bar();
+            c.hello();
+            d.something();
+            e.nillfunc();
+        }
+        

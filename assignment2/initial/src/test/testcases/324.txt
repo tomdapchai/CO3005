@@ -1,0 +1,12 @@
+
+        func main() {
+            for idx, val := range arr {
+                putInt(idx);
+                putInt(val);
+            }
+            for _, val := range arr {
+                putInt(val);
+            }
+        }
+            
+        

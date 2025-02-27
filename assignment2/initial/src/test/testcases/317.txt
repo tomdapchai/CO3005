@@ -1,0 +1,12 @@
+
+        func foo() int {
+            return 5;
+        }
+        func bar(a int, b float) float {
+            return a + b;
+        }
+        func main() {
+            putInt(foo());
+            putFloat(bar(5, 5.5));
+        }
+        

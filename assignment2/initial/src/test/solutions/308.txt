@@ -1,0 +1,1 @@
+Program([VarDecl(a,FloatType),VarDecl(b,FloatType,FloatLiteral(5.5)),VarDecl(c,BinaryOp(Id(a),+,Id(b))),VarDecl(d,BinaryOp(Id(a),>,Id(b))),VarDecl(e,BinaryOp(Id(a),<,Id(b))),VarDecl(f,BinaryOp(Id(a),>=,Id(b))),VarDecl(g,BinaryOp(Id(a),<=,Id(b))),VarDecl(h,BinaryOp(Id(a),!=,Id(b))),VarDecl(i,BinaryOp(Id(a),==,Id(b)))])

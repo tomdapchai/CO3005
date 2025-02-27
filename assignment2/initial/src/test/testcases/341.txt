@@ -1,0 +1,7 @@
+
+        func main(){
+            for var i = arr[2]; i < 10; i +=  b.foo() {
+                putInt(i);
+            }
+        }
+        

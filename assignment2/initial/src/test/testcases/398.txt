@@ -1,0 +1,5 @@
+
+        func (c Circle) area() float {
+            return c.radius * c.radius * 3.14;
+        }
+        

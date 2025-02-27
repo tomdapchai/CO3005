@@ -1,0 +1,1 @@
+Program([MethodDecl(c,Id(Circle),FuncDecl(area,[],FloatType,Block([Return(BinaryOp(BinaryOp(FieldAccess(Id(c),radius),*,FieldAccess(Id(c),radius)),*,FloatLiteral(3.14)))])))])

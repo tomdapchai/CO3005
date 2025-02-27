@@ -1,0 +1,11 @@
+
+        func main() {
+            if (a>b){
+                if (b>c){
+                    if (c>d){
+                        putString("a>b, b>c, c>d");
+                    }
+                }
+            }
+        }
+        

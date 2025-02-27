@@ -1,0 +1,18 @@
+
+        func complexFunc(a int, b float, c string, d boolean, e [5]int, f [3][3]float, g Person) {
+            if (a > 10) {
+                putInt(a);
+            } else {
+                putFloat(b);
+            }
+            if (d) {
+                putString(c);
+            }
+            if (e[0] == 5) {
+                putBool(d);
+            }
+            if (f[0][0] != 5.5) {
+                putInt(e[0]);
+            }
+        }
+        

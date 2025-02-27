@@ -1,0 +1,5 @@
+
+        func main(){
+            b.a[1][2][3][4][5] := Person{name: "John", age: 25};
+        }
+        

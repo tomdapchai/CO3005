@@ -1,0 +1,11 @@
+
+        func main(){
+            for true {
+                for false{
+                    for i < 10{
+                        putInt(i);
+                    }
+                }
+            }
+        }
+        

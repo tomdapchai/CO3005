@@ -1,0 +1,1 @@
+Program([VarDecl(a,StringType),VarDecl(b,StringType,StringLiteral("Hello")),VarDecl(c,BinaryOp(Id(a),+,Id(b))),VarDecl(d,BinaryOp(Id(a),>,Id(b))),VarDecl(e,BinaryOp(Id(a),<,Id(b))),VarDecl(f,BinaryOp(Id(a),>=,Id(b))),VarDecl(g,BinaryOp(Id(a),<=,Id(b))),VarDecl(h,BinaryOp(Id(a),!=,Id(b))),VarDecl(i,BinaryOp(Id(a),==,Id(b)))])

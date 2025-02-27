@@ -1,0 +1,7 @@
+
+        var xyz[5] int;
+        func main(){
+            xyz[0] := 5;
+            putInt(xyz[0]);
+        }
+        

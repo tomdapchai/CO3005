@@ -1,0 +1,13 @@
+
+        func main (){
+            for i:=0;i<10;i+=1{
+                if (abc){
+                    break;
+                } else if(def){
+                    if (ghi){
+                        continue;
+                    }
+                }
+            }
+        }
+        

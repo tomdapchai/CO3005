@@ -1,0 +1,5 @@
+
+        func main() {
+            a := [1][2]int{1,2, Id, 3, Person{name: "John", age: 25}};
+        }
+        

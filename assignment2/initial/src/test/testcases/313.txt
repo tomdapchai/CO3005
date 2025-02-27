@@ -1,0 +1,23 @@
+
+        type Person struct {
+            name string;
+            age int;
+        }
+        type Student struct {
+            person Person;
+            grade float;
+        }
+        type Teacher struct {
+            person Person;
+            salary float;
+        }
+        func main() {
+            p := Person{name: "John", age: 25};
+            s := Student{person: p, grade: 8.5};
+            t := Teacher{person: p, salary: 1000.9};
+            age := p.age;
+            age1 := s.person.age;
+            age2 := t.person.age;
+            total := s.grade + t.salary;
+        }
+        

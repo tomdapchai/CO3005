@@ -1,0 +1,1 @@
+Program([FuncDecl(main,[],VoidType,Block([MethodCall(Id(p),foo,[Id(dd),IntLiteral(5),FloatLiteral(5.5),StringLiteral("Hello"),BooleanLiteral(true),ArrayCell(Id(a),[IntLiteral(1),IntLiteral(2)]),ArrayCell(FieldAccess(ArrayCell(FieldAccess(ArrayCell(FieldAccess(Id(b),c),[IntLiteral(3)]),d),[IntLiteral(4)]),e),[IntLiteral(5)])])]))])

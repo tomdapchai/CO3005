@@ -1,0 +1,1 @@
+Program([FuncDecl(main,[],VoidType,Block([If(BinaryOp(Id(a),>,Id(b)),Block([If(BinaryOp(Id(b),>,Id(c)),Block([If(BinaryOp(Id(c),>,Id(d)),Block([FuncCall(putString,[StringLiteral("a>b, b>c, c>d")])]))]))]))]))])

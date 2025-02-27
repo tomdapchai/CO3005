@@ -1,0 +1,1 @@
+Program([FuncDecl(main,[],VoidType,Block([FuncCall(foo,[IntLiteral(1),IntLiteral(2),IntLiteral(3)]),FuncCall(bar,[FloatLiteral(1.0),FloatLiteral(2.0),FloatLiteral(3.0)]),FuncCall(hello,[StringLiteral("Hello"),StringLiteral("World")]),FuncCall(something,[BooleanLiteral(true),BooleanLiteral(false)]),FuncCall(nillfunc,[Nil])]))])

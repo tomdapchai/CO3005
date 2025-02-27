@@ -1,0 +1,5 @@
+
+        func complexFunc(a boolean, b int, c float) float{
+            return (b * c) / 1.0;
+        }
+        

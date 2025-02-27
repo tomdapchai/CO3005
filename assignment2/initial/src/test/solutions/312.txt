@@ -1,0 +1,1 @@
+Program([InterfaceType(Person,[Prototype(getName,[],StringType),Prototype(getAge,[],IntType),Prototype(getGrade,[],FloatType),Prototype(printInfo,[],VoidType),Prototype(setAge,[IntType],VoidType)])])

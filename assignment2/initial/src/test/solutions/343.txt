@@ -1,0 +1,1 @@
+Program([FuncDecl(boolLLLL,[],BoolType,Block([Return(BinaryOp(BinaryOp(BinaryOp(Id(a),||,BinaryOp(Id(a),&&,Id(a))),||,Id(a)),||,BinaryOp(Id(a),&&,BinaryOp(BinaryOp(UnaryOp(!,Id(a)),>,Id(b)),<=,Id(c)))))]))])

@@ -1,0 +1,5 @@
+
+        func test() boolean{
+            return (x + y) * z > 10 && a || b;
+        }
+        
