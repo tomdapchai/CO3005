@@ -1,5 +1,14 @@
 
-        func main(){
-        a[5][2][4][foo()].b.c.d.e := [2]Person{1,2,3,4};
+        type Point struct {
+            x int;
+            y int;
         }
+
+        func main() {
+            var p Point = Point{x: 5, y: 10};
+        p.x += 5;
+
+        var area int = p.x * p.y;
+        }
+        
         

@@ -1,1 +1,1 @@
-Program([ConstDecl(a,BinaryOp(BinaryOp(Id(b),+,Id(c)),*,Id(d)))])
+Program([FuncDecl("Add",[],VoidType(),Block([If(BinaryOp(">",Id("x"),IntLiteral(10)),Block([Assign(Id("x"),BinaryOp("-",Id("x"),IntLiteral(5)))]),None)]))])

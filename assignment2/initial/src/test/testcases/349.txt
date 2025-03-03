@@ -1,1 +1,4 @@
-func main() {var a int;};
+func Add(x, y int, b float) {
+            if (b > 0 && b < 10 || b == 15) { b := b / 2; };
+        }
+        

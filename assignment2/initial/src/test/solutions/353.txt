@@ -1,1 +1,1 @@
-Program([FuncDecl(main,[],VoidType,Block([Assign(Id(a),BinaryOp(Id(a),+,Id(b))),Assign(Id(a),BinaryOp(Id(a),-,Id(c))),Assign(Id(a),BinaryOp(Id(a),*,Id(d))),Assign(Id(a),BinaryOp(Id(a),/,Id(e))),Assign(Id(a),BinaryOp(Id(a),%,Id(f)))]))])
+Program([VarDecl("a",None,BinaryOp("*",BinaryOp("%",IntLiteral(10),IntLiteral(3)),MethCall(FieldAccess(FieldAccess(ArrayCell(MethCall(ArrayCell(FieldAccess(StructLiteral("Person",[("Id",Id("test"))]),"Id"),[IntLiteral(3)]),"d",[IntLiteral(2),IntLiteral(3)]),[IntLiteral(4)]),"d"),"e"),"f",[])))])

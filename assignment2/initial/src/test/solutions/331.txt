@@ -1,1 +1,1 @@
-Program([FuncDecl("main",[],VoidType(),Block([ForStep(Assign(Id("i"),IntLiteral(0)),BinaryOp("<",Id("i"),IntLiteral(10)),Assign(Id("i"),BinaryOp("+",Id("i"),IntLiteral(1))),Block([If(BinaryOp("==",BinaryOp("%",Id("i"),IntLiteral(2)),IntLiteral(0)),Block([Continue()]),None)]))]))])
+Program([VarDecl("result",None,FuncCall("add",[BinaryOp("+",IntLiteral(5),IntLiteral(5)),BinaryOp("*",IntLiteral(7),BinaryOp("+",IntLiteral(1),UnaryOp("-",UnaryOp("!",IntLiteral(2))))),StructLiteral("Person",[("ID",Id("name"))])]))])

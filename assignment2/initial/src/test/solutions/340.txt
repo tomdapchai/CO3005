@@ -1,1 +1,1 @@
-Program([ConstDecl(a,FieldAccess(FieldAccess(Id(b),c),d))])
+Program([StructType("Rectangle",[("width",IntType()),("height",IntType())],[]),MethodDecl("r",Id("Rectangle"),FuncDecl("area",[],IntType(),Block([Return(BinaryOp("*",FieldAccess(Id("r"),"width"),FieldAccess(Id("r"),"height")))]))),VarDecl("rect",Id("Rectangle"),StructLiteral("Rectangle",[("width",IntLiteral(10)),("height",IntLiteral(5))])),VarDecl("rectArea",IntType(),MethCall(Id("rect"),"area",[]))])

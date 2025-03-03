@@ -59,7 +59,7 @@ class ParamDecl(Decl):
     parName: str
     parType: Type
     def __str__(self):
-        return "ParDecl(" + self.parName + "," + str(self.parType) + ")"
+        return "ParamDecl(" + f"\"{self.parName}\"" + "," + str(self.parType) + ")"
 
     def accept(self, v, param):
         return v.visitParamDecl(self, param)

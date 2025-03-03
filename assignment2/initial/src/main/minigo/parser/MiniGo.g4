@@ -292,7 +292,7 @@ index_expr: logical_index_or_expr ;
 
 logical_index_or_expr: logical_index_or_expr OR logical_index_and_expr | logical_index_and_expr ;
 
-logical_index_and_expr: logical_index_and_expr (AND | OR) relational_index_expr | relational_index_expr ;
+logical_index_and_expr: logical_index_and_expr AND relational_index_expr | relational_index_expr ;
 
 relational_index_expr: relational_index_expr (EQ | NEQ | LT | LE | GT | GE) additive_index_expr | additive_index_expr ;
 

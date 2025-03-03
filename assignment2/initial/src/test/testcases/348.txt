@@ -1,1 +1,6 @@
-const a = b && c || d && !e;
+func Add() {
+        if (a > 5) { 
+            if (a < 10) { a := a * 2; }
+          };
+        }
+        

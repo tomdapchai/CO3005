@@ -1,1 +1,1 @@
-func main() {a += b; a -= c; a *= d; a /= e; a %= f;};
+var a = 10 % 3 * Person{Id: test}.Id[3].d(2, 3)[4].d.e.f();

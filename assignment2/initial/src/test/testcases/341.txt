@@ -1,1 +1,13 @@
-const a = foo();
+
+        type Circle struct {
+            radius float;
+        }
+
+        func (c Circle) circumference() float {
+            const PI = 3.14159;
+            return 2 * PI * c.radius;
+        }
+
+        var myCircle Circle = Circle{radius: 7.0};
+        var c float = myCircle.circumference();
+        

@@ -1,9 +1,11 @@
-func main() {
-            if (a == 1) {
-                a := 10;
-            } else if (a >= 1) {
-                a := 20;
-            } else {
-                a := 30;
-            }
-        };
+
+        const TEST = 10;
+        var arr [5]int;
+        var a2 [TEST]string;
+        
+        func main() {
+            arr := [TEST]int{1, 2, 3}
+            arr[a+b-c*(11%11+1||(d&&(!c)))] /= 23;
+        }
+        
+        

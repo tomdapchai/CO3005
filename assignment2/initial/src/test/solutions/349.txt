@@ -1,1 +1,1 @@
-Program([FuncDecl(main,[],VoidType,Block([VarDecl(a,IntType)]))])
+Program([FuncDecl("Add",[ParamDecl("x",IntType()),ParamDecl("y",IntType()),ParamDecl("b",FloatType())],VoidType(),Block([If(BinaryOp("||",BinaryOp("&&",BinaryOp(">",Id("b"),IntLiteral(0)),BinaryOp("<",Id("b"),IntLiteral(10))),BinaryOp("==",Id("b"),IntLiteral(15))),Block([Assign(Id("b"),BinaryOp("/",Id("b"),IntLiteral(2)))]),None)]))])
