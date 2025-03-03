@@ -1,3 +1,15 @@
-func main() {
-            return 1;
-        };
+
+            type Tree struct {
+                value int;
+                left Tree;
+                right Tree;
+            }
+
+            func (t Tree) insert(val int) {
+                if (val < t.value) {
+                    t.left.insert(val);
+                } else {
+                    t.right.insert(val);
+                }
+            }
+        

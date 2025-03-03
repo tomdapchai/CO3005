@@ -1,1 +1,1 @@
-Program([FuncDecl("Add",[],VoidType(),Block([ForStep(VarDecl("i",ArrayType([IntLiteral(2)],IntType()),IntLiteral(0)),MethCall(FieldAccess(FuncCall("foo",[]),"a"),"b",[]),Assign(Id("i"),IntLiteral(1)),Block([Return(None)]))]))])
+Program([FuncDecl(Add,[],VoidType,Block([For(VarDecl(i,ArrayType(IntType,[IntLiteral(2)]),IntLiteral(0)),MethodCall(FieldAccess(FuncCall(foo,[]),a),b,[]),Assign(Id(i),IntLiteral(1)),Block([Return()]))]))])

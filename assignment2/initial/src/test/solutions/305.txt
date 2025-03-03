@@ -1,1 +1,1 @@
-Program([ConstDecl("x",None,IntLiteral(5)),ConstDecl("y",None,IntLiteral(6)),VarDecl("Tam",None,BinaryOp("&&",BinaryOp("&&",IntLiteral(1),IntLiteral(2)),BinaryOp("-",BinaryOp("+",Id("c"),BinaryOp("/",IntLiteral(3),IntLiteral(2))),UnaryOp("-",IntLiteral(1)))))])
+Program([ConstDecl(x,IntLiteral(5)),ConstDecl(y,IntLiteral(6)),VarDecl(Tam,BinaryOp(BinaryOp(IntLiteral(1),&&,IntLiteral(2)),&&,BinaryOp(BinaryOp(Id(c),+,BinaryOp(IntLiteral(3),/,IntLiteral(2))),-,UnaryOp(-,IntLiteral(1)))))])

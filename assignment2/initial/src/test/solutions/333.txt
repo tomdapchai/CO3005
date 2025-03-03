@@ -1,1 +1,1 @@
-Program([VarDecl("result",None,MethCall(Id("a"),"add",[IntLiteral(5),IntLiteral(7),FuncCall("b",[]),MethCall(Id("c"),"a",[IntLiteral(1),IntLiteral(2),IntLiteral(3)]),MethCall(ArrayCell(Id("a"),[IntLiteral(1)]),"c",[IntLiteral(2)])]))])
+Program([VarDecl(result,MethodCall(Id(a),add,[IntLiteral(5),IntLiteral(7),FuncCall(b,[]),MethodCall(Id(c),a,[IntLiteral(1),IntLiteral(2),IntLiteral(3)]),MethodCall(ArrayCell(Id(a),[IntLiteral(1)]),c,[IntLiteral(2)])]))])

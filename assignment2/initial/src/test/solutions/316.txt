@@ -1,1 +1,1 @@
-Program([FuncDecl("main",[],VoidType(),Block([Assign(Id("c"),BinaryOp("+",Id("c"),IntLiteral(2)))]))])
+Program([FuncDecl(main,[],VoidType,Block([Assign(Id(c),BinaryOp(Id(c),+,IntLiteral(2)))]))])

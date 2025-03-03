@@ -1,5 +1,8 @@
-func main() {
-            for i := 0; i < 10; i+=1 {
-                a := i;
+
+            type Stack interface {
+                push(value int);
+                pop() int;
+                isEmpty() boolean;
+                size() int
             }
-        };
+        

@@ -1,1 +1,1 @@
-Program([FuncDecl(main,[],VoidType,Block([For(VarDecl(i,IntType,IntLiteral(0)),BinaryOp(Id(i),<,IntLiteral(10)),Assign(Id(i),BinaryOp(Id(i),+,IntLiteral(1))),Block([Assign(Id(a),Id(i))]))]))])
+Program([FuncDecl(processArray,[ParDecl(arr,ArrayType(IntType,[IntLiteral(10)]))],VoidType,Block([For(Assign(Id(i),IntLiteral(0)),BinaryOp(Id(i),<,IntLiteral(10)),Assign(Id(i),BinaryOp(Id(i),+,IntLiteral(1))),Block([Assign(ArrayCell(Id(arr),[Id(i)]),BinaryOp(ArrayCell(Id(arr),[Id(i)]),*,IntLiteral(2)))]))]))])

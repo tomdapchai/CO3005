@@ -1,1 +1,1 @@
-Program([VarDecl("a",None,ArrayCell(Id("b"),[IntLiteral(1)]))])
+Program([VarDecl(a,ArrayCell(Id(b),[IntLiteral(1)]))])

@@ -1,1 +1,1 @@
-Program([FuncDecl(main,[],VoidType,Block([MethodCall(Id(a),foo,[BinaryOp(Id(b),+,Id(c))])]))])
+Program([FuncDecl(calculateFactorial,[ParDecl(n,IntType)],IntType,Block([If(BinaryOp(Id(n),<=,IntLiteral(1)),Block([Return(IntLiteral(1))])),Assign(Id(result),IntLiteral(1)),For(Assign(Id(i),IntLiteral(2)),BinaryOp(Id(i),<=,Id(n)),Assign(Id(i),BinaryOp(Id(i),+,IntLiteral(1))),Block([Assign(Id(result),BinaryOp(Id(result),*,Id(i)))])),Return(Id(result))]))])

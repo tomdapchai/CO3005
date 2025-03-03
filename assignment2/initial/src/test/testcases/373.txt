@@ -1,3 +1,16 @@
-func main() {
-            foo(bar());
-        };
+
+            type BinaryTreeNode struct {
+                data int;
+                left BinaryTreeNode;
+                right BinaryTreeNode;
+                parent BinaryTreeNode;
+            }
+
+            func (node BinaryTreeNode) findMin() BinaryTreeNode {
+                current := node;
+                for current.left != nil {
+                    current := current.left;
+                }
+                return current;
+            }
+        

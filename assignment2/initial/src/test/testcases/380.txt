@@ -1,3 +1,11 @@
-func main() {
-            a.foo().bar(b);
-        };
+
+            type RGB struct {
+                red int;
+                green int;
+                blue int;
+            }
+
+            func (color RGB) toGrayscale() int {
+                return (color.red + color.green + color.blue) / 3;
+            }
+        

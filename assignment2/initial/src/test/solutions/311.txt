@@ -1,1 +1,1 @@
-Program([InterfaceType("Calculator",[Prototype("Add",[IntType(),IntType()],IntType()),Prototype("Subtract",[IntType(),IntType(),IntType()],StringType()),Prototype("SayHello",[StringType()],VoidType())])])
+Program([InterfaceType(Calculator,[Prototype(Add,[IntType,IntType],IntType),Prototype(Subtract,[IntType,IntType,IntType],StringType),Prototype(SayHello,[StringType],VoidType)])])

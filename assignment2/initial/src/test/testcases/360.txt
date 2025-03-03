@@ -1,5 +1,5 @@
-func main() {
-            for i, value := range a {
-                a := value;
-            }
-        };
+
+            var colors = [3]string{"red", "green", "blue"};
+            const MAX_SIZE = 100;
+            var grid = [MAX_SIZE][MAX_SIZE]int{1,2,3};
+        

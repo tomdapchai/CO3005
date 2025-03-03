@@ -1,1 +1,1 @@
-Program([FuncDecl(main,[],VoidType,Block([ForEach(Id(i),Id(value),Id(a),Block([Assign(Id(a),Id(value))]))]))])
+Program([VarDecl(colors,ArrayLiteral([IntLiteral(3)],StringType,[StringLiteral("red"),StringLiteral("green"),StringLiteral("blue")])),ConstDecl(MAX_SIZE,IntLiteral(100)),VarDecl(grid,ArrayLiteral([Id(MAX_SIZE),Id(MAX_SIZE)],IntType,[IntLiteral(1),IntLiteral(2),IntLiteral(3)]))])

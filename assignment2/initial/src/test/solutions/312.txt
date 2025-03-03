@@ -1,1 +1,1 @@
-Program([InterfaceType("Calculator",[Prototype("Add",[IntType(),IntType()],IntType()),Prototype("Reset",[],VoidType())])])
+Program([InterfaceType(Calculator,[Prototype(Add,[IntType,IntType],IntType),Prototype(Reset,[],VoidType)])])

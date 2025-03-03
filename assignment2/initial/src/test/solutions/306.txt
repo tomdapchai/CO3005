@@ -1,1 +1,1 @@
-Program([VarDecl("c",BoolType(),None),VarDecl("d",BoolType(),BooleanLiteral(False)),VarDecl("a",None,BinaryOp("&&",Id("x"),Id("y"))),VarDecl("d",None,UnaryOp("!",Id("a")))])
+Program([VarDecl(c,BoolType),VarDecl(d,BoolType,BooleanLiteral(false)),VarDecl(a,BinaryOp(Id(x),&&,Id(y))),VarDecl(d,UnaryOp(!,Id(a)))])

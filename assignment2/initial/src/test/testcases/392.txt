@@ -1,9 +1,9 @@
-var a int
-        
-        const b = 1
-        
-        func main() {
-            a := 1
-            b := 2
-        }
+
+            type WeightedGraph interface {
+                addEdge(from int, to int, weight float);
+                removeEdge(from int, to int);
+                getWeight(from int, to int) float;
+                isAdjacent(from int, to int) boolean;
+                getNeighbors(vertex int) [100]int
+            }
         

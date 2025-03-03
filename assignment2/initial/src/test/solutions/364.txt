@@ -1,1 +1,1 @@
-Program([FuncDecl(main,[],VoidType,Block([For(BinaryOp(Id(i),<,IntLiteral(10)),Block([Break()]))]))])
+Program([StructType(Complex,[(real,FloatType),(imag,FloatType)],[]),MethodDecl(c,Id(Complex),FuncDecl(magnitude,[],FloatType,Block([Return(BinaryOp(BinaryOp(FieldAccess(Id(c),real),*,FieldAccess(Id(c),real)),+,BinaryOp(FieldAccess(Id(c),imag),*,FieldAccess(Id(c),imag))))])))])

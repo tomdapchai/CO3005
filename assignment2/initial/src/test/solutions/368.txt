@@ -1,1 +1,1 @@
-Program([FuncDecl(main,[],VoidType,Block([Return()]))])
+Program([InterfaceType(Queue,[Prototype(enqueue,[IntType],VoidType),Prototype(dequeue,[],IntType),Prototype(peek,[],IntType),Prototype(isEmpty,[],BoolType),Prototype(isFull,[],BoolType)])])

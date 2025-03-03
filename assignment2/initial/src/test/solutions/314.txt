@@ -1,1 +1,1 @@
-Program([ConstDecl("k",None,BinaryOp("+",BinaryOp("+",BinaryOp("+",ArrayCell(FieldAccess(StructLiteral("ID",[("a",IntLiteral(2))]),"c"),[IntLiteral(2)]),ArrayCell(IntLiteral(2),[IntLiteral(2)])),MethCall(Id("a"),"foo",[])),MethCall(IntLiteral(1),"foo",[])))])
+Program([ConstDecl(k,BinaryOp(BinaryOp(BinaryOp(ArrayCell(FieldAccess(StructLiteral(ID,[(a,IntLiteral(2))]),c),[IntLiteral(2)]),+,ArrayCell(IntLiteral(2),[IntLiteral(2)])),+,MethodCall(Id(a),foo,[])),+,MethodCall(IntLiteral(1),foo,[])))])

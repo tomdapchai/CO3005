@@ -1,1 +1,1 @@
-Program([FuncDecl("multiply",[ParamDecl("x",IntType()),ParamDecl("y",IntType())],IntType(),Block([Return(BinaryOp("*",Id("x"),Id("y")))])),ConstDecl("FACTOR",None,IntLiteral(2)),VarDecl("result",IntType(),BinaryOp("*",FuncCall("multiply",[IntLiteral(5),IntLiteral(10)]),Id("FACTOR")))])
+Program([FuncDecl(multiply,[ParDecl(x,IntType),ParDecl(y,IntType)],IntType,Block([Return(BinaryOp(Id(x),*,Id(y)))])),ConstDecl(FACTOR,IntLiteral(2)),VarDecl(result,IntType,BinaryOp(FuncCall(multiply,[IntLiteral(5),IntLiteral(10)]),*,Id(FACTOR)))])

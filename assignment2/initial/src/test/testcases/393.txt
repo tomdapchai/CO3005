@@ -1,5 +1,18 @@
-type Person struct {
-            name string
-            age int
-        }
+
+            type Trie struct {
+                isEndOfWord boolean;
+                children [26]Trie;
+            }
+
+            func (t Trie) insert(word string) {
+                current := t;
+                for i := 0; i < len(word); i += 1 {
+                    index := word[i] - "a";
+                    if (current.children[index] == nil) {
+                        current.children[index] := Trie{isEndOfWord: false};
+                    }
+                    current := current.children[index];
+                }
+                current.isEndOfWord := true;
+            }
         

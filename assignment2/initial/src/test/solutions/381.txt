@@ -1,1 +1,1 @@
-Program([FuncDecl(main,[],VoidType,Block([MethodCall(MethodCall(Id(a),foo,[]),bar,[Id(b),Id(c),Id(d)])]))])
+Program([FuncDecl(isPalindrome,[ParDecl(str,StringType)],BoolType,Block([Assign(Id(length),FuncCall(len,[Id(str)])),For(Assign(Id(i),IntLiteral(0)),BinaryOp(Id(i),<,BinaryOp(Id(length),/,IntLiteral(2))),Assign(Id(i),BinaryOp(Id(i),+,IntLiteral(1))),Block([If(BinaryOp(ArrayCell(Id(str),[Id(i)]),!=,ArrayCell(Id(str),[BinaryOp(BinaryOp(Id(length),-,IntLiteral(1)),-,Id(i))])),Block([Return(BooleanLiteral(false))]))])),Return(BooleanLiteral(true))]))])

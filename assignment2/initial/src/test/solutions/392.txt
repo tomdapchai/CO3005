@@ -1,1 +1,1 @@
-Program([VarDecl(a,IntType),ConstDecl(b,IntLiteral(1)),FuncDecl(main,[],VoidType,Block([Assign(Id(a),IntLiteral(1)),Assign(Id(b),IntLiteral(2))]))])
+Program([InterfaceType(WeightedGraph,[Prototype(addEdge,[IntType,IntType,FloatType],VoidType),Prototype(removeEdge,[IntType,IntType],VoidType),Prototype(getWeight,[IntType,IntType],FloatType),Prototype(isAdjacent,[IntType,IntType],BoolType),Prototype(getNeighbors,[IntType],ArrayType(IntType,[IntLiteral(100)]))])])

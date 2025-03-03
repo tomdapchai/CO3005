@@ -1,3 +1,13 @@
-func main() {
-            a.foo(b, c, d);
-        };
+
+            type Stack struct {
+                elements [100]int;
+                top int;
+            }
+
+            func (s Stack) push(element int) boolean {
+                if (s.top >= 100) { return false; }
+                s.elements[s.top] := element;
+                s.top += 1;
+                return true;
+            }
+        

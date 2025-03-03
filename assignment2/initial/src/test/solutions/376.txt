@@ -1,1 +1,1 @@
-Program([FuncDecl(main,[],VoidType,Block([MethodCall(Id(a),foo,[Id(b),Id(c),Id(d)])]))])
+Program([StructType(Stack,[(elements,ArrayType(IntType,[IntLiteral(100)])),(top,IntType)],[]),MethodDecl(s,Id(Stack),FuncDecl(push,[ParDecl(element,IntType)],BoolType,Block([If(BinaryOp(FieldAccess(Id(s),top),>=,IntLiteral(100)),Block([Return(BooleanLiteral(false))])),Assign(ArrayCell(FieldAccess(Id(s),elements),[FieldAccess(Id(s),top)]),Id(element)),Assign(FieldAccess(Id(s),top),BinaryOp(FieldAccess(Id(s),top),+,IntLiteral(1))),Return(BooleanLiteral(true))])))])

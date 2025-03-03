@@ -1,3 +1,13 @@
-func main() {
-            a.foo(b);
-        };
+
+            func (ht HashTable) resize() {
+                oldTable := ht.table;
+                ht.size *= 2;
+                ht.table := [2000]int{1, 2, 3};
+                
+                for i := 0; i < ht.size / 2; i += 1 {
+                    if (oldTable[i] != 0) {
+                        ht.insert(oldTable[i]);
+                    }
+                }
+            }
+        

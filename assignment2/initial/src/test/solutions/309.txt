@@ -1,1 +1,1 @@
-Program([VarDecl("a",StringType(),None),VarDecl("b",StringType(),StringLiteral("\"Hello\""))])
+Program([VarDecl(a,StringType),VarDecl(b,StringType,StringLiteral("Hello"))])

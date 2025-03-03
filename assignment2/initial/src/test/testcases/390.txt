@@ -1,4 +1,11 @@
-func main() {
-                a := 1
-                b := 2
-        };
+
+            type Vector3D struct {
+                x float;
+                y float;
+                z float;
+            }
+
+            func (v Vector3D) crossProduct(other Vector3D) Vector3D {
+                return Vector3D(v.y * other.z - v.z * other.y, v.z * other.x - v.x * other.z, v.x * other.y - v.y * other.x);
+            }
+        

@@ -1,5 +1,7 @@
-func main() {
-            for var i int = 0; i < 10; i+=1 {
-                a := i;
+
+            func processArray(arr [10]int) {
+                for i := 0; i < 10; i += 1 {
+                    arr[i] := arr[i] * 2;
+                }
             }
-        };
+        

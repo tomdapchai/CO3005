@@ -1,1 +1,1 @@
-Program([FuncDecl(main,[],VoidType,Block([FuncCall(foo,[MethodCall(Id(a),foo,[Id(b),Id(c),Id(d)])])]))])
+Program([InterfaceType(PriorityQueue,[Prototype(insert,[IntType,IntType],VoidType),Prototype(deleteMin,[],IntType),Prototype(decreaseKey,[IntType,IntType],VoidType),Prototype(isEmpty,[],BoolType),Prototype(size,[],IntType)])])

@@ -1,3 +1,15 @@
-func main() {
-            foo(a.foo());
-        };
+
+            type AVLNode struct {
+                key int;
+                height int;
+                left AVLNode;
+                right AVLNode;
+            }
+
+            func (node AVLNode) getHeight() int {
+                if (node == nil) {
+                    return -1;
+                }
+                return node.height;
+            }
+        

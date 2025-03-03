@@ -1,7 +1,35 @@
-// This is a comment
-        // This is another comment
 
-        func main() {
-            a := 1
-        }
+            type SegmentTree struct {
+                tree [400]int;
+                lazy [400]int;
+            }
+
+            func (st SegmentTree) updateRange(node int, start int, end int, l int, r int, val int) {
+                if (st.lazy[node] != 0) {
+                    st.tree[node] += (end - start + 1) * st.lazy[node];
+                    if (start != end) {
+                        st.lazy[node * 2] += st.lazy[node];
+                        st.lazy[node * 2 + 1] += st.lazy[node];
+                    }
+                    st.lazy[node] := 0;
+                }
+
+                if (start > end || start > r || end < l) {
+                    return;
+                }
+
+                if (start >= l && end <= r) {
+                    st.tree[node] += (end - start + 1) * val;
+                    if (start != end) {
+                        st.lazy[node * 2] += val;
+                        st.lazy[node * 2 + 1] += val;
+                    }
+                    return;
+                }
+
+                mid := (start + end) / 2;
+                st.updateRange(node * 2, start, mid, l, r, val);
+                st.updateRange(node * 2 + 1, mid + 1, end, l, r, val);
+                st.tree[node] := st.tree[node * 2] + st.tree[node * 2 + 1];
+            }
         

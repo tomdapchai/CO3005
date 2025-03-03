@@ -1,3 +1,17 @@
-func main() {
-            return a;
-        };
+
+            func quickSort(arr [100]int, low int, high int) {
+                if (low < high) {
+                    pivot := arr[high];
+                    i := low - 1;
+                    
+                    for j := low; j < high; j += 1 {
+                        if (arr[j] < pivot) {
+                            i += 1;
+                            temp := arr[i];
+                            arr[i] := arr[j];
+                            arr[j] := temp;
+                        }
+                    }
+                }
+            }
+        

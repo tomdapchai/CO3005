@@ -1,3 +1,9 @@
-func main() {
-            foo(a.foo(b, c, d));
-        };
+
+            type PriorityQueue interface {
+                insert(element int, priority int);
+                deleteMin() int;
+                decreaseKey(element int, newPriority int);
+                isEmpty() boolean;
+                size() int
+            }
+        
