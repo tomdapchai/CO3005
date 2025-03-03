@@ -1,7 +1,3 @@
-
-        func main(){
-            a:= 1.e-2;
-            b:= 1.e+2;
-            c:= 1.e2;
-        }
-        
+func main() {
+            a.foo(bar());
+        };

@@ -1,7 +1,6 @@
-
-        func main() {
-            for i := 0; i < 10; i += 1 {
-                putInt(i);
-            }
+func Add() {
+        if (a > 5) { 
+            if (a < 10) { a := a * 2; }
+          };
         }
         

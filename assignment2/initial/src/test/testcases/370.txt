@@ -1,6 +1,3 @@
-
-        func main() {
-            str := "Hello" + " World";
-            putString(str);
-        }
-        
+func main() {
+            foo(a);
+        };

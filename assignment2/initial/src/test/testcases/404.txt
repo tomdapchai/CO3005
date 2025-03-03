@@ -1,0 +1,6 @@
+/* This is a comment /* This is a nested comment */ */
+        func main() {
+            a := 1
+        }
+        /* This is another comment */
+        

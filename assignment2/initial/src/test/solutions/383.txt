@@ -1,1 +1,1 @@
-Program([FuncDecl(main,[],VoidType,Block([For(Assign(Id(i),IntLiteral(0)),BinaryOp(Id(i),<,IntLiteral(10)),Assign(Id(i),BinaryOp(Id(i),+,IntLiteral(1))),Block([If(Id(abc),Block([Break()]),If(Id(def),Block([If(Id(ghi),Block([Continue()]))])))]))]))])
+Program([FuncDecl(main,[],VoidType,Block([Assign(Id(a),FuncCall(foo,[Id(b)]))]))])

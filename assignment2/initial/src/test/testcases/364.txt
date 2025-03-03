@@ -1,6 +1,5 @@
-
-        func foo() {
-            
-            return x+y;
-        }
-        
+func main() {
+            for i < 10 {
+                break;
+            }
+        };

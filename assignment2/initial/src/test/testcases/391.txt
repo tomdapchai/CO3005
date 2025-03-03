@@ -1,11 +1,5 @@
+func main() {
+                a := 1
 
-        func main(){
-            for var i = 0; i < 10; i += 1{
-                for var j = 0; j < 10; j += 1{
-                    for var k = 0; k < 10; k += 1{
-                        putInt(i+j+k);
-                    }
-                }
-            }
-        }
-        
+                b := 2
+        };

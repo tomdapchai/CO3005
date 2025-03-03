@@ -276,8 +276,6 @@ class ASTGeneration(MiniGoVisitor):
             return self.visit(ctx.struct_literal())
         elif ctx.struct_field_access():
             return self.visit(ctx.struct_field_access())
-        elif ctx.array_access():
-            return self.visit(ctx.array_access())
         else:
             return self.visit(ctx.struct_field_access_no_func())
 

@@ -1,5 +1,1 @@
-
-        func sumAndCompare(x int, y int) boolean{
-            return x + y > 100;
-        }
-        
+func main() {var a int;};

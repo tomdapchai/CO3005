@@ -1,11 +1,4 @@
-
-        func main(){
-            for true {
-                for false{
-                    for i < 10{
-                        putInt(i);
-                    }
-                }
-            }
-        }
-        
+func main() {
+                a := 1;
+                b := 2;
+        };

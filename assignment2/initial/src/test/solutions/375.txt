@@ -1,1 +1,1 @@
-Program([FuncDecl(fibo,[ParDecl(n,IntType)],IntType,Block([If(BinaryOp(Id(n),==,IntLiteral(0)),Block([Return(IntLiteral(0))])),If(BinaryOp(Id(n),==,IntLiteral(1)),Block([Return(IntLiteral(1))])),Return(BinaryOp(FuncCall(fibo,[BinaryOp(Id(n),-,IntLiteral(1))]),+,FuncCall(fibo,[BinaryOp(Id(n),-,IntLiteral(2))])))]))])
+Program([FuncDecl(main,[],VoidType,Block([MethodCall(Id(a),foo,[Id(b)])]))])

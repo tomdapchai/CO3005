@@ -1,1 +1,1 @@
-Program([FuncDecl(main,[],VoidType,Block([Assign(Id(a),StringLiteral("Hello")),Assign(Id(b),StringLiteral("World")),Assign(Id(c),BinaryOp(Id(a),+,Id(b))),FuncCall(putString,[Id(c)]),Assign(Id(z),StringLiteral("ccndshbc \n \t"))]))])
+Program([FuncDecl(main,[],VoidType,Block([MethodCall(Id(a),foo,[BinaryOp(Id(b),+,Id(c))])]))])

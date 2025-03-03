@@ -1,1 +1,1 @@
-Program([FuncDecl(main,[],VoidType,Block([Assign(Id(str),BinaryOp(StringLiteral("Hello"),+,StringLiteral(" World"))),FuncCall(putString,[Id(str)])]))])
+Program([FuncDecl(main,[],VoidType,Block([FuncCall(foo,[Id(a)])]))])

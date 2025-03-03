@@ -1,1 +1,1 @@
-Program([FuncDecl(main,[],VoidType,Block([FuncCall(foo,[]),FuncCall(bar,[]),FuncCall(something,[]),FuncCall(hello,[])]))])
+Program([FuncDecl(main,[],VoidType,Block([MethodCall(MethodCall(Id(a),foo,[]),bar,[Id(b)])]))])

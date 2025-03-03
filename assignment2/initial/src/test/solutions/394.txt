@@ -1,1 +1,1 @@
-Program([FuncDecl(main,[],VoidType,Block([FuncCall(foo,[StringLiteral("Hello"),FloatLiteral(inf),FloatLiteral(0.01),FloatLiteral(100.0),FloatLiteral(100.0)])]))])
+Program([InterfaceType(Person,[Prototype(Hello,[],VoidType),Prototype(Hi,[],IntType)])])

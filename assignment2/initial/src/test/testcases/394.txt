@@ -1,5 +1,5 @@
-
-        func main(){
-            foo("Hello", 1.e432, 1.0e-2, 1.0e+2, 1.0e2);
+type Person interface {
+            Hello()
+            Hi() int
         }
         

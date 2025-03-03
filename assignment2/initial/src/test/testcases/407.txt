@@ -1,0 +1,4 @@
+func main() {
+            a := foo(1).bar();
+        }
+        

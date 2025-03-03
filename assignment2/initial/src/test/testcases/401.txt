@@ -1,0 +1,6 @@
+/* This is a comment */
+
+        func main() {
+            a := 1
+        }
+        

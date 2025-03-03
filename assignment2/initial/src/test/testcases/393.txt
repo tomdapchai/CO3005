@@ -1,10 +1,5 @@
-
-        func ifStmt(){
-            if (true){
-                putString("Hello");
-                if (foo()){
-                    putString("World");
-                }
-            }
+type Person struct {
+            name string
+            age int
         }
         

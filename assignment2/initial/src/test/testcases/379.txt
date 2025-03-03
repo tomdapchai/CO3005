@@ -1,7 +1,3 @@
-
-        func main(){
-            for true{
-                putString("Hello");
-            }
-        }
-        
+func main() {
+            a.foo().bar();
+        };

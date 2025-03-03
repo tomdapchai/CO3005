@@ -1,11 +1,6 @@
+// This is a comment
 
-        func smartFunc(){
-            if (true){
-                putString("Hello");
-            } else if (false){
-                putString("World");
-            } else {
-                putString("Goodbye");
-            }
+        func main() {
+            a := 1
         }
         

@@ -1,6 +1,3 @@
-
-        func main() {
-            var flag bool = false;
-            putBool(flag);
-        }
-        
+func main() {
+            foo(a + b);
+        };

@@ -1,1 +1,1 @@
-Program([FuncDecl(main,[],VoidType,Block([Assign(Id(x),UnaryOp(!,BooleanLiteral(true)))]))])
+Program([FuncDecl(main,[],VoidType,Block([FuncCall(foo,[FuncCall(bar,[])])]))])

@@ -1,1 +1,1 @@
-Program([FuncDecl(main,[],VoidType,Block([VarDecl(b,IntType)])),VarDecl(x,IntType)])
+Program([FuncDecl("main",[],VoidType(),Block([VarDecl("a",IntType(),None)])),VarDecl("b",IntType(),None)])

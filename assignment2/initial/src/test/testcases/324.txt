@@ -1,12 +1,8 @@
 
-        func main() {
-            for idx, val := range arr {
-                putInt(idx);
-                putInt(val);
-            }
-            for _, val := range arr {
-                putInt(val);
-            }
+        func Add() {
+        if (arr[0] > 0) { 
+        arr[0] := arr[0] * 2; 
+        } else {
+            arr[0] := 0;
         }
-            
-        
+        }

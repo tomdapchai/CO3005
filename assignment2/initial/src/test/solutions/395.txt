@@ -1,1 +1,1 @@
-Program([ConstDecl(a,IntLiteral(5)),ConstDecl(z,BinaryOp(Id(a),+,IntLiteral(5))),ConstDecl(y,BinaryOp(Id(z),+,IntLiteral(5))),ConstDecl(x,BinaryOp(Id(y),+,IntLiteral(5)))])
+Program([FuncDecl(main,[],VoidType,Block([For(BinaryOp(Id(i),<,IntLiteral(10)),Block([Assign(Id(a),Id(i))]))]))])

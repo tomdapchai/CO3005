@@ -1,11 +1,3 @@
-
-        func main(){
-            for idx, value := range arr{
-                if (idx * value > 10){
-                    break;
-                } else if(idx * value < 10){
-                    continue;
-                }
-            }
-        }
-        
+func main() {
+            foo(a.foo(b));
+        };

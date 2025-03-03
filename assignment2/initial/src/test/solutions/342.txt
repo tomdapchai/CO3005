@@ -1,1 +1,1 @@
-Program([FuncDecl(compare,[ParDecl(a,IntType),ParDecl(b,IntType)],BoolType,Block([Return(BinaryOp(BinaryOp(BinaryOp(Id(a),&&,Id(b)),||,Id(a)),||,BinaryOp(Id(b),&&,UnaryOp(!,Id(a)))))]))])
+Program([ConstDecl(a,MethodCall(Id(b),foo,[]))])

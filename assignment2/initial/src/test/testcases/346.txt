@@ -1,5 +1,1 @@
-
-        func logic() boolean{
-            return x * y + z > a || b && c;
-        }
-        
+const a = (b + c) * d;

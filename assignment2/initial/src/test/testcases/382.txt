@@ -1,7 +1,3 @@
-
-        var fl float;
-        func main(){
-            fl := 5.5;
-            putFloat(fl);
-        }
-        
+func main() {
+            a := foo();
+        };
