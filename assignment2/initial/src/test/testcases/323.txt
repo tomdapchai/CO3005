@@ -1,4 +1,7 @@
-func Add() {
-            if (b > 0 && b < 10 || b == 15) { b := b / 2; };
+
+        func main() {
+            for i < 10 {
+                putInt(i);
+            }
         }
         

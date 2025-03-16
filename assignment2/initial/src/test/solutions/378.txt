@@ -1,1 +1,1 @@
-Program([StructType(CircularQueue,[(items,ArrayType(IntType,[IntLiteral(100)])),(head,IntType),(tail,IntType),(size,IntType)],[]),MethodDecl(cq,Id(CircularQueue),FuncDecl(isFull,[],BoolType,Block([Return(BinaryOp(FieldAccess(Id(cq),size),==,IntLiteral(100)))])))])
+Program([FuncDecl(main,[],VoidType,Block([Assign(Id(a),FloatLiteral(1.e-2)),Assign(Id(b),FloatLiteral(1.e+2)),Assign(Id(c),FloatLiteral(1.e2))]))])

@@ -1,3 +1,9 @@
 
-        const k = -b - !-!c - ---[2]int{2, 3, 4};  
+        var a int;
+        var b int = 5;
+        var c = a + b;
+        var d = a - b;
+        var e = a * b;
+        var f = a / b;
+        var g = a % b;
         

@@ -1,13 +1,5 @@
 
-        type Person struct {
-            name string;
-            age int;
+        func boolLLLL() boolean{
+            return a || a && a || a || a && !a > b <= c;
         }
-
-        func (p Person) greet() string {
-            return "Hello, my name is " + p.name + " and I am " + toString(p.age) + " years old.";
-        }
-
-        var someone Person = Person{name: "Charlie", age: 42};
-        var greeting string = someone.greet();
         

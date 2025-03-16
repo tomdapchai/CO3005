@@ -1,6 +1,6 @@
 
-        var c boolean;
-        var d boolean = false;
-        var a = x && y;
-        var d = !a;
+        var a boolean;
+        var b boolean = true;
+        var c = a && b;
+        var e = !a;
         

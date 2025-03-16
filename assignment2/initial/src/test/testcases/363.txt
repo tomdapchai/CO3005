@@ -1,7 +1,5 @@
 
-            func processArray(arr [10]int) {
-                for i := 0; i < 10; i += 1 {
-                    arr[i] := arr[i] * 2;
-                }
-            }
+        func foo() int{
+            a := 5 + 5;
+        }
         

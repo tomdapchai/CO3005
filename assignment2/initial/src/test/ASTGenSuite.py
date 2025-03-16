@@ -86,7 +86,7 @@ class ASTGenSuite(unittest.TestCase):
     def test_308(self):
         input = """
         var a float;
-        var a float = 2.47;
+        var a float = 2.47e-2;
         var a = a + b;
         var a = a > b;
         var a = a < b;
@@ -98,7 +98,7 @@ class ASTGenSuite(unittest.TestCase):
         expect = str(
                 Program([
                     VarDecl("a",FloatType(),None),
-                    VarDecl("a",FloatType(),FloatLiteral(2.47)),
+                    VarDecl("a",FloatType(),FloatLiteral("2.47e-2")),
                     VarDecl("a",None,BinaryOp("+",Id("a"),Id("b"))),
                     VarDecl("a",None,BinaryOp(">",Id("a"),Id("b"))),
                     VarDecl("a",None,BinaryOp("<",Id("a"),Id("b"))),
@@ -697,7 +697,7 @@ class ASTGenSuite(unittest.TestCase):
         
         """
         expect = str(
-            Program([ConstDecl("TEST",None,IntLiteral(10)),VarDecl("arr",ArrayType([IntLiteral(5)],IntType()),None),VarDecl("a2",ArrayType([Id("TEST")],StringType()),None),FuncDecl("main",[],VoidType(),Block([Assign(Id("arr"),ArrayLiteral([Id("TEST")],IntType(),[IntLiteral(1),IntLiteral(2),IntLiteral(3)])),Assign(ArrayCell(Id("arr"),[BinaryOp("-",BinaryOp("+",Id("a"),Id("b")),BinaryOp("*",Id("c"),BinaryOp("||",BinaryOp("+",BinaryOp("%",IntLiteral(11),IntLiteral(11)),IntLiteral(1)),BinaryOp("&&",Id("d"),Id("c")))))]),BinaryOp("/",ArrayCell(Id("arr"),[BinaryOp("-",BinaryOp("+",Id("a"),Id("b")),BinaryOp("*",Id("c"),BinaryOp("||",BinaryOp("+",BinaryOp("%",IntLiteral(11),IntLiteral(11)),IntLiteral(1)),BinaryOp("&&",Id("d"),Id("c")))))]),IntLiteral(23)))]))])
+            Program([ConstDecl("TEST",None,IntLiteral(10)),VarDecl("arr",ArrayType([IntLiteral(5)],IntType()),None),VarDecl("a2",ArrayType([Id("TEST")],StringType()),None),FuncDecl("main",[],VoidType(),Block([Assign(Id("arr"),ArrayLiteral([Id("TEST")],IntType(),[IntLiteral(1),IntLiteral(2),IntLiteral(3)])),Assign(ArrayCell(Id("arr"),[BinaryOp("-",BinaryOp("+",Id("a"),Id("b")),BinaryOp("*",Id("c"),BinaryOp("||",BinaryOp("+",BinaryOp("%",IntLiteral(11),IntLiteral(11)),IntLiteral(1)),BinaryOp("&&",Id("d"),UnaryOp("!",Id("c"))))))]),BinaryOp("/",ArrayCell(Id("arr"),[BinaryOp("-",BinaryOp("+",Id("a"),Id("b")),BinaryOp("*",Id("c"),BinaryOp("||",BinaryOp("+",BinaryOp("%",IntLiteral(11),IntLiteral(11)),IntLiteral(1)),BinaryOp("&&",Id("d"),UnaryOp("!",Id("c"))))))]),IntLiteral(23)))]))])
         )
         self.assertTrue(TestAST.checkASTGen(input, expect, 354))
     def test_355(self):
@@ -744,7 +744,7 @@ class ASTGenSuite(unittest.TestCase):
         
         """
         expect = str(
-            Program([StructType("Point",[("x",IntType()),("y",IntType())],[]),VarDecl("p",Id("Point"),StructLiteral("Point",[("x",IntLiteral(5)),("y",IntLiteral(10))])),FuncDecl("tmp",[],VoidType(),Block([ForStep(Assign(Id("i"),IntLiteral(0)),BinaryOp("<",Id("i"),FieldAccess(Id("p"),"x")),Assign(Id("i"),BinaryOp("+",Id("i"),IntLiteral(1))),Block([Assign(FieldAccess(Id("p"),"y"),BinaryOp("+",FieldAccess(Id("p"),"y"),IntLiteral(1))),ConstDecl("a",None,BinaryOp("+",ArrayLiteral([IntLiteral(1)],IntType(),[[IntLiteral(1),IntLiteral(1)],StructLiteral("ID",[]),FloatLiteral(1.2),StringLiteral("\"s\""),BooleanLiteral(True),BooleanLiteral(False),NilLiteral()]),NilLiteral()))]))]))])
+            Program([StructType("Point",[("x",IntType()),("y",IntType())],[]),VarDecl("p",Id("Point"),StructLiteral("Point",[("x",IntLiteral(5)),("y",IntLiteral(10))])),FuncDecl("tmp",[],VoidType(),Block([ForStep(Assign(Id("i"),IntLiteral(0)),BinaryOp("<",Id("i"),FieldAccess(Id("p"),"x")),Assign(Id("i"),BinaryOp("+",Id("i"),IntLiteral(1))),Block([Assign(FieldAccess(Id("p"),"y"),BinaryOp("+",FieldAccess(Id("p"),"y"),IntLiteral(1))),ConstDecl("a",None,BinaryOp("+",ArrayLiteral([IntLiteral(1)],IntType(),[[IntLiteral(1),IntLiteral("0x1")],StructLiteral("ID",[]),FloatLiteral(1.2),StringLiteral("\"s\""),BooleanLiteral(True),BooleanLiteral(False),NilLiteral()]),NilLiteral()))]))]))])
         )
         self.assertTrue(TestAST.checkASTGen(input, expect, 356))
     def test_357(self):

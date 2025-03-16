@@ -1,1 +1,1 @@
-Program([StructType(AVLNode,[(key,IntType),(height,IntType),(left,Id(AVLNode)),(right,Id(AVLNode))],[]),MethodDecl(node,Id(AVLNode),FuncDecl(getHeight,[],IntType,Block([If(BinaryOp(Id(node),==,Nil),Block([Return(UnaryOp(-,IntLiteral(1)))])),Return(FieldAccess(Id(node),height))])))])
+Program([FuncDecl(main,[],VoidType,Block([For(BinaryOp(Id(abc),*,Id(def)),Block([FuncCall(putString,[StringLiteral("Hello")])]))]))])

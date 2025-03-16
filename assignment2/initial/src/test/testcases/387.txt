@@ -1,15 +1,10 @@
 
         // full call stmt
-        func power(base float, exponent int) float {
-                if (exponent == 0) { return 1.0; }
-                if (exponent < 0) {
-                    base := 1.0 / base;
-                    exponent := -exponent;
-                }
-                result := 1.0;
-                for i := 0; i < exponent; i += 1 {
-                    result *= base;
-                }
-                return result;
-            }
+        func main(){
+            foo(1,2,3);
+            bar(1.0,2.0,3.0);
+            hello("Hello","World");
+            something(true,false);
+            nillfunc(nil)
+        }
         

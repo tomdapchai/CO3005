@@ -1,1 +1,1 @@
-Program([ConstDecl(k,BinaryOp(BinaryOp(UnaryOp(-,Id(b)),-,UnaryOp(!,UnaryOp(-,UnaryOp(!,Id(c))))),-,UnaryOp(-,UnaryOp(-,UnaryOp(-,ArrayLiteral([IntLiteral(2)],IntType,[IntLiteral(2),IntLiteral(3),IntLiteral(4)]))))))])
+Program([VarDecl(a,IntType),VarDecl(b,IntType,IntLiteral(5)),VarDecl(c,BinaryOp(Id(a),+,Id(b))),VarDecl(d,BinaryOp(Id(a),-,Id(b))),VarDecl(e,BinaryOp(Id(a),*,Id(b))),VarDecl(f,BinaryOp(Id(a),/,Id(b))),VarDecl(g,BinaryOp(Id(a),%,Id(b)))])

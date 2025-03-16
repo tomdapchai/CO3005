@@ -1,8 +1,11 @@
-func Add() {
-        if (z < 0) { z := -z; } else if (z > 0) { 
-        z += 1 
-        } else { 
-        z := 0 
-        }
+
+        func main() {
+            if (a > b){
+                putString("a is greater than b");
+            } else if (a < b) {
+                putString("a is less than b");
+            } else {
+                putString("a is equal to b");
+            }
         }
         

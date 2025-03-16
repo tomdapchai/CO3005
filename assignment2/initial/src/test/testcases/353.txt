@@ -1,1 +1,14 @@
-var a = 10 % 3 * Person{Id: test}.Id[3].d(2, 3)[4].d.e.f();
+
+        func insertionSort(arr [100]int) {
+            n := len(arr);
+            for i := 1; i < n; i += 1 {
+                key := arr[i];
+                j := i - 1;
+                for j >= 0 && arr[j] > key {
+                    arr[j+1] := arr[j];
+                    j -= 1;
+                }
+                arr[j+1] := key;
+            }
+        }
+        

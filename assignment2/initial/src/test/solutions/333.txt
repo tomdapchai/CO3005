@@ -1,1 +1,1 @@
-Program([VarDecl(result,MethodCall(Id(a),add,[IntLiteral(5),IntLiteral(7),FuncCall(b,[]),MethodCall(Id(c),a,[IntLiteral(1),IntLiteral(2),IntLiteral(3)]),MethodCall(ArrayCell(Id(a),[IntLiteral(1)]),c,[IntLiteral(2)])]))])
+Program([FuncDecl(main,[],VoidType,Block([Assign(ArrayCell(FieldAccess(Id(b),a),[IntLiteral(1),IntLiteral(2),IntLiteral(3),IntLiteral(4),IntLiteral(5)]),StructLiteral(Person,[(name,StringLiteral("John")),(age,IntLiteral(25))]))]))])

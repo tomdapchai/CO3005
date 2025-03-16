@@ -1,8 +1,8 @@
 
-        func multiply(x int, y int) int {
-            return x * y;
+        func foo(a int, b float, c string, d Person, f[1][2]int) Person{
+            a := 5;
+            c := "Hello";
+            d := Person{name: "John", age: 25};
+            return d;
         }
-
-        const FACTOR = 2;
-        var result int = multiply(5, 10) * FACTOR;
         

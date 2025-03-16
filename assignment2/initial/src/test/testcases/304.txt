@@ -1,5 +1,5 @@
 
         func main() {
-            foo(1 + a * b, 3);
+            foo(1+x/y, 2);
         }
         

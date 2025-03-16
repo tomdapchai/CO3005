@@ -1,13 +1,12 @@
 
-            type Stack struct {
-                elements [100]int;
-                top int;
+        func lcs(X string, Y string, m int, n int) int {
+            if (m == 0 || n == 0) {
+                return 0;
             }
-
-            func (s Stack) push(element int) boolean {
-                if (s.top >= 100) { return false; }
-                s.elements[s.top] := element;
-                s.top += 1;
-                return true;
+            if (X[m-1] == Y[n-1]) {
+                return 1 + lcs(X, Y, m-1, n-1);
+            } else {
+                return max(lcs(X, Y, m, n-1), lcs(X, Y, m-1, n));
             }
+        }
         

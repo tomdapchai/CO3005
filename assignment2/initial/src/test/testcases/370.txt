@@ -1,10 +1,6 @@
 
-            type HashTable struct {
-                size int;
-                table [1000]int;
-            }
-
-            func (h HashTable) hash(key int) int {
-                return key % h.size;
-            }
+        func main() {
+            str := "Hello" + " World";
+            putString(str);
+        }
         

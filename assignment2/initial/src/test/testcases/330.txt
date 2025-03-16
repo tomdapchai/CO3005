@@ -1,6 +1,8 @@
 
-                                    func Add() {
-                                        for var i [2]int = 0; foo().a.b(); i := 1 {
-                                            return; 
-                                        }
-                                    };
+        func main() {
+            a := foo() + 5;
+            b := foo() + 5 * 5;
+            c := d[1].foo(bar(5, 5.5)) / bar[foo1(5, 5.5)]/5 + 10;
+            d := -5 + 5;
+        }
+        

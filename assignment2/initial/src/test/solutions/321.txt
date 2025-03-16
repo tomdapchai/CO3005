@@ -1,1 +1,1 @@
-Program([FuncDecl(Add,[],VoidType,Block([If(BinaryOp(Id(z),<,IntLiteral(0)),Block([Assign(Id(z),UnaryOp(-,Id(z)))]),If(BinaryOp(Id(z),>,IntLiteral(0)),Block([Assign(Id(z),BinaryOp(Id(z),+,IntLiteral(1)))]),Block([Assign(Id(z),IntLiteral(0))])))]))])
+Program([FuncDecl(main,[],VoidType,Block([If(BinaryOp(Id(a),>,Id(b)),Block([FuncCall(putString,[StringLiteral("a is greater than b")])]),If(BinaryOp(Id(a),<,Id(b)),Block([FuncCall(putString,[StringLiteral("a is less than b")])]),Block([FuncCall(putString,[StringLiteral("a is equal to b")])])))]))])

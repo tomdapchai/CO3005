@@ -1,1 +1,1 @@
-Program([FuncDecl(main,[],VoidType,Block([Assign(Id(a),IntLiteral(1))]))])
+Program([FuncDecl(main,[],VoidType,Block([Assign(ArrayCell(Id(a),[IntLiteral(0x123),IntLiteral(0b0110),IntLiteral(0o123)]),IntLiteral(1))]))])

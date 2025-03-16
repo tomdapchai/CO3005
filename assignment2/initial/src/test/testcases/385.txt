@@ -1,17 +1,11 @@
 
-            func bubbleSort(arr [100]int) {
-                n := 100;
-                swapped := true;
-                for swapped {
-                    swapped := false;
-                    for i := 1; i < n; i += 1 {
-                        if (arr[i-1] > arr[i]) {
-                            temp := arr[i-1];
-                            arr[i-1] := arr[i];
-                            arr[i] := temp;
-                            swapped := true;
-                        }
-                    }
+        func main(){
+            for idx, value := range arr{
+                if (idx * value > 10){
+                    break;
+                } else if(idx * value < 10){
+                    continue;
                 }
             }
+        }
         

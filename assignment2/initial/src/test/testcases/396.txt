@@ -1,27 +1,8 @@
 
-            type Graph struct {
-                vertices int;
-                adjMatrix [100][100]float;
-            }
-
-            func (g Graph) floydWarshall() [100][100]float {
-                var dist [100][100]float;
-                
-                for i := 0; i < g.vertices; i += 1 {
-                    for j := 0; j < g.vertices; j += 1 {
-                        dist[i][j] := g.adjMatrix[i][j];
-                    }
-                }
-                
-                for k := 0; k < g.vertices; k += 1 {
-                    for i := 0; i < g.vertices; i += 1 {
-                        for j := 0; j < g.vertices; j += 1 {
-                            if (dist[i][k] + dist[k][j] < dist[i][j]) {
-                                dist[i][j] := dist[i][k] + dist[k][j];
-                            }
-                        }
-                    }
-                }
-                return dist;
-            }
+        func main (){
+            a := !true;
+            b := !false;
+            c := !a;
+            d := !b;
+        }
         

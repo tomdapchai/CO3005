@@ -1,4 +1,5 @@
 
-       var arr = [3]int{1, 2, 3};
-       var sum int = arr[0] + arr[1] + arr[2];
-       
+        func main(){
+            foo("abc", 5, 5.5, true, nil, false, Person{name: "John", age: 25});
+        }
+        

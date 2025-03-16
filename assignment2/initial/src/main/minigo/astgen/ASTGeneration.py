@@ -283,9 +283,9 @@ class ASTGeneration(MiniGoVisitor):
     # Visit a parse tree produced by MiniGoParser#atom_value.
     def visitAtom_value(self, ctx:MiniGoParser.Atom_valueContext):
         if ctx.TRUE():
-            return BooleanLiteral(True)
+            return BooleanLiteral(ctx.TRUE().getText())
         elif ctx.FALSE():
-            return BooleanLiteral(False)
+            return BooleanLiteral(ctx.FALSE().getText())
         elif ctx.STRING_LIT():
             return StringLiteral(ctx.STRING_LIT().getText())
         elif ctx.NIL():
@@ -302,9 +302,9 @@ class ASTGeneration(MiniGoVisitor):
         elif ctx.STRING_LIT():
             return StringLiteral(ctx.STRING_LIT().getText())
         elif ctx.TRUE():
-            return BooleanLiteral(True)
+            return BooleanLiteral(ctx.TRUE().getText())
         elif ctx.FALSE():
-            return BooleanLiteral(False)
+            return BooleanLiteral(ctx.FALSE().getText())
         elif ctx.NIL():
             return NilLiteral()
         elif ctx.struct_literal():
@@ -362,20 +362,14 @@ class ASTGeneration(MiniGoVisitor):
 
     #* int_number: INT_LIT | HEX_LIT | OCT_LIT | BIN_LIT;
     def visitInt_number(self, ctx:MiniGoParser.Int_numberContext):
-        if ctx.INT_LIT():
-            return IntLiteral(int(ctx.INT_LIT().getText()))
-        elif ctx.HEX_LIT():
-            return IntLiteral(int(ctx.HEX_LIT().getText(), 16))
-        elif ctx.OCT_LIT():
-            return IntLiteral(int(ctx.OCT_LIT().getText(), 8))
-        else:
-            return IntLiteral(int(ctx.BIN_LIT().getText(), 2))
+        return IntLiteral(ctx.getText())
+        
 
     # Visit a parse tree produced by MiniGoParser#number.
     def visitNumber(self, ctx:MiniGoParser.NumberContext):
         if ctx.int_number():
             return self.visit(ctx.int_number())
-        return FloatLiteral(float(ctx.FLOAT_LIT().getText()))
+        return FloatLiteral(ctx.FLOAT_LIT().getText())
 
 
     def visitArray_access(self, ctx: MiniGoParser.Array_accessContext):
@@ -492,7 +486,7 @@ class ASTGeneration(MiniGoVisitor):
         if operator:
             for op in operator:
                 expr = UnaryOp(op, expr)
-        return self.visitChildren(ctx)
+        return expr
     
     def visitPrimary_index_expr(self, ctx: MiniGoParser.Primary_index_exprContext):
         """Visit primary index expression with all its possible forms."""

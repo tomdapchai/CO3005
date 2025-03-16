@@ -1,1 +1,1 @@
-Program([VarDecl(arr,ArrayLiteral([IntLiteral(3)],IntType,[IntLiteral(1),IntLiteral(2),IntLiteral(3)])),FuncDecl(Add,[],VoidType,Block([ForEach(Id(_),Id(value),Id(arr),Block([Assign(Id(x),BinaryOp(Id(x),+,Id(value)))]))]))])
+Program([FuncDecl(main,[],VoidType,Block([FuncCall(foo,[FuncCall(foo,[IntLiteral(1),IntLiteral(2)]),FuncCall(foo,[IntLiteral(4),IntLiteral(5)])]),FuncCall(goo,[FuncCall(goo,[FuncCall(goo,[FuncCall(goo,[FuncCall(goo,[FuncCall(goo,[IntLiteral(1)])])])])])])]))])

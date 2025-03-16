@@ -1,1 +1,1 @@
-Program([VarDecl(arr2,ArrayLiteral([IntLiteral(2)],FloatType,[StringLiteral("a"),StringLiteral("b")]))])
+Program([FuncDecl(main,[],VoidType,Block([If(BinaryOp(Id(a),>,Id(b)),Block([FuncCall(putString,[StringLiteral("a is greater than b")])]),Block([FuncCall(putString,[StringLiteral("a is not greater than b")])]))]))])

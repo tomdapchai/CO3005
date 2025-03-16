@@ -1,3 +1,12 @@
 
-            const a = !-!-!-1 + Person{Id: name}.c[3].d().a[2];
+        func complexFunc(a int, b float, c string, d boolean, e [5]int, f [3][3]float, g Person) {
+            putInt(a);
+            putFloat(b);
+            putString(c);
+            putBool(d);
+            putInt(e[0]);
+            putFloat(f[0][0]);
+            putString(g.name);
+            putInt(g.age);
+        }
         

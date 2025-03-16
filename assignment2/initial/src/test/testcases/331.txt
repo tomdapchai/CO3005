@@ -1,1 +1,9 @@
-var result = add(5 + 5, 7 * (1 + -!2), Person{ID: name});
+
+        func main(){
+            for i:=0;i<10;i+=1{
+                if (i % 2 == 0){
+                    continue;
+                }
+            }    
+        }
+        

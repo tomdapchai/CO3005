@@ -1,21 +1,21 @@
 
-        type Person struct {
-            name string;
-            age int;
-        }
-
-        func (c Person) SayHello() {
-                fmt.Println("Hello, my name is " + c.name);
+        func mergeSort(arr [100]int) {
+            n := len(arr);
+            if (n < 2) {
+                return;
             }
-
-        var p Person = Person{name: "Alice", age: 25};
-        func tmp() {
-        if (p.age > 18) {
-            for i := 0; i < p.age; i += 1 {
-                // Some action
-                counter := counter + 1;
+            mid := n / 2;
+            left := [mid]int{1,2,3};
+            remain := n - mid;
+            right := [remain]int{1,2,3};
+            for i := 0; i < mid; i += 1 {
+                left[i] := arr[i];
             }
+            for i := mid; i < n; i += 1 {
+                right[i - mid] := arr[i];
+            }
+            mergeSort(left);
+            mergeSort(right);
+            merge(arr, left, right);
         }
-        }
-        
         

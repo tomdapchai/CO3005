@@ -1,15 +1,8 @@
 
-        type Person struct {
-            name string;
-            age int;
+        func foo(a int, b float, c string, d Person, f[1][2]int) int{
+            a := 5;
+            c := "Hello";
+            d := Person{name: "John", age: 25};
+            return b+a;
         }
-
-        func main() {
-        var people [2]Person;
-        people[0] := Person{name: "Alice", age: 30};
-        people[1] := Person{name: "Bob", age: 25};
-
-        var aliceAge int = people[0].age;
-        }
-        
         

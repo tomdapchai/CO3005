@@ -1,13 +1,5 @@
 
-        type Rectangle struct {
-            width int;
-            height int;
+        func test() boolean{
+            return (x + y) * z > 10 && a || b;
         }
-
-        func (r Rectangle) scale(factor int) {
-            r.width := r.width * factor;
-            r.height := r.height * factor;
-        }
-
-        var rect Rectangle = Rectangle{width: 4, height: 6};
         

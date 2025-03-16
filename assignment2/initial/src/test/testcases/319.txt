@@ -1,1 +1,7 @@
-var a = [1][2][3]int{1,{2,3,4},{Person{Id: name}, 3, {a, b}}};
+
+        func foo() {
+            if (x > 10) {
+                putString("x is greater than 10");
+            }
+        }
+        

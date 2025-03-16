@@ -1,14 +1,5 @@
 
-        type Car struct {
-            make string;
-            model string;
-            year int;
+        func compute() boolean{
+            return (x - y) / z <= a && b || !c;
         }
-
-        func (c Car) description() string {
-            return stri(c.year) + " " + c.make + " " + c.model;
-        }
-
-        var myCar Car = Car{make: "Toyota", model: "Camry", year: 2023};
-        var carDesc string = myCar.description();
         

@@ -1,4 +1,5 @@
-func Add(x, y int, b float) {
-            if (b > 0 && b < 10 || b == 15) { b := b / 2; };
+
+        func sumAndCompare(x int, y int) boolean{
+            return x + y > 100;
         }
         

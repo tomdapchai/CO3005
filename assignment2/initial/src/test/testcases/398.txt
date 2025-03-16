@@ -1,27 +1,5 @@
 
-            type DynamicArray struct {
-                elements [100]int;
-                size int;
-                capacity int;
-            }
-
-            func (da DynamicArray) resize() {
-                newCapacity := da.capacity * 2;
-                var newElements [100]int;
-                
-                for i := 0; i < da.size; i += 1 {
-                    newElements[i] := da.elements[i];
-                }
-                
-                da.elements := newElements;
-                da.capacity := newCapacity;
-            }
-
-            func (da DynamicArray) add(element int) {
-                if (da.size == da.capacity) {
-                    da.resize();
-                }
-                da.elements[da.size] := element;
-                da.size += 1;
-            }
+        func (c Circle) area() float {
+            return c.radius * c.radius * 3.14;
+        }
         

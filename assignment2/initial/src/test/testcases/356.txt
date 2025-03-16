@@ -1,16 +1,21 @@
 
-        type Point struct {
-            x int;
-            y int;
+        func quickSort(arr [100]int, low int, high int) {
+            if (low < high) {
+                pi := partition(arr, low, high);
+                quickSort(arr, low, pi - 1);
+                quickSort(arr, pi + 1, high);
+            }
         }
-
-        var p Point = Point{x: 5, y: 10};
-        func tmp() {
-            for i := 0; i < p.x; i += 1 {
-            p.y := p.y + 1;
-            const a = [1]int{{1, 0x1}, ID{}, 1.2, "s", true, false, nil} + nil                    
+        func partition(arr [100]int, low int, high int) int {
+            pivot := arr[high];
+            i := low - 1;
+            for j := low; j < high; j += 1 {
+                if (arr[j] < pivot) {
+                    i += 1;
+                    swap(arr, i, j);
+                }
+            }
+            swap(arr, i + 1, high);
+            return i + 1;
         }
-        
-        }
-        
         

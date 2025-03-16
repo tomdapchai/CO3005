@@ -1,6 +1,5 @@
-/* This is a comment */
 
-        func main() {
-            a := 1
+        func main(){
+            a[0x123][0b0110][0o123] := 1;
         }
         

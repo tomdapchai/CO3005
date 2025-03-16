@@ -1,18 +1,7 @@
 
-            type Matrix3D struct {
-                data [10][10][10]float;
-                rows int;
-                cols int;
-                depth int;
-            }
-
-            func (m Matrix3D) initialize(value float) {
-                for i := 0; i < m.rows; i += 1 {
-                    for j := 0; j < m.cols; j += 1 {
-                        for k := 0; k < m.depth; k += 1 {
-                            m.data[i][j][k] := value;
-                        }
-                    }
-                }
-            }
+        var fl float;
+        func main(){
+            fl := 5.5;
+            putFloat(fl);
+        }
         

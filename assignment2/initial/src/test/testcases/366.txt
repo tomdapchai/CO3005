@@ -1,15 +1,11 @@
 
-            type Tree struct {
-                value int;
-                left Tree;
-                right Tree;
+        func complexFunc(a int, b float, c string, d boolean, e [5]int, f [3][3]float, g Person) {
+            for i := 0; i < 10; i += 1 {
+                putInt(i);
             }
-
-            func (t Tree) insert(val int) {
-                if (val < t.value) {
-                    t.left.insert(val);
-                } else {
-                    t.right.insert(val);
-                }
+            for idx, value := range e {
+                putInt(idx);
+                putInt(value);
             }
+        }
         

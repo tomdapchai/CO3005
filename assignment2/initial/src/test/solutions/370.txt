@@ -1,1 +1,1 @@
-Program([StructType(HashTable,[(size,IntType),(table,ArrayType(IntType,[IntLiteral(1000)]))],[]),MethodDecl(h,Id(HashTable),FuncDecl(hash,[ParDecl(key,IntType)],IntType,Block([Return(BinaryOp(Id(key),%,FieldAccess(Id(h),size)))])))])
+Program([FuncDecl(main,[],VoidType,Block([Assign(Id(str),BinaryOp(StringLiteral("Hello"),+,StringLiteral(" World"))),FuncCall(putString,[Id(str)])]))])

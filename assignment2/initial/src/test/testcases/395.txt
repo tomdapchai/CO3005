@@ -1,31 +1,6 @@
 
-            type RedBlackNode struct {
-                key int;
-                color boolean;
-                left RedBlackNode;
-                right RedBlackNode;
-                parent RedBlackNode;
-            }
-
-            func (tree RedBlackNode) rotateLeft(node RedBlackNode) {
-                rightChild := node.right;
-                node.right := rightChild.left;
-                
-                if (rightChild.left != nil) {
-                    rightChild.left.parent := node;
-                }
-                
-                rightChild.parent := node.parent;
-                
-                if (node.parent == nil) {
-                    tree := rightChild;
-                } else if (node == node.parent.left) {
-                    node.parent.left := rightChild;
-                } else {
-                    node.parent.right := rightChild;
-                }
-                
-                rightChild.left := node;
-                node.parent := rightChild;
-            }
+        const a = 5;
+        const z = a + 5;
+        const y = z + 5;
+        const x = y + 5;
         
