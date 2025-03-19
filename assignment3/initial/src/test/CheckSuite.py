@@ -17,4 +17,54 @@ class CheckSuite(unittest.TestCase):
         input = Program([VarDecl("a",IntType(),Id("b"))])
         expect = "Undeclared Identifier: b\n"
         self.assertTrue(TestChecker.test(input,expect,402))
+
+    def test_function(self):
+        input = """
+        func foo(a int, b int, a, c int) int {return 1;}
+        
+        """
+        expect = "Redeclared Parameter: a\n"
+        self.assertTrue(TestChecker.test(input,expect,403))
+
+    def test(self):
+        input = """
+        type Person struct {
+            name string
+            age int
+            year int
+            birth int
+        }
+
+        func (c Person) Add(x int) int {
+            c.value += x;
+            return c.value;
+        }
+
+        type People struct {
+            name string
+            age int
+            year int
+            birth int
+        }
+
+        func (c People) Add(x int) int {
+            c.value += x;
+            return c.value;
+        }
+
+        type Peo struct {
+            name string
+            age int
+            year int
+            birth int
+        }
+
+        func (c Person) Add(x int) int {
+            c.value += x;
+            return c.value;
+        }
+
+        """
+        expect = "Redeclared Field: age\n"
+        self.assertTrue(TestChecker.test(input,expect,404))
   

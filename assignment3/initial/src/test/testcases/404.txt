@@ -1,0 +1,38 @@
+
+        type Person struct {
+            name string
+            age int
+            year int
+            birth int
+        }
+
+        func (c Person) Add(x int) int {
+            c.value += x;
+            return c.value;
+        }
+
+        type People struct {
+            name string
+            age int
+            year int
+            birth int
+        }
+
+        func (c People) Add(x int) int {
+            c.value += x;
+            return c.value;
+        }
+
+        type Peo struct {
+            name string
+            age int
+            year int
+            birth int
+        }
+
+        func (c Person) Add(x int) int {
+            c.value += x;
+            return c.value;
+        }
+
+        

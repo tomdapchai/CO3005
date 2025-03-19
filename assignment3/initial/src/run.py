@@ -5,7 +5,7 @@ import unittest
 from antlr4 import *
 
 #Make sure that ANTLR_JAR is set to antlr-4.9.2-complete.jar
-ANTLR_JAR = os.environ.get('ANTLR_JAR')
+ANTLR_JAR = './antlr-4.9.2-complete.jar'
 TARGET = '../target/main/minigo/parser' if os.name == 'posix' else os.path.normpath('../target/')
 locpath = ['./main/minigo/parser/','./main/minigo/astgen/','./main/minigo/utils/','./main/minigo/checker/']
 for p in locpath:
