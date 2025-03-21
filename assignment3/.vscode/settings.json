@@ -1,3 +1,6 @@
 {
-    "python.analysis.extraPaths": ["./initial/src/main/minigo/utils"]
+    "python.analysis.extraPaths": [
+        "./initial/src/main/minigo/utils",
+        "./initial/src/test"
+    ]
 }

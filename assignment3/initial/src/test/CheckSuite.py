@@ -28,32 +28,21 @@ class CheckSuite(unittest.TestCase):
 
     def test(self):
         input = """
-        type Person struct {
-            name string
-            age int
-            year int
-            birth int
+        func foo(a int, b int, c int) int {
+            if (a == b) {
+                var e int;
+                e := 1;
+            } else if (x == c) {
+                var x float;
+                x := 1;
+            } else {
+                var x float;
+                if (x == 1) {
+                   var a = 1.2;
+                }
+            }
         }
-
-        func (c Person) Add(x int) int {
-            var a = 1.2;
-            var a int;
-            var b float;
-        }
-
-        type People struct {
-            name string
-            age int
-            year int
-            birth int
-        }
-
-        func (c Person) Add(x int) int {
-            var a = 1.2;
-            var b float;
-        }
-
         """
-        expect = "Redeclared Variable: a\n"
+        expect = "Redeclared Variable: e\n"
         self.assertTrue(TestChecker.test(input,expect,404))
   
