@@ -27,19 +27,19 @@ class Symbol:
 class StaticChecker(BaseVisitor,Utils):
 
     builtin_env = [
-        # Symbol("getInt",MType([],IntType())),
-        # Symbol("putInt",MType([IntType()],VoidType())),
-        # Symbol("putIntLn",MType([IntType()],VoidType())),
-        # Symbol("getFloat",MType([],FloatType())),
-        # Symbol("putFloat",MType([FloatType()],VoidType())),
-        # Symbol("putFloatLn",MType([FloatType()],VoidType())),
-        # Symbol("getBool",MType([],BoolType())),
-        # Symbol("putBool",MType([BoolType()],VoidType())),
-        # Symbol("putBoolLn",MType([BoolType()],VoidType())),
-        # Symbol("getString",MType([],StringType())),
-        # Symbol("putString",MType([StringType()],VoidType())),
-        # Symbol("putStringLn",MType([StringType()],VoidType())),
-        # Symbol("putLn",MType([],VoidType()))
+        Symbol("getInt",MType([],IntType())),
+        Symbol("putInt",MType([IntType()],VoidType())),
+        Symbol("putIntLn",MType([IntType()],VoidType())),
+        Symbol("getFloat",MType([],FloatType())),
+        Symbol("putFloat",MType([FloatType()],VoidType())),
+        Symbol("putFloatLn",MType([FloatType()],VoidType())),
+        Symbol("getBool",MType([],BoolType())),
+        Symbol("putBool",MType([BoolType()],VoidType())),
+        Symbol("putBoolLn",MType([BoolType()],VoidType())),
+        Symbol("getString",MType([],StringType())),
+        Symbol("putString",MType([StringType()],VoidType())),
+        Symbol("putStringLn",MType([StringType()],VoidType())),
+        Symbol("putLn",MType([],VoidType()))
     ]    
     
     def __init__(self,ast):
@@ -48,7 +48,7 @@ class StaticChecker(BaseVisitor,Utils):
  
     
     def check(self):
-        return self.visit(self.ast,self.global_envi)
+        return self.visit(self.ast, self.global_envi)
     
     def inferSymbol(self, symbol: Symbol, env: List[List[Symbol]], error: StaticError) -> AST.Type:
         # this function will infer the type of a symbol
@@ -104,16 +104,18 @@ class StaticChecker(BaseVisitor,Utils):
             return all(type1.size[i] == type2.size[i] for i in range(len(type1.size)))
         return type(type1) is type(type2)
 
-    def visitProgram(self,ast: Program, c):
-        reduce(lambda acc, ele: [self.visit(ele, acc)] + acc , ast.decl,c)
-        return c
+    def visitProgram(self,ast: Program, c: List[Symbol]):
+        
+        return reduce(lambda acc, ele: self.visit(ele, acc), ast.decl, [c])
+        pass
 
     # DECLARATION
-    def visitVarDecl(self, ast: VarDecl, c):
-        res = self.lookup(ast.varName, c, lambda x: x.name)
+    def visitVarDecl(self, ast: VarDecl, c: List[List[Symbol]]):
+        res = self.lookup(ast.varName, c[0], lambda x: x.name)
         # lookup list of symbol in c, compare with varName
         if not res is None:
             raise Redeclared(Variable(), ast.varName) 
+        
         if ast.varInit:
             initType = self.visit(ast.varInit, c)
             if ast.varType is None:
@@ -121,47 +123,61 @@ class StaticChecker(BaseVisitor,Utils):
                 ast.varType = initType
             if not type(ast.varType) is type(initType):
                 raise TypeMismatch(ast)
-        return Symbol(ast.varName, ast.varType,None)
+        
+        c[0].append(Symbol(ast.varName, ast.varType, ast.varInit))
+
+        return c
     
-    def visitParamDecl(self, ast: ParamDecl, c):
-        res = self.lookup(ast.parName, c, lambda x: x.name) 
+    def visitParamDecl(self, ast: ParamDecl, c: List[List[Symbol]]):
+        res = self.lookup(ast.parName, c[0], lambda x: x.name) 
         if not res is None:
             raise Redeclared(Parameter(), ast.parName)
-        return Symbol(ast.parName, ast.parType,None)
+        
+        c[0].append(Symbol(ast.parName, ast.parType, None))
+
+        return c
     
-    def visitConstDecl(self, ast: ConstDecl, c):
-        res = self.lookup(ast.conName, c, lambda x: x.name)
+    def visitConstDecl(self, ast: ConstDecl, c: List[List[Symbol]]):
+        res = self.lookup(ast.conName, c[0], lambda x: x.name)
         if not res is None:
             raise Redeclared(Constant(), ast.conName)
         
 
         if not type(ast.conType) is type(ast.iniExpr):
             raise TypeMismatch(ast)
-        return Symbol(ast.conName, ast.conType,ast.constInit)
+        
+        c[0].append(Symbol(ast.conName, ast.conType, ast.iniExpr))
 
-    def visitFuncDecl(self, ast: FuncDecl, c):
-        res = self.lookup(ast.name, c, lambda x: x.name)
+        return c
+
+    def visitFuncDecl(self, ast: FuncDecl, c: List[List[Symbol]]):
+        res = self.lookup(ast.name, c[-1], lambda x: x.name)
         if not res is None:
             raise Redeclared(Function(), ast.name)
         # check param
-        param = reduce(lambda acc, ele: [self.visit(ele, acc)] + acc , ast.params,[])
+        env = [[]] + c
 
-        for i in param:
-            print(i.name)
+        # Param
+        env = reduce(lambda acc, ele: self.visit(ele, acc), ast.params, env)
 
-        # check block body return type and function return type
-        returnType = self.visit(ast.body, c)
+        # Add function to the list of symbol, global
+        env[-1].append(Symbol(name=ast.name, mtype=MType(partype=env, rettype=ast.retType)))
+        
+        # check body
+
+        env = self.visit(ast.body, env)
+    
 
         # will do later
         # if not self.isSameType(returnType, ast.retType):
         #     raise TypeMismatch(ast)
 
 
-        return Symbol(name=ast.name, mtype=MType(partype=param, rettype=ast.retType))
+        return env
     
-    def visitMethodDecl(self, ast: MethodDecl, c):
+    def visitMethodDecl(self, ast: MethodDecl, c: List[List[Symbol]]):
         # only take list of method in appropriate struct
-        env = filter(lambda x: x.value == ast.recType.name, c)
+        env = list(filter(lambda x: x.value == ast.recType.name, c[-1]))
 
         res = self.lookup(ast.fun.name, env, lambda x: x.name)
 
@@ -169,40 +185,47 @@ class StaticChecker(BaseVisitor,Utils):
             raise Redeclared(Method(), ast.fun.name)
 
         # check fun
-        fun : FuncDecl = self.visit(ast.fun, env)
+        env = self.visit(ast.fun, [env])
 
-        return Symbol(name=ast.fun.name, mtype=MType(partype=fun.mtype.partype, rettype=fun.mtype.rettype), value=ast.recType.name)
+        
+        fun = env[-1][-1]
 
-    def visitPrototype(self, ast: Prototype, c):
+        c[-1].append(Symbol(name=ast.fun.name, mtype=MType(partype=fun.mtype.partype, rettype=fun.mtype.rettype), value=ast.recType.name))
+
+        return c
+
+    def visitPrototype(self, ast: Prototype, c: List[List[Symbol]]):
         # c here is a list of symbol of prototypes of an interface
-        res = self.lookup(ast.name, c, lambda x: x.name)
+        res = self.lookup(ast.name, c[-1], lambda x: x.name)
         if not res is None:
             raise Redeclared(Prototype(), ast.name)
         
-        param = reduce(lambda acc, ele: [self.visit(ele, acc)] + acc , ast.params, [])
+        param = reduce(lambda acc, ele: self.visit(ele, acc) , ast.params, c)
+
+        c[-1].append(Symbol(name=ast.name, mtype=MType(partype=param, rettype=ast.retType)))
         
-        return Symbol(name=ast.name, mtype=MType(partype=param, rettype=ast.retType))
+        return c
 
     
     # TYPE
     
 
-    def visitIntType(self, ast, c):
+    def visitIntType(self, ast, c: List[List[Symbol]]):
         return ast
 
-    def visitFloatType(self, ast, c):
+    def visitFloatType(self, ast, c: List[List[Symbol]]):
         return ast
 
-    def visitBoolType(self, ast, c):
+    def visitBoolType(self, ast, c: List[List[Symbol]]):
         return ast
 
-    def visitStringType(self, ast, c):
+    def visitStringType(self, ast, c: List[List[Symbol]]):
         return ast
 
-    def visitVoidType(self, ast, c):
+    def visitVoidType(self, ast, c: List[List[Symbol]]):
         return ast
 
-    def visitArrayType(self, ast, c):
+    def visitArrayType(self, ast, c: List[List[Symbol]]):
         # looking for redeclared array name
         res = self.lookup(ast.eleType, c, lambda x: x.name)
         if not res is None:
@@ -210,8 +233,8 @@ class StaticChecker(BaseVisitor,Utils):
 
         pass
 
-    def visitStructType(self, ast, c):
-        res = self.lookup(ast.name, c, lambda x: x.name)
+    def visitStructType(self, ast, c: List[List[Symbol]]):
+        res = self.lookup(ast.name, c[-1], lambda x: x.name)
         if not res is None:
             raise Redeclared(Type(), ast.name)
         
@@ -221,88 +244,89 @@ class StaticChecker(BaseVisitor,Utils):
             for j in range(i + 1, len(ast.elements)):
                 if ast.elements[i][0] == ast.elements[j][0]:
                     raise Redeclared(Field(), ast.elements[i][0])
-
-
         
 
         # check methods
-        method = reduce(lambda acc, ele: [self.visit(ele, acc)] + acc, filter(lambda x: x.value == ast.name, c), [])
+        #method = reduce(lambda acc, ele: [self.visit(ele, acc)] + acc, filter(lambda x: x.value == ast.name, c), c)
 
-        return Symbol(name=ast.name, mtype=ast.name, value=ast.elements)
+        c[-1].append(Symbol(name=ast.name, mtype=ast.name, value=ast.elements))
 
-    def visitInterfaceType(self, ast, c):
+
+        return c
+
+    def visitInterfaceType(self, ast, c: List[List[Symbol]]):
         pass
 
     # STATEMENT
 
-    def visitBlock(self, ast, c):
+    def visitBlock(self, ast, c: List[List[Symbol]]):
+        return reduce(lambda acc, ele: self.visit(ele, acc), ast.member, c)
+
+    def visitAssign(self, ast, c: List[List[Symbol]]):
         pass
 
-    def visitAssign(self, ast, c):
+    def visitIf(self, ast, c: List[List[Symbol]]):
         pass
 
-    def visitIf(self, ast, c):
+    def visitForBasic(self, ast, c: List[List[Symbol]]):
         pass
 
-    def visitForBasic(self, ast, c):
+    def visitForStep(self, ast, c: List[List[Symbol]]):
         pass
 
-    def visitForStep(self, ast, c):
+    def visitForEach(self, ast, c: List[List[Symbol]]):
         pass
 
-    def visitForEach(self, ast, c):
+    def visitBreak(self, ast, c: List[List[Symbol]]):
         pass
 
-    def visitBreak(self, ast, c):
+    def visitContinue(self, ast, c: List[List[Symbol]]):
         pass
 
-    def visitContinue(self, ast, c):
-        pass
-
-    def visitReturn(self, ast, c):
+    def visitReturn(self, ast, c: List[List[Symbol]]):
         pass
 
     # LHS
 
-    def visitId(self,ast,c):
-        res = self.lookup(ast.name, c, lambda x: x.name)
+    def visitId(self, ast, c: List[List[Symbol]]):
+        res = self.lookup(ast.name, reduce(lambda x, y: x + y, c, []), lambda x: x.name)
         if res is None:
             raise Undeclared(Identifier(), ast.name)
-        return res.mtype    
+        return ast
     
-    def visitArrayCell(self,ast,c):
+    def visitArrayCell(self, ast, c: List[List[Symbol]]):
         pass
 
-    def visitFieldAccess(self,ast,c):   
+    def visitFieldAccess(self, ast, c: List[List[Symbol]]):   
         pass
 
     # EXPRESSION
-    def visitBinaryOp(self,ast,c):
+    def visitBinaryOp(self,ast,c: List[List[Symbol]]):
         pass
 
-    def visitUnaryOp(self,ast,c):
+    def visitUnaryOp(self,ast,c: List[List[Symbol]]):
         pass
 
-    def visitFuncCall(self,ast,c):
+    def visitFuncCall(self,ast,c: List[List[Symbol]]):
         pass
 
-    def visitMethCall(self,ast,c):
+    def visitMethCall(self,ast,c: List[List[Symbol]]):
         pass
 
     # LITERALS    
-    def visitIntLiteral(self,ast, c):
+    def visitIntLiteral(self,ast, c: List[List[Symbol]]):
         return IntType()
     
-    def visitFloatLiteral(self,ast, c):
+    def visitFloatLiteral(self,ast, c: List[List[Symbol]]):
         return FloatType()
     
-    def visitStringLiteral(self,ast, c):
+    def visitStringLiteral(self,ast, c: List[List[Symbol]]):
         return StringType()
     
-    def visitBooleanLiteral(self,ast, c):
+    def visitBooleanLiteral(self,ast, c: List[List[Symbol]]):
         return BoolType()
     
-    def visitArrayLiteral(self,ast, c):
+    def visitArrayLiteral(self,ast, c: List[List[Symbol]]):
         pass
 
     def visitStructLiteral(self, ast, c):

@@ -36,8 +36,9 @@ class CheckSuite(unittest.TestCase):
         }
 
         func (c Person) Add(x int) int {
-            c.value += x;
-            return c.value;
+            var a = 1.2;
+            var a int;
+            var b float;
         }
 
         type People struct {
@@ -47,24 +48,12 @@ class CheckSuite(unittest.TestCase):
             birth int
         }
 
-        func (c People) Add(x int) int {
-            c.value += x;
-            return c.value;
-        }
-
-        type Peo struct {
-            name string
-            age int
-            year int
-            birth int
-        }
-
         func (c Person) Add(x int) int {
-            c.value += x;
-            return c.value;
+            var a = 1.2;
+            var b float;
         }
 
         """
-        expect = "Redeclared Field: age\n"
+        expect = "Redeclared Variable: a\n"
         self.assertTrue(TestChecker.test(input,expect,404))
   

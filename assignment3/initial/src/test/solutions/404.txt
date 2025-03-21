@@ -1,1 +1,1 @@
-Redeclared Method: Add
+Redeclared Variable: a
