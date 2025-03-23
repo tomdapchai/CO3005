@@ -1,5 +1,5 @@
 
         const x = 5;
         const y = 6;
-        const z = x+y;
+        var Tam = 1 && 2 && c + 3 / 2 - -1;
         

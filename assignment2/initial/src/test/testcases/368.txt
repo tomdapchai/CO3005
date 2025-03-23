@@ -1,7 +1,9 @@
 
-        var b int;
-        func main() {
-            b := [5]int{1,2,3,4,5};
-            putInt(b[0]);
-        }
+            type Queue interface {
+                enqueue(value int);
+                dequeue() int;
+                peek() int;
+                isEmpty() boolean;
+                isFull() boolean
+            }
         

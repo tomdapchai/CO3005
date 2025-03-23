@@ -1,1 +1,1 @@
-Program([FuncDecl(sumAndCompare,[ParDecl(x,IntType),ParDecl(y,IntType)],BoolType,Block([Return(BinaryOp(BinaryOp(Id(x),+,Id(y)),>,IntLiteral(100)))]))])
+Program([FuncDecl(Add,[ParDecl(x,IntType),ParDecl(y,IntType),ParDecl(b,FloatType)],VoidType,Block([If(BinaryOp(BinaryOp(BinaryOp(Id(b),>,IntLiteral(0)),&&,BinaryOp(Id(b),<,IntLiteral(10))),||,BinaryOp(Id(b),==,IntLiteral(15))),Block([Assign(Id(b),BinaryOp(Id(b),/,IntLiteral(2)))]))]))])

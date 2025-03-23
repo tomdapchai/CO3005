@@ -1,7 +1,9 @@
 
-        func main() {
-            x := 5;
-            y := 10;
-            z := x + y;
-        }
+            func mergeSort(arr [100]int, left int, right int) {
+                if (left < right) {
+                    mid := (left + right) / 2;
+                    mergeSort(arr, left, mid);
+                    mergeSort(arr, mid + 1, right);
+                }
+            }
         

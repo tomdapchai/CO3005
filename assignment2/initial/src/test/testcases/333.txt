@@ -1,5 +1,1 @@
-
-        func main(){
-            b.a[1][2][3][4][5] := Person{name: "John", age: 25};
-        }
-        
+var result = a.add(5, 7, b(), c.a(1,2,3), a[1].c(2));

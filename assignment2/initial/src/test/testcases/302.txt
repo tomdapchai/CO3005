@@ -1,1 +1,6 @@
-func main () {var b int;}; var x int ;
+func main () {
+        var a int;
+        }; 
+        var b int 
+        
+        

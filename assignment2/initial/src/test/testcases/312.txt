@@ -1,9 +1,6 @@
 
-        type Person interface {
-            getName() string;
-            getAge() int;
-            getGrade() float
-            printInfo()
-            setAge(age int) 
+        type Calculator interface {
+            Add(x, y int) int;
+            Reset();
         }
         

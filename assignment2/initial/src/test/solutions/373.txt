@@ -1,1 +1,1 @@
-Program([FuncDecl(main,[],VoidType,Block([Assign(Id(x),UnaryOp(!,BooleanLiteral(true)))]))])
+Program([StructType(BinaryTreeNode,[(data,IntType),(left,Id(BinaryTreeNode)),(right,Id(BinaryTreeNode)),(parent,Id(BinaryTreeNode))],[]),MethodDecl(node,Id(BinaryTreeNode),FuncDecl(findMin,[],Id(BinaryTreeNode),Block([Assign(Id(current),Id(node)),For(BinaryOp(FieldAccess(Id(current),left),!=,Nil),Block([Assign(Id(current),FieldAccess(Id(current),left))])),Return(Id(current))])))])

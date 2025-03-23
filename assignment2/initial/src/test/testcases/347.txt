@@ -1,5 +1,6 @@
-
-        func mathLogic() boolean{
-            return a + b * c - d / e > f && g || h;
+func Add() {if (y == 0) { 
+        y := 1 
+        } else { 
+            y *= 2 
         }
-        
+        };

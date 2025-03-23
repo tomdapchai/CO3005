@@ -44,6 +44,7 @@ class ASTGeneration(MiniGoVisitor):
 
     # Visit a parse tree produced by MiniGoParser#decl.
     def visitDecl(self, ctx:MiniGoParser.DeclContext):
+        print("decl visit")
         # Check for struct declaration
         if ctx.struct_decl():
             return self.visit(ctx.struct_decl())
@@ -61,6 +62,7 @@ class ASTGeneration(MiniGoVisitor):
             return self.visit(ctx.array_decl())
         # Check for variable declaration without initialization
         if ctx.var_decl_no_init():
+            print("var_decl_no_init visit")
             return self.visit(ctx.var_decl_no_init())
         # Check for function declaration
         if ctx.func_decl():
@@ -68,6 +70,8 @@ class ASTGeneration(MiniGoVisitor):
         # Check for method declaration
         if ctx.method_decl():
             return self.visit(ctx.method_decl())
+        if ctx.array_decl_with_init():
+            return self.visit(ctx.array_decl_with_init())
         # Fallback to visiting all children if none found (though unlikely)
         # return self.visitChildren(ctx)
 
@@ -941,6 +945,7 @@ class ASTGeneration(MiniGoVisitor):
 
     # Visit a parse tree produced by MiniGoParser#array_decl_with_init.
     def visitArray_decl_with_init(self, ctx:MiniGoParser.Array_decl_with_initContext):
+        print("array_decl_with_init")
         return VarDecl(varName=ctx.ID().getText(), varType=self.visit(ctx.arrayType()), varInit=self.visit(ctx.array_init()))
 
     # Visit a parse tree produced by MiniGoParser#array_decl.

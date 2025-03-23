@@ -1,1 +1,1 @@
-Program([VarDecl(b,IntType),FuncDecl(main,[],VoidType,Block([Assign(Id(b),ArrayLiteral([IntLiteral(5)],IntType,[IntLiteral(1),IntLiteral(2),IntLiteral(3),IntLiteral(4),IntLiteral(5)])),FuncCall(putInt,[ArrayCell(Id(b),[IntLiteral(0)])])]))])
+Program([InterfaceType(Queue,[Prototype(enqueue,[IntType],VoidType),Prototype(dequeue,[],IntType),Prototype(peek,[],IntType),Prototype(isEmpty,[],BoolType),Prototype(isFull,[],BoolType)])])

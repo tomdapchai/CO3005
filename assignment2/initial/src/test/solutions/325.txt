@@ -1,1 +1,1 @@
-Program([FuncDecl(main,[],VoidType,Block([Assign(Id(a),BinaryOp(IntLiteral(5),+,IntLiteral(5))),Assign(Id(b),BinaryOp(IntLiteral(5),-,IntLiteral(5))),Assign(Id(c),BinaryOp(IntLiteral(5),*,IntLiteral(5))),Assign(Id(d),BinaryOp(IntLiteral(5),/,IntLiteral(5))),Assign(Id(e),BinaryOp(IntLiteral(5),%,IntLiteral(5)))]))])
+Program([FuncDecl(Add,[],VoidType,Block([If(BinaryOp(FieldAccess(Id(person),age),>,IntLiteral(18)),Block([Assign(FieldAccess(Id(person),isAdult),BooleanLiteral(true))]))]))])

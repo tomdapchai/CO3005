@@ -1,11 +1,12 @@
 
-        /* comment*/
-        func main(){
-            // call method
-            a.foo();
-            b.bar();
-            c.hello();
-            d.something();
-            e.nillfunc();
-        }
+        /* Comment */
+            type Fraction struct {
+                numerator int;
+                denominator int;
+            }
+
+            func (f Fraction) simplify() Fraction {
+                gcd := calculateGCD(f.numerator, f.denominator);
+                return Fraction(f.numerator / gcd, f.denominator / gcd);
+            }
         

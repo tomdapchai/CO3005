@@ -1,5 +1,6 @@
-
-        func logic() boolean{
-            return x * y + z > a || b && c;
+func Add() {
+            if (x > 10) { 
+        x -= 5; 
+        }
         }
         

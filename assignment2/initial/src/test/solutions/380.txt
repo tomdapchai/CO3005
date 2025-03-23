@@ -1,1 +1,1 @@
-Program([FuncDecl(main,[],VoidType,Block([FuncCall(foo,[]),FuncCall(bar,[]),FuncCall(something,[]),FuncCall(hello,[])]))])
+Program([StructType(RGB,[(red,IntType),(green,IntType),(blue,IntType)],[]),MethodDecl(color,Id(RGB),FuncDecl(toGrayscale,[],IntType,Block([Return(BinaryOp(BinaryOp(BinaryOp(FieldAccess(Id(color),red),+,FieldAccess(Id(color),green)),+,FieldAccess(Id(color),blue)),/,IntLiteral(3)))])))])

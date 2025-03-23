@@ -1,1 +1,1 @@
-var x int ;
+var a float ;

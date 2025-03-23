@@ -1,1 +1,1 @@
-Program([InterfaceType(Person,[Prototype(getName,[],StringType),Prototype(getAge,[],IntType),Prototype(getGrade,[],FloatType),Prototype(printInfo,[],VoidType),Prototype(setAge,[IntType],VoidType)])])
+Program([InterfaceType(Calculator,[Prototype(Add,[IntType,IntType],IntType),Prototype(Reset,[],VoidType)])])

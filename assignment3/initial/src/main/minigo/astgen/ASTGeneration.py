@@ -68,6 +68,8 @@ class ASTGeneration(MiniGoVisitor):
         # Check for method declaration
         if ctx.method_decl():
             return self.visit(ctx.method_decl())
+        if ctx.array_decl_with_init():
+            return self.visit(ctx.array_decl_with_init())
         # Fallback to visiting all children if none found (though unlikely)
         # return self.visitChildren(ctx)
 

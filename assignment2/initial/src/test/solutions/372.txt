@@ -1,1 +1,1 @@
-Program([FuncDecl(main,[],VoidType,Block([VarDecl(flag,Id(bool),BooleanLiteral(false)),FuncCall(putBool,[Id(flag)])]))])
+Program([FuncDecl(isPrime,[ParDecl(n,IntType)],BoolType,Block([If(BinaryOp(Id(n),<=,IntLiteral(1)),Block([Return(BooleanLiteral(false))])),For(VarDecl(i,IntLiteral(2)),BinaryOp(BinaryOp(Id(i),*,Id(i)),<=,Id(n)),Assign(Id(i),BinaryOp(Id(i),+,IntLiteral(1))),Block([If(BinaryOp(BinaryOp(Id(n),%,Id(i)),==,IntLiteral(0)),Block([Return(BooleanLiteral(false))]))])),Return(BooleanLiteral(true))]))])

@@ -1,11 +1,9 @@
 
-        func main(){
-        for i:=0;i<10;i+=1{
-            for j:=0;j<10;j+=1{
-                for true{
-                    putInt(i+j);
-                }
+            type WeightedGraph interface {
+                addEdge(from int, to int, weight float);
+                removeEdge(from int, to int);
+                getWeight(from int, to int) float;
+                isAdjacent(from int, to int) boolean;
+                getNeighbors(vertex int) [100]int
             }
-        }
-        }
         

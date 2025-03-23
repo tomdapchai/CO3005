@@ -1,11 +1,27 @@
 
-        func smartFunc(){
-            if (true){
-                putString("Hello");
-            } else if (false){
-                putString("World");
-            } else {
-                putString("Goodbye");
+            type Heap struct {
+                data [100]int;
+                size int;
             }
-        }
+
+            func (h Heap) heapifyDown(index int) {
+                smallest := index;
+                left := 2 * index + 1;
+                right := 2 * index + 2;
+
+                if (left < h.size && h.data[left] < h.data[smallest]) {
+                    smallest := left;
+                }
+
+                if (right < h.size && h.data[right] < h.data[smallest]) {
+                    smallest := right;
+                }
+
+                if (smallest != index) {
+                    temp := h.data[index];
+                    h.data[index] := h.data[smallest];
+                    h.data[smallest] := temp;
+                    h.heapifyDown(smallest);
+                }
+            }
         

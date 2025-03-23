@@ -1,9 +1,9 @@
 
-        func main(){
-            for i:=0;i<10;i+=1{
-                for j:=0;j<10;j+=1{
-                    putInt(i+j);
-                }
+            type PriorityQueue interface {
+                insert(element int, priority int);
+                deleteMin() int;
+                decreaseKey(element int, newPriority int);
+                isEmpty() boolean;
+                size() int
             }
-        }
         

@@ -1,1 +1,1 @@
-Program([FuncDecl(main,[],VoidType,Block([Assign(Id(a),BinaryOp(Id(a),+,BinaryOp(IntLiteral(727432),+,IntLiteral(1324324)))),Assign(Id(a),BinaryOp(Id(a),-,IntLiteral(1234))),Assign(Id(a),BinaryOp(Id(a),*,IntLiteral(1234))),Assign(Id(a),BinaryOp(Id(a),/,IntLiteral(1234))),Assign(Id(a),BinaryOp(Id(a),%,IntLiteral(1234)))]))])
+Program([FuncDecl(Add,[],VoidType,Block([If(BinaryOp(Id(a),>,IntLiteral(5)),Block([If(BinaryOp(Id(a),<,IntLiteral(10)),Block([Assign(Id(a),BinaryOp(Id(a),*,IntLiteral(2)))]))]))]))])

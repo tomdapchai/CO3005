@@ -1,1 +1,1 @@
-Program([FuncDecl(main,[],VoidType,Block([MethodCall(Id(a),foo,[]),MethodCall(Id(b),bar,[]),MethodCall(Id(c),hello,[]),MethodCall(Id(d),something,[]),MethodCall(Id(e),nillfunc,[])]))])
+Program([StructType(Fraction,[(numerator,IntType),(denominator,IntType)],[]),MethodDecl(f,Id(Fraction),FuncDecl(simplify,[],Id(Fraction),Block([Assign(Id(gcd),FuncCall(calculateGCD,[FieldAccess(Id(f),numerator),FieldAccess(Id(f),denominator)])),Return(FuncCall(Fraction,[BinaryOp(FieldAccess(Id(f),numerator),/,Id(gcd)),BinaryOp(FieldAccess(Id(f),denominator),/,Id(gcd))]))])))])

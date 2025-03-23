@@ -1,5 +1,26 @@
 
-        func main(){
-            foo("Hello", 1.e432, 1.0e-2, 1.0e+2, 1.0e2);
-        }
+            type BTree struct {
+                keys [100]int;
+                children [101]BTree;
+                count int;
+                isLeaf boolean;
+            }
+
+            func (b BTree) splitChild(i int, child BTree) {
+                newNode := BTree{isLeaf: child.isLeaf};
+                newNode.count := b.count / 2;
+                
+                for j := 0; j < newNode.count; j += 1 {
+                    newNode.keys[j] := child.keys[j + b.count];
+                }
+                
+                if (!child.isLeaf) {
+                    for j := 0; j < newNode.count + 1; j += 1 {
+                        newNode.children[j] := child.children[j + b.count];
+                    }
+                }
+                
+                child.count := b.count / 2;
+                b.children[i + 1] := newNode;
+            }
         

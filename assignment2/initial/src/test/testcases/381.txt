@@ -1,7 +1,11 @@
 
-        var xyz[5] int;
-        func main(){
-            xyz[0] := 5;
-            putInt(xyz[0]);
-        }
+            func isPalindrome(str string) boolean {
+                length := len(str);
+                for i := 0; i < length / 2; i += 1 {
+                    if (str[i] != str[length - 1 - i]) {
+                        return false;
+                    }
+                }
+                return true;
+            }
         

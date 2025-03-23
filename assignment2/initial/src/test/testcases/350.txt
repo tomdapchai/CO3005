@@ -1,5 +1,8 @@
 
-        func complexFunc(a boolean, b int, c float) float{
-            return (b * c) / 1.0;
+        func Add() {
+        if (arr[0] > 0) { 
+        arr[0] := arr[0] * 2; 
+        } else {
+            arr[0] := 0;
         }
-        
+        }

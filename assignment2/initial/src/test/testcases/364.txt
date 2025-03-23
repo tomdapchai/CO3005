@@ -1,6 +1,10 @@
 
-        func foo() {
-            
-            return x+y;
-        }
+            type Complex struct {
+                real float;
+                imag float;
+            }
+
+            func (c Complex) magnitude() float {
+                return c.real * c.real + c.imag * c.imag;
+            }
         

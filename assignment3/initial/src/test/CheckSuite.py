@@ -91,24 +91,90 @@ class CheckSuite(unittest.TestCase):
         type Person struct {
             name string;
             age int;
+            job string;
+            isStudent boolean;
+            isTeacher boolean;
+            base float;
+        }
+
+        func (p Person) getAge() int {
+            var x int;
+            p := Person{age: 1, name: "string", job: "string", isStudent: true, isTeacher: false, base: 1.2};
+            return x
         }
 
         const x = -1;
         var y int = x;
+        var a Person = Person{age: 1, name: "string", job: "string", isStudent: true, isTeacher: false, base: 1.2};
 
-        func foo(a int, b float, c int) int {
-            a := x;
+        var b [10]int = [10]int{1,2,3,4,5,6,7,8,9,10};
 
-            if (c < b) {
 
-                return;
+        func forLoop(a int) {
+            var i int = 0;
+            for i < 10 {
+                i := i + 1;
             }
+
+            for k := 0; i < 10; k := k + 1 {
+                var x int;
+            }
+
+            var x float = 1;
+        }
         
+        
+        func fibonacci(n int) int {
+        var a Person = Person{age: 1, name: "string", job: "string", isStudent: true, isTeacher: false, base: 1.2};
+                if (n <= 1) {
+                    return n;
+                    
+                } else if (n == 2) {
+                    if (n == 2) {
+                        return 1;
+                        if (n == 2) {
+                            return 1;
+                            if (n == 2) {
+                                return x + 1;
+                            } else {
+                                if (n == 2) {
+                                    return 1;
+                                }
+                                return 1;
+                            }
+                        } else if (n == 2) {
+                            return 1;
+                        } else {
+                            if (n == 2) {
+                                return 1;
+                            }
+                            return 1;
+                        }
+                    }
+
+
+                } else {
+                    if (n == 2) {
+                        return 1;
+                        if (n == 2) {
+                            return 1;
+                        } else if (n == 2) {
+                            return 1;
+                        } else {
+                            if (n == 2) {
+                                return y * x;
+                            }
+                            return fibonacci(n - 1) + fibonacci(n - 2);
+                        }
+                    }
+                }
+
+
+
+                return fibonacci(n - 1) + fibonacci(n - 2);
         }
 
-        func foo1() {
-            foo(x, 1.2, 5, 6);
-        }
+        var n float = 2.5 + fibonacci(10);
 
 
 

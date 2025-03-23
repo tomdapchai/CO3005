@@ -1,1 +1,1 @@
-Program([FuncDecl(main,[],VoidType,Block([Assign(Id(x),IntLiteral(5)),Assign(Id(y),IntLiteral(10)),Assign(Id(z),BinaryOp(Id(x),+,Id(y)))]))])
+Program([FuncDecl(mergeSort,[ParDecl(arr,ArrayType(IntType,[IntLiteral(100)])),ParDecl(left,IntType),ParDecl(right,IntType)],VoidType,Block([If(BinaryOp(Id(left),<,Id(right)),Block([Assign(Id(mid),BinaryOp(BinaryOp(Id(left),+,Id(right)),/,IntLiteral(2))),FuncCall(mergeSort,[Id(arr),Id(left),Id(mid)]),FuncCall(mergeSort,[Id(arr),BinaryOp(Id(mid),+,IntLiteral(1)),Id(right)])]))]))])

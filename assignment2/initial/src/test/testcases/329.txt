@@ -1,11 +1,1 @@
-
-        func main() {
-            if (a>b){
-                if (b>c){
-                    if (c>d){
-                        putString("a>b, b>c, c>d");
-                    }
-                }
-            }
-        }
-        
+func Add() {for i := 0; i < 10; i += 1 { if (i == 5) { break; }; };};
