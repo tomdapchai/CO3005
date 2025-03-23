@@ -1,0 +1,35 @@
+
+        func foo(a int, b int, c int) int {
+            var x float;
+        }
+        
+        var x int;
+        const y = 1;
+        var z = 1.2;
+        
+
+        type Person struct {
+            name string;
+            age int;
+        }
+
+        type Car interface {
+            Add(a int, b int) int;
+            Sub(a int, b int) int;
+        }
+
+        type Door interface {
+            Add(a int, b int) int;
+            Sub(a int, b int) int;
+        }
+
+        func (p Person) getAge() int {
+            var x int;
+            
+        }
+
+        func Person(a int) int {
+            var x int;
+        }
+
+        

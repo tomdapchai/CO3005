@@ -25,6 +25,15 @@ class Symbol:
     def __str__(self):
         return "Symbol(" + str(self.name) + "," + str(self.mtype) + ("" if self.value is None else "," + str(self.value)) + ")"
 
+class SymbolType(Symbol): # for struct and interface
+    def __init__(self, name, mtype, field: List[Symbol] = None, method: List[Symbol] = [], value = None):
+        self.name = name
+        self.mtype = mtype
+        self.field = field # None if interface
+        self.method = method
+
+    def __str__(self):
+        return "SymbolType(" + str(self.name) + "," + str(self.mtype) + ")"
 
 
 class StaticChecker(BaseVisitor,Utils):
@@ -48,49 +57,214 @@ class StaticChecker(BaseVisitor,Utils):
     def __init__(self,ast):
         self.ast = ast
         self.global_envi = self.builtin_env.copy()
+        self.type : List[SymbolType] = []
  
     
     def check(self):
         return self.visit(self.ast, self.global_envi)
     
-    def inferSymbol(self, symbol: Symbol, env: List[List[Symbol]], error: StaticError) -> AST.Type:
-        # this function will infer the type of a symbol
-        for symbolList in env:
-            symbol = self.lookup(symbol.name, symbolList, lambda x: x.name)
-            if symbol:
-                symbol.mtype = self.inferType(symbol.value, env, error)
-                return symbol.mtype
-        pass
+    def inferSymbol(self, symbol: Symbol, c: List[List[Symbol]]):
+        """
+        Infer the type of a symbol.
+        """
+        # If symbol already has a type, return it
+        if symbol.mtype is not None:
+            return symbol.mtype
+        
+        # If symbol has an initialization value, infer type from it
+        if symbol.value is not None:
+            return self.inferType(symbol.value, c)
+        
+        # For function symbols with MType
+        if hasattr(symbol.mtype, 'rettype'):
+            return symbol.mtype.rettype
+        
+        # If no type can be inferred, return None
+        return None
 
-    def inferType(self, expr: Expr, env: List[List[Symbol]], error: StaticError) -> AST.Type:
+    def inferType(self, expr: Expr, c: List[List[Symbol]]) -> AST.Type:
         """
-        Infer type of an expression
+        Infer the type of an expression.
         """
-        if type(expr) is BinaryOp:
-            left = self.inferType(expr.left, env, error)
-            right = self.inferType(expr.right, env, error)
-            if not self.isSameType(left, right):
-                raise error(expr)
-            return left
-        if type(expr) is UnaryOp:
-            return self.inferType(expr.body, env, error)
-        if type(expr) is Id:
-            res = self.lookup(expr.name, env, lambda x: x.name)
-            if res is None:
-                raise error(expr)
-            return res.mtype
-        if type(expr) is FuncCall:
-            res = self.lookup(expr.method.name, env, lambda x: x.name)
-            if res is None:
-                raise error(expr)
-            if not type(res.mtype) is MType:
-                raise error(expr)
-            if len(res.mtype.partype) != len(expr.param):
-                raise error(expr)
-            for i in range(len(res.mtype.partype)):
-                if not self.isSameType(self.inferType(expr.param[i], env, error), res.mtype.partype[i]):
-                    raise error(expr)
-            return res.mtype.rettype
+        if isinstance(expr, Id):
+            # Look up variable in all scopes
+            sym = self.lookup(expr.name, sum(c, []), lambda x: x.name)
+            if sym is None:
+                raise Undeclared(Identifier(), expr.name)
+            return sym.mtype
+        
+        elif isinstance(expr, IntLiteral):
+            return IntType()
+        
+        elif isinstance(expr, FloatLiteral):
+            return FloatType()
+        
+        elif isinstance(expr, BooleanLiteral):
+            return BoolType()
+        
+        elif isinstance(expr, StringLiteral):
+            return StringType()
+        
+        elif isinstance(expr, NilLiteral):
+            return NilLiteral()
+        
+        elif isinstance(expr, ArrayLiteral):
+            return ArrayType(expr.dimens, expr.eleType)
+        
+        elif isinstance(expr, BinaryOp):
+            ltype = self.inferType(expr.left, c)
+            rtype = self.inferType(expr.right, c)
+            
+            # Arithmetic operators
+            if expr.op in ['+', '-', '*', '/', '%']:
+                if type(ltype) is IntType and type(rtype) is IntType:
+                    return IntType()
+                elif (type(ltype) in [IntType, FloatType] and 
+                    type(rtype) in [IntType, FloatType]):
+                    return FloatType()
+                else:
+                    raise TypeMismatch(expr)
+            
+            # Comparison operators - result is boolean
+            elif expr.op in ['==', '!=', '<', '<=', '>', '>=']:
+                # Allow comparison between same types or between numeric types
+                if type(ltype) is type(rtype) or (type(ltype) in [IntType, FloatType] and type(rtype) in [IntType, FloatType]):
+                    return BoolType()
+                else:
+                    raise TypeMismatch(expr)
+            
+            # Logical operators - operands and result are boolean
+            elif expr.op in ['&&', '||']:
+                if type(ltype) is not BoolType or type(rtype) is not BoolType:
+                    raise TypeMismatch(expr)
+                return BoolType()
+            
+            else:
+                raise TypeMismatch(expr)
+        
+        elif isinstance(expr, UnaryOp):
+            operandType = self.inferType(expr.body, c)
+            print("operandType: ", operandType)
+            
+            if expr.op == '!':
+                if type(operandType) is not BoolType:
+                    raise TypeMismatch(expr)
+                return BoolType()
+            
+            elif expr.op == '-':
+                if type(operandType) not in [IntType, FloatType]:
+                    raise TypeMismatch(expr)
+                return operandType
+            
+            else:
+                raise TypeMismatch(expr)
+        
+        # need further fix
+        elif isinstance(expr, ArrayCell):
+            arrType = self.inferType(expr.arr, c)
+            
+            if not isinstance(arrType, ArrayType):
+                raise TypeMismatch(expr)
+            
+            # Validate index expressions
+            for idx in expr.idx:
+                idxType = self.inferType(idx, c)
+                if type(idxType) is not IntType:
+                    raise TypeMismatch(expr)
+            
+            return arrType.eleType
+        
+
+        elif isinstance(expr, FieldAccess):
+            receiverType = self.inferType(expr.receiver, c)
+            
+            # Find the struct or interface definition
+            structSym = None
+            for scope in c:
+                for sym in scope:
+                    if isinstance(sym, SymbolType) and sym.name == receiverType.name:
+                        structSym = sym
+                        break
+                if structSym:
+                    break
+            
+            if not structSym or not structSym.field:
+                raise TypeMismatch(expr)
+            
+            # Find the field
+            fieldSym = None
+            for field in structSym.field:
+                if field.name == expr.field:
+                    fieldSym = field
+                    break
+            
+            if not fieldSym:
+                raise Undeclared(Field(), expr.field)
+            
+            return fieldSym.mtype
+        
+        # this is so good lol
+        elif isinstance(expr, FuncCall):
+            funcSym = self.lookup(expr.funName, sum(c, []), lambda x: x.name)
+            if not funcSym:
+                raise Undeclared(Function(), expr.funName)
+            
+            if not isinstance(funcSym.mtype, MType):
+                raise TypeMismatch(expr)
+            
+            # Check parameter types
+            if len(expr.args) != len(funcSym.mtype.partype):
+                raise TypeMismatch(expr)
+            
+            for i, arg in enumerate(expr.args):
+                argType = self.inferType(arg, c)
+                paramType = funcSym.mtype.partype[i].mtype
+                if not self.isSameType(argType, paramType):
+                    raise TypeMismatch(expr)
+            
+            return funcSym.mtype.rettype
+        
+        elif isinstance(expr, MethCall):
+            # Handle method calls similar to FuncCall but with receiver
+            # This is a simplified version - you'll need to adapt it based on your language spec
+            receiverType = self.inferType(expr.receiver, c)
+            
+            # Find the struct or interface definition
+            typeSym = None
+            for scope in c:
+                for sym in scope:
+                    if isinstance(sym, SymbolType) and sym.name == receiverType.name:
+                        typeSym = sym
+                        break
+                if typeSym:
+                    break
+            
+            if not typeSym or not typeSym.method:
+                raise TypeMismatch(expr)
+            
+            # Find the method
+            methodSym = None
+            for method in typeSym.method:
+                if method.name == expr.metName:
+                    methodSym = method
+                    break
+            
+            if not methodSym:
+                raise Undeclared(Method(), expr.metName)
+            
+            # Check parameter types
+            if len(expr.args) != len(methodSym.mtype.partype):
+                raise TypeMismatch(expr)
+            
+            for i, arg in enumerate(expr.args):
+                argType = self.inferType(arg, c)
+                paramType = methodSym.mtype.partype[i].mtype
+                if not self.isSameType(argType, paramType):
+                    raise TypeMismatch(expr)
+            
+            return methodSym.mtype.rettype
+        
+        raise TypeMismatch(expr)  # Default case if type can't be inferred
 
     
     
@@ -103,9 +277,9 @@ class StaticChecker(BaseVisitor,Utils):
                 return False
             if type(type1.eleType) is not type(type2.eleType):
                 return False
-            if len(type1.size) != len(type2.size):
+            if len(type1.dimens.size) != len(type2.dimens.size):
                 return False
-            return all(type1.size[i] == type2.size[i] for i in range(len(type1.size)))
+            return all(type1.dimens.size[i] == type2.dimens.size[i] for i in range(len(type1.size)))
         return type(type1) is type(type2)
 
     def visitProgram(self,ast: Program, c: List[Symbol]):
@@ -115,23 +289,34 @@ class StaticChecker(BaseVisitor,Utils):
 
     # DECLARATION
     def visitVarDecl(self, ast: VarDecl, c: List[List[Symbol]]):
-        res = self.lookup(ast.varName, c[0], lambda x: x.name)
+        print(ast)
+        res = self.lookup(
+            ast.varName,
+            # filter out SymbolType
+            list(filter(lambda x: not isinstance(x, SymbolType), c[0])),
+            lambda x: x.name)
         # lookup list of symbol in c, compare with varName
         if not res is None:
             raise Redeclared(Variable(), ast.varName) 
-        print("Var decl: ", ast)
-        printEnv(c)
         if ast.varInit:
-            initType = self.visit(ast.varInit, c)
+            initType = self.inferType(ast.varInit, c)
+            print("type: ", initType)
             if ast.varType is None:
                 # if varType is None, infer type from initType
                 ast.varType = initType
+                
             if not type(ast.varType) is type(initType):
                 raise TypeMismatch(ast)
         
-        c[0].append(Symbol(ast.varName, ast.varType, ast.varInit))
-
+        else:
+            try:
+                # for varType is user-defined (ID), visit it
+                # if Undeclared occurs, raise Undeclared(Type) because the Id visitor will raise Undeclared(Identifier)
+                self.visit(ast.varType, c)
+            except Undeclared:
+                raise Undeclared(Type(), ast.varType.name)
         
+        c[0].append(Symbol(ast.varName, ast.varType, ast.varInit))
 
         return c
     
@@ -150,25 +335,26 @@ class StaticChecker(BaseVisitor,Utils):
             raise Redeclared(Constant(), ast.conName)
         
         
-        c[0].append(Symbol(ast.conName, ast.conType, ast.iniExpr))
+        c[0].append(Symbol(name=ast.conName, mtype=self.inferType(ast.iniExpr, c), value=ast.iniExpr))
 
         return c
 
     def visitFuncDecl(self, ast: FuncDecl, c: List[List[Symbol]]):
-        res = self.lookup(ast.name, c[-1], lambda x: x.name)
+        res = self.lookup(
+            ast.name, 
+            list(filter(lambda x: not isinstance(x, SymbolType), c[-1])),
+            lambda x: x.name)
         if not res is None:
             raise Redeclared(Function(), ast.name)
-        
-        # create new scope for function
-        
+
+        # create new scope for function        
         env = [[]] + copy.deepcopy(c)
 
         # Param
         env = reduce(lambda acc, ele: self.visit(ele, acc), ast.params, env)
 
-        
+        func_symbol = Symbol(name=ast.name, mtype=MType(partype=copy.deepcopy(env[0]), rettype=ast.retType))
 
-        func_symbol = Symbol(name=ast.name, mtype=MType(partype=env[0], rettype=ast.retType))
         # Add function to the list of symbol, global
         env[-1].append(func_symbol)
         # check body
@@ -181,46 +367,54 @@ class StaticChecker(BaseVisitor,Utils):
         # if not self.isSameType(returnType, ast.retType):
         #     raise TypeMismatch(ast)
 
-
         return c
     
     def visitMethodDecl(self, ast: MethodDecl, c: List[List[Symbol]]):
-        # only take list of method in appropriate struct
-        env = list(filter(lambda x: x.value == ast.recType.name, c[-1]))
+        # Find the struct in c[-1]
+        struct : SymbolType = next((x for x in c[-1] if x.name == ast.recType.name), None)
+
+        # Check if struct was found
+        if struct is None:
+            raise Undeclared(Type(), ast.recType.name)
+
+        env = struct.method
 
         res = self.lookup(ast.fun.name, env, lambda x: x.name)
-
 
         if not res is None:
             raise Redeclared(Method(), ast.fun.name)
 
         # check method for the same struct
-        env = self.visit(ast.fun, [env])
+        ret_env = self.visit(ast.fun, copy.deepcopy(c))
 
+        fun = ret_env[-1][-1]
+
+
+        # add method to the list of method of the struct
+        env.append(Symbol(name=ast.fun.name, mtype=MType(partype=fun.mtype.partype, rettype=fun.mtype.rettype)))
         
-        fun = env[-1][-1]
 
-        c[-1].append(Symbol(name=ast.fun.name, mtype=MType(partype=fun.mtype.partype, rettype=fun.mtype.rettype), value=ast.recType.name))
+        printEnv(c)
 
         return c
 
     def visitPrototype(self, ast: Prototype, c: List[List[Symbol]]):
         # c here is a list of symbol of prototypes of an interface, with c[-1][-1] is the interface
-        
-        res = self.lookup(ast.name, list(filter(lambda x: x.value == c[-1][-1].name, c[-1])), lambda x: x.name)
 
-        printEnv(c)
-
+        # since prototype is declared in the interface, there will be always interface, and it is the latest item in c[-1]
+        interface : SymbolType = c[-1][-1]
         
+        prototypes = interface.method
+
+        res = self.lookup(ast.name, prototypes, lambda x: x.name)
+
         if not res is None:
             raise Redeclared(Prototype(), ast.name)
         
         param = reduce(lambda acc, ele: self.visit(ele, acc), ast.params, c)
-
         
         # add prototype in the 2nd last list of c[-1], so the last item of c[-1] (c[-1][-1]) is the interface
-        c[-1] = c[-1][:-1] + [Symbol(name=ast.name, mtype=MType(partype=param, rettype=ast.retType), value=c[-1][-1].name)] + [c[-1][-1]]
-
+        prototypes.append(Symbol(name=ast.name, mtype=MType(partype=param[0], rettype=ast.retType)))
         
         
         return c
@@ -244,13 +438,15 @@ class StaticChecker(BaseVisitor,Utils):
     def visitVoidType(self, ast, c: List[List[Symbol]]):
         return c
 
-    def visitArrayType(self, ast, c: List[List[Symbol]]):
-        # looking for redeclared array name
-        res = self.lookup(ast.eleType, c[0], lambda x: x.name)
-        if not res is None:
-            raise Redeclared(Variable(), ast.eleType)
+    def visitArrayType(self, ast: ArrayType, c: List[List[Symbol]]):
+        
+        
 
-        pass
+        # this is hard
+
+        
+
+        return c
 
     def visitStructType(self, ast, c: List[List[Symbol]]):
         res = self.lookup(ast.name, c[-1], lambda x: x.name)
@@ -259,18 +455,24 @@ class StaticChecker(BaseVisitor,Utils):
         
         # check elements: list[Tuple[str, Type]], where str is the name of the field, Type is the type of the field, no visit, just check if there is two duplicate name in the elements
 
-        for i in range (len(ast.elements) - 1):
-            for j in range(i + 1, len(ast.elements)):
-                if ast.elements[i][0] == ast.elements[j][0]:
-                    raise Redeclared(Field(), ast.elements[i][0])
+        # if valid add to field of struct
+
+        fields : List[Symbol] = []
+        seen_fields = set()
+        
+        for element in ast.elements:
+            field_name = element[0]
+            if field_name in seen_fields:
+                raise Redeclared(Field(), field_name)
+            
+            seen_fields.add(field_name)
+            fields.append(Symbol(name=field_name, mtype=element[1]))  
+        
         
 
         # check methods
         #method = reduce(lambda acc, ele: [self.visit(ele, acc)] + acc, filter(lambda x: x.value == ast.name, c), c)
-        
-
-
-        c[-1].append(Symbol(name=ast.name, mtype=ast.name, value=ast.elements))
+        c[-1].append(SymbolType(name=ast.name, mtype=type(ast), method=[], field=fields))
         
         
 
@@ -283,7 +485,7 @@ class StaticChecker(BaseVisitor,Utils):
         
         # check prototypes
         # c here is a list of symbol of prototypes of an interface
-        c[-1].append(Symbol(name=ast.name, mtype=type(ast)))
+        c[-1].append(SymbolType(name=ast.name, mtype=type(ast), field=None, method=[]))
 
         reduce(lambda acc, ele: self.visit(ele, acc), ast.methods, c)
 
@@ -294,11 +496,22 @@ class StaticChecker(BaseVisitor,Utils):
     def visitBlock(self, ast, c: List[List[Symbol]]):
         return reduce(lambda acc, ele: self.visit(ele, acc), ast.member, c)
 
-    def visitAssign(self, ast, c: List[List[Symbol]]):
+    def visitAssign(self, ast: Assign, c: List[List[Symbol]]):
+        # check LHS
+        lhsType = self.inferType(ast.lhs, c)
+        # check RHS
+        rhsType = self.inferType(ast.rhs, c)
+
+        if not self.isSameType(lhsType, rhsType):
+            raise TypeMismatch(ast)
+
+
         return c
 
     def visitIf(self, ast: If, c: List[List[Symbol]]):
-        print(ast)
+        # check condition
+        self.inferType(ast.expr, c)
+
         # then stmt is a block
         # create local scope for then stmt
         env = [[]] + copy.deepcopy(c)
@@ -317,6 +530,7 @@ class StaticChecker(BaseVisitor,Utils):
         return c
 
     def visitForBasic(self, ast: ForBasic, c: List[List[Symbol]]):
+        # check the condition
 
         env = [[]] + copy.deepcopy(c)
         self.visit(ast.loop, env)
@@ -324,18 +538,24 @@ class StaticChecker(BaseVisitor,Utils):
         return c
 
     def visitForStep(self, ast: ForStep, c: List[List[Symbol]]):
-
-
+        # checking init
         env = [[]] + copy.deepcopy(c)
 
+        # basically just add the init variable to the scope
         env = self.visit(ast.init, env)
+        
+        # checking condition
 
+        # checking update
+        self.visit(ast.upda, env)
+
+        # checking loop block
         self.visit(ast.loop, env)
 
         return c
 
     def visitForEach(self, ast: ForEach , c: List[List[Symbol]]):
-
+        # this might just check the loop block and the arr (if it is an arrayType and declared)
         env = [[]] + copy.deepcopy(c)
         self.visit(ast.loop, env)
         return c
@@ -352,7 +572,7 @@ class StaticChecker(BaseVisitor,Utils):
     # LHS
 
     def visitId(self, ast, c: List[List[Symbol]]):
-        res = self.lookup(ast.name, reduce(lambda x, y: x + y, c, []), lambda x: x.name)
+        res = self.lookup(ast.name, sum(c, []), lambda x: x.name)
         if res is None:
             raise Undeclared(Identifier(), ast.name)
         return c
@@ -360,47 +580,89 @@ class StaticChecker(BaseVisitor,Utils):
     def visitArrayCell(self, ast, c: List[List[Symbol]]):
         return c
 
-    def visitFieldAccess(self, ast, c: List[List[Symbol]]):   
+    def visitFieldAccess(self, ast: FieldAccess, c: List[List[Symbol]]):
+        """
+            get type of receiver (struct)
+            check if the field is in the list of field of the struct
+            if not raise Undeclared(Field())
+        """
+
         return c
 
     # EXPRESSION
-    def visitBinaryOp(self,ast,c: List[List[Symbol]]):
+    def visitBinaryOp(self, ast: BinaryOp, c: List[List[Symbol]]):
+        self.visit(ast.left, c)
+        self.visit(ast.right, c)
+
         return c
 
-    def visitUnaryOp(self,ast,c: List[List[Symbol]]):
+    def visitUnaryOp(self, ast: UnaryOp, c: List[List[Symbol]]):
+        self.visit(ast.body, c)
         return c
 
-    def visitFuncCall(self,ast,c: List[List[Symbol]]):
+    def visitFuncCall(self, ast: FuncCall,c: List[List[Symbol]]):
+        self.inferType(ast, c)
         return c
 
-    def visitMethCall(self,ast,c: List[List[Symbol]]):
+    def visitMethCall(self,ast : MethCall,c: List[List[Symbol]]):
+        # check if the caller exist
+        res = self.lookup(ast.receiver, sum(c, []), lambda x: x.name)
+        if res is None:
+            raise Undeclared(Identifier(), ast.receiver)
+        
+        # check the type of caller (struct or interface) and check if the method is in the list of method of the caller
+        # do later
+
         return c
 
     # LITERALS    
     def visitIntLiteral(self,ast, c: List[List[Symbol]]):
-        return IntType()
+        return c
     
     def visitFloatLiteral(self,ast, c: List[List[Symbol]]):
-        return FloatType()
+        return c
     
     def visitStringLiteral(self,ast, c: List[List[Symbol]]):
-        return StringType()
+        return c
     
     def visitBooleanLiteral(self,ast, c: List[List[Symbol]]):
-        return BoolType()
+        return c
     
     def visitArrayLiteral(self,ast, c: List[List[Symbol]]):
-        pass
+        return c
 
     def visitStructLiteral(self, ast, c):
-        pass
+        return c
 
     def visitNilLiteral(self, ast, c):
-        pass
+        return c
     
     
 def printEnv(c: List[List[Symbol]]):
-        tmp = c.copy()
-        tmp = list(map(lambda x: list(map(lambda y: y.name, x)), tmp))
-
-        print(tmp)
+    result = []
+    for scope in c:
+        scope_info = []
+        for symbol in scope:
+            if isinstance(symbol, SymbolType):
+                symbol_info = {
+                    "name": symbol.name,
+                    "fields": [field[0] if isinstance(field, tuple) else (field.name, field.mtype) for field in symbol.field] if symbol.field else None,
+                    "methods": [method.name for method in symbol.method] if symbol.method else None
+                }
+                scope_info.append(symbol_info)
+            else:
+                if isinstance(symbol.mtype, MType):
+                    symbol_info = {
+                        "name": symbol.name,
+                        "mtype": symbol.mtype.rettype,
+                        "partype": [(partype.name, partype.mtype) if hasattr(partype, 'name') else partype for partype in symbol.mtype.partype]
+                    }
+                else:
+                    symbol_info = {
+                        "name": symbol.name,
+                        "mtype": symbol.mtype
+                    }
+                scope_info.append(symbol_info)
+        result.append(scope_info)
+    
+    print(result)

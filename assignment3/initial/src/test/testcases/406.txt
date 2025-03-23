@@ -1,0 +1,27 @@
+
+
+        type Person struct {
+            name string;
+            age int;
+        }
+
+        const x = -1;
+        var y int = x;
+
+        func foo(a int, b float, c int) int {
+            a := x;
+
+            if (c < b) {
+
+                return;
+            }
+        
+        }
+
+        func foo1() {
+            foo(x, 1.2, 5, 6);
+        }
+
+
+
+        
