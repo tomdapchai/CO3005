@@ -63,6 +63,41 @@ class StaticChecker(BaseVisitor,Utils):
     def check(self):
         return self.visit(self.ast, self.global_envi)
     
+    def checkArrayStructure(self, value, dimensions, level, eleType, c):
+        """
+        Recursively check that the array structure matches the dimensions.
+        
+        Args:
+            value: Current array value or subarray
+            dimensions: List of dimension expressions
+            level: Current dimension level (0-indexed)
+            eleType: Expected element type
+            c: Symbol context
+        """
+        # If we've reached the end of dimensions, this should be a leaf element
+        if level >= len(dimensions):
+            # This should be a leaf element, check its type against eleType
+            elemType = self.inferType(value, c)
+            if not self.isSameType(elemType, eleType):
+                raise TypeMismatch(value)
+            return
+        
+        # At this level, value should be a list
+        if not isinstance(value, list):
+            raise TypeMismatch(value)
+        
+        # Check if dimension size is specified as a constant
+        expected_size = None
+        if isinstance(dimensions[level], IntLiteral):
+            expected_size = int(dimensions[level].value)
+            # Validate the array size at this level
+            if len(value) > expected_size:
+                raise TypeMismatch(value)
+        
+        # Recursively check each element at this level
+        for elem in value:
+            self.checkArrayStructure(elem, dimensions, level + 1, eleType, c)
+
     def inferSymbol(self, symbol: Symbol, c: List[List[Symbol]]):
         """
         Infer the type of a symbol.
@@ -132,16 +167,12 @@ class StaticChecker(BaseVisitor,Utils):
 
 
         elif isinstance(expr, NilLiteral):
-            return NilLiteral()
+            return TypeMismatch(expr)
         
         elif isinstance(expr, ArrayLiteral):
             # Infer type of elements, they must be the same and the same of eleType
             # there would be multi dimension array so need to check if all of them are the same
-            for elem in expr.value:
-                elemType = self.inferType(elem, c)
-                if not self.isSameType(elemType, expr.eleType):
-                    raise TypeMismatch(expr)
-
+            self.checkArrayStructure(expr.value, expr.dimens, 0, expr.eleType, c)
             return ArrayType(expr.dimens, expr.eleType)
         
         elif isinstance(expr, BinaryOp):
@@ -376,13 +407,12 @@ class StaticChecker(BaseVisitor,Utils):
         """
         Check if two Types are exactly the same.
         """
-        if type(type1) is ArrayType or type(type2) is ArrayType:
-            if type(type1) is not ArrayType or type(type2) is not ArrayType:
-                return False
+        if type(type1) is ArrayType and type(type2) is ArrayType:
             if type(type1.eleType) is not type(type2.eleType):
                 return False
             if len(type1.dimens) != len(type2.dimens):
                 return False
+            # check dimension
             return all(type1.dimens[i] == type2.dimens[i] for i in range(len(type1.dimens)))
         return type(type1) is type(type2)
 

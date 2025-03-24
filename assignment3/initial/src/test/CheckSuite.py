@@ -107,13 +107,13 @@ class CheckSuite(unittest.TestCase):
         var y int = x;
         var a Person = Person{age: 1, name: "string", job: "string", isStudent: true, isTeacher: false, base: 1.2};
 
-        var b [10]int = [10]int{1,2,3,4,5,6,7,8,9,10};
+        var b [10][3][3]int = [10][3][3]int{{{1, 2, 3}, {1, 2, 3}, {1,2, 3}}, {{1,2,3}, {1,2,3}, {2, 3, 4}}, {1}};
 
 
         func forLoop(a int) {
             var i int = 0;
             for i < 10 {
-                i := i + 1;
+                i := i + i;
             }
 
             for k := 0; i < 10; k := k + 1 {
