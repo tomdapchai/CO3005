@@ -136,6 +136,7 @@ class StaticChecker(BaseVisitor,Utils):
         
         elif isinstance(expr, ArrayLiteral):
             # Infer type of elements, they must be the same and the same of eleType
+            # there would be multi dimension array so need to check if all of them are the same
             for elem in expr.value:
                 elemType = self.inferType(elem, c)
                 if not self.isSameType(elemType, expr.eleType):
@@ -688,13 +689,13 @@ class StaticChecker(BaseVisitor,Utils):
         env = [[]] + copy.deepcopy(c)
         arrayTyp = self.inferType(ast.arr, c)
         if not isinstance(arrayTyp, ArrayType):
-            raise TypeMismatch(ast)
+            raise TypeMismatch(ast.arr)
 
 
-        env[0].append(Symbol(name=ast.idx, mtype=IntType()))
-        env[0].append(Symbol(name=ast.value, mtype=arrayTyp.eleType))
+        env[0].append(Symbol(name=ast.idx.name, mtype=IntType()))
+        env[0].append(Symbol(name=ast.value.name, mtype=arrayTyp.eleType))
 
-
+        printEnv(env)
         
         self.visit(ast.loop, env)
         return c

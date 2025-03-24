@@ -120,6 +120,10 @@ class CheckSuite(unittest.TestCase):
                 var x int;
             }
 
+            for index, value := range b {
+                var x int;
+            }
+
             var x float = 1;
         }
         
