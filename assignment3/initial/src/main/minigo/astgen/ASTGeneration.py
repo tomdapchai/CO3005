@@ -1066,11 +1066,9 @@ class ASTGeneration(MiniGoVisitor):
 
     # Visit a parse tree produced by MiniGoParser#function_call.
     def visitFunction_call(self, ctx:MiniGoParser.Function_callContext):
-        if not ctx.built_in_function_call():
-            if ctx.param_call_list():
-                return FuncCall(funName=ctx.ID().getText(), args=self.visit(ctx.param_call_list()))
-            return FuncCall(funName=ctx.ID().getText(), args=[])
-        return self.visit(ctx.built_in_function_call())
+        if ctx.param_call_list():
+            return FuncCall(funName=ctx.ID().getText(), args=self.visit(ctx.param_call_list()))
+        return FuncCall(funName=ctx.ID().getText(), args=[])
 
 
     # Visit a parse tree produced by MiniGoParser#func_decl.
@@ -1089,69 +1087,69 @@ class ASTGeneration(MiniGoVisitor):
         return Block(self.visit(ctx.stmt_list()))
 
 
-    # Visit a parse tree produced by MiniGoParser#GetIntCall.
-    def visitGetIntCall(self, ctx:MiniGoParser.GetIntCallContext):
-        return FuncCall(funName=ctx.GET_INT().getText(), args=[])
+    # # Visit a parse tree produced by MiniGoParser#GetIntCall.
+    # def visitGetIntCall(self, ctx:MiniGoParser.GetIntCallContext):
+    #     return FuncCall(funName=ctx.GET_INT().getText(), args=[])
 
 
-    # Visit a parse tree produced by MiniGoParser#PutIntCall.
-    def visitPutIntCall(self, ctx:MiniGoParser.PutIntCallContext):
-        return FuncCall(funName=ctx.PUT_INT().getText(), args=[self.visit(ctx.expr())])
+    # # Visit a parse tree produced by MiniGoParser#PutIntCall.
+    # def visitPutIntCall(self, ctx:MiniGoParser.PutIntCallContext):
+    #     return FuncCall(funName=ctx.PUT_INT().getText(), args=[self.visit(ctx.expr())])
 
 
-    # Visit a parse tree produced by MiniGoParser#PutIntLnCall.
-    def visitPutIntLnCall(self, ctx:MiniGoParser.PutIntLnCallContext):
-        return FuncCall(funName=ctx.PUT_INT_LN().getText(), args=[self.visit(ctx.expr())])  
+    # # Visit a parse tree produced by MiniGoParser#PutIntLnCall.
+    # def visitPutIntLnCall(self, ctx:MiniGoParser.PutIntLnCallContext):
+    #     return FuncCall(funName=ctx.PUT_INT_LN().getText(), args=[self.visit(ctx.expr())])  
 
 
-    # Visit a parse tree produced by MiniGoParser#GetFloatCall.
-    def visitGetFloatCall(self, ctx:MiniGoParser.GetFloatCallContext):
-        return FuncCall(funName=ctx.GET_FLOAT().getText(), args=[])
+    # # Visit a parse tree produced by MiniGoParser#GetFloatCall.
+    # def visitGetFloatCall(self, ctx:MiniGoParser.GetFloatCallContext):
+    #     return FuncCall(funName=ctx.GET_FLOAT().getText(), args=[])
 
 
-    # Visit a parse tree produced by MiniGoParser#PutFloatCall.
-    def visitPutFloatCall(self, ctx:MiniGoParser.PutFloatCallContext):
-        return FuncCall(funName=ctx.PUT_FLOAT().getText(), args=[self.visit(ctx.expr())])
+    # # Visit a parse tree produced by MiniGoParser#PutFloatCall.
+    # def visitPutFloatCall(self, ctx:MiniGoParser.PutFloatCallContext):
+    #     return FuncCall(funName=ctx.PUT_FLOAT().getText(), args=[self.visit(ctx.expr())])
 
 
-    # Visit a parse tree produced by MiniGoParser#PutFloatLnCall.
-    def visitPutFloatLnCall(self, ctx:MiniGoParser.PutFloatLnCallContext):
-        return FuncCall(funName=ctx.PUT_FLOAT_LN().getText(), args=[self.visit(ctx.expr())])
+    # # Visit a parse tree produced by MiniGoParser#PutFloatLnCall.
+    # def visitPutFloatLnCall(self, ctx:MiniGoParser.PutFloatLnCallContext):
+    #     return FuncCall(funName=ctx.PUT_FLOAT_LN().getText(), args=[self.visit(ctx.expr())])
 
 
-    # Visit a parse tree produced by MiniGoParser#GetBoolCall.
-    def visitGetBoolCall(self, ctx:MiniGoParser.GetBoolCallContext):
-        return FuncCall(funName=ctx.GET_BOOL().getText(), args=[])
+    # # Visit a parse tree produced by MiniGoParser#GetBoolCall.
+    # def visitGetBoolCall(self, ctx:MiniGoParser.GetBoolCallContext):
+    #     return FuncCall(funName=ctx.GET_BOOL().getText(), args=[])
 
 
-    # Visit a parse tree produced by MiniGoParser#PutBoolCall.
-    def visitPutBoolCall(self, ctx:MiniGoParser.PutBoolCallContext):
-        return FuncCall(funName=ctx.PUT_BOOL().getText(), args=[self.visit(ctx.expr())])
+    # # Visit a parse tree produced by MiniGoParser#PutBoolCall.
+    # def visitPutBoolCall(self, ctx:MiniGoParser.PutBoolCallContext):
+    #     return FuncCall(funName=ctx.PUT_BOOL().getText(), args=[self.visit(ctx.expr())])
 
 
-    # Visit a parse tree produced by MiniGoParser#PutBoolLnCall.
-    def visitPutBoolLnCall(self, ctx:MiniGoParser.PutBoolLnCallContext):
-        return FuncCall(funName=ctx.PUT_BOOL_LN().getText(), args=[self.visit(ctx.expr())])
+    # # Visit a parse tree produced by MiniGoParser#PutBoolLnCall.
+    # def visitPutBoolLnCall(self, ctx:MiniGoParser.PutBoolLnCallContext):
+    #     return FuncCall(funName=ctx.PUT_BOOL_LN().getText(), args=[self.visit(ctx.expr())])
 
 
-    # Visit a parse tree produced by MiniGoParser#GetStringCall.
-    def visitGetStringCall(self, ctx:MiniGoParser.GetStringCallContext):
-        return FuncCall(funName=ctx.GET_STRING().getText(), args=[])
+    # # Visit a parse tree produced by MiniGoParser#GetStringCall.
+    # def visitGetStringCall(self, ctx:MiniGoParser.GetStringCallContext):
+    #     return FuncCall(funName=ctx.GET_STRING().getText(), args=[])
 
 
-    # Visit a parse tree produced by MiniGoParser#PutStringCall.
-    def visitPutStringCall(self, ctx:MiniGoParser.PutStringCallContext):
-        return FuncCall(funName=ctx.PUT_STRING().getText(), args=[self.visit(ctx.expr())])
+    # # Visit a parse tree produced by MiniGoParser#PutStringCall.
+    # def visitPutStringCall(self, ctx:MiniGoParser.PutStringCallContext):
+    #     return FuncCall(funName=ctx.PUT_STRING().getText(), args=[self.visit(ctx.expr())])
 
 
-    # Visit a parse tree produced by MiniGoParser#PutStringLnCall.
-    def visitPutStringLnCall(self, ctx:MiniGoParser.PutStringLnCallContext):
-        return FuncCall(funName=ctx.PUT_STRING_LN().getText(), args=[self.visit(ctx.expr())])
+    # # Visit a parse tree produced by MiniGoParser#PutStringLnCall.
+    # def visitPutStringLnCall(self, ctx:MiniGoParser.PutStringLnCallContext):
+    #     return FuncCall(funName=ctx.PUT_STRING_LN().getText(), args=[self.visit(ctx.expr())])
 
 
-    # Visit a parse tree produced by MiniGoParser#PutLnCall.
-    def visitPutLnCall(self, ctx:MiniGoParser.PutLnCallContext):
-        return FuncCall(funName=ctx.PUT_LN().getText(), args=[])
+    # # Visit a parse tree produced by MiniGoParser#PutLnCall.
+    # def visitPutLnCall(self, ctx:MiniGoParser.PutLnCallContext):
+    #     return FuncCall(funName=ctx.PUT_LN().getText(), args=[])
     
     
 # HELPER FUNCTIONS

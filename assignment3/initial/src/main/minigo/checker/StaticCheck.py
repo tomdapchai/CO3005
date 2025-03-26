@@ -39,19 +39,19 @@ class SymbolType(Symbol): # for struct and interface
 class StaticChecker(BaseVisitor,Utils):
 
     builtin_env = [
-        # Symbol("getInt",MType([],IntType())),
-        # Symbol("putInt",MType([IntType()],VoidType())),
-        # Symbol("putIntLn",MType([IntType()],VoidType())),
-        # Symbol("getFloat",MType([],FloatType())),
-        # Symbol("putFloat",MType([FloatType()],VoidType())),
-        # Symbol("putFloatLn",MType([FloatType()],VoidType())),
-        # Symbol("getBool",MType([],BoolType())),
-        # Symbol("putBool",MType([BoolType()],VoidType())),
-        # Symbol("putBoolLn",MType([BoolType()],VoidType())),
-        # Symbol("getString",MType([],StringType())),
-        # Symbol("putString",MType([StringType()],VoidType())),
-        # Symbol("putStringLn",MType([StringType()],VoidType())),
-        # Symbol("putLn",MType([],VoidType()))
+        Symbol("getInt",MType([],IntType())),
+        Symbol("putInt",MType([IntType()],VoidType())),
+        Symbol("putIntLn",MType([IntType()],VoidType())),
+        Symbol("getFloat",MType([],FloatType())),
+        Symbol("putFloat",MType([FloatType()],VoidType())),
+        Symbol("putFloatLn",MType([FloatType()],VoidType())),
+        Symbol("getBool",MType([],BoolType())),
+        Symbol("putBool",MType([BoolType()],VoidType())),
+        Symbol("putBoolLn",MType([BoolType()],VoidType())),
+        Symbol("getString",MType([],StringType())),
+        Symbol("putString",MType([StringType()],VoidType())),
+        Symbol("putStringLn",MType([StringType()],VoidType())),
+        Symbol("putLn",MType([],VoidType()))
     ]    
     
     def __init__(self,ast):
@@ -79,6 +79,11 @@ class StaticChecker(BaseVisitor,Utils):
         for decl in ast.decl:
             if isinstance(decl, FuncDecl):
                 # For functions, we just need a placeholder with signature
+                # check if function is redeclared in global_envi:
+                # res = self.lookup(decl.name, self.global_envi, lambda x: x.name)
+                # if not res is None:
+                #     raise Redeclared(Function(), decl.name)
+
                 func_symbol = Symbol(
                     name=decl.name, 
                     mtype=MType(
@@ -115,10 +120,11 @@ class StaticChecker(BaseVisitor,Utils):
                 
                 if struct_sym:
                     # Add method to the struct
+                    print("method: ", decl.fun.retType)
                     method_sym = Symbol(
                         name=decl.fun.name,
                         mtype=MType(
-                            partype=[ParamDecl(param.parName, param.parType) for param in decl.fun.params],
+                            partype=[param.parType for param in decl.fun.params],
                             rettype=decl.fun.retType
                         )
                     )
@@ -318,10 +324,11 @@ class StaticChecker(BaseVisitor,Utils):
         elif isinstance(expr, FieldAccess):
             # should be Id()
             receiverType = self.inferType(expr.receiver, c)
-            
+            print("receiverType: ", receiverType)
+
             # Find the struct or interface definition
             structSym = None
-            for scope in c:
+            for scope in [self.global_types]:
                 for sym in scope:
                     if isinstance(sym, SymbolType) and sym.name == receiverType.name:
                         structSym = sym
@@ -330,6 +337,7 @@ class StaticChecker(BaseVisitor,Utils):
                     break
             
             if not structSym or not structSym.field:
+                print("get here")
                 raise TypeMismatch(expr)
             
             # Find the field
@@ -377,11 +385,13 @@ class StaticChecker(BaseVisitor,Utils):
         elif isinstance(expr, MethCall):
             # Handle method calls similar to FuncCall but with receiver
             # This is a simplified version - you'll need to adapt it based on your language spec
+            print("expr: ", expr)
             receiverType = self.inferType(expr.receiver, c)
+            print("receiverType: ", receiverType)
             
-            # Find the struct or interface definition
+            # Find the struct or interface definition, only need to search in global_types
             typeSym = None
-            for scope in c:
+            for scope in [self.global_types]:
                 for sym in scope:
                     if isinstance(sym, SymbolType) and sym.name == receiverType.name:
                         typeSym = sym
@@ -391,8 +401,6 @@ class StaticChecker(BaseVisitor,Utils):
             
             if not typeSym or not typeSym.method:
                 raise TypeMismatch(expr)
-            
-
             
             # Find the method
             methodSym = None
@@ -423,12 +431,15 @@ class StaticChecker(BaseVisitor,Utils):
             # get return type of block (only function declaration call this one)
             # there would be multiple return type in a block, so we need to check if all of them are the same, if not raise TypeMismatch
             return_type = retType
-    
+            hasReturn = False
             # Helper function to process a block recursively
+
             def process_block(blk):
                 nonlocal return_type
+                nonlocal hasReturn
                 for member in blk.member:
                     if isinstance(member, Return):
+                        hasReturn = True
                         if member.expr is None:
                             current_type = VoidType()
                         else:
@@ -451,6 +462,7 @@ class StaticChecker(BaseVisitor,Utils):
                             process_block(member.loop)
                     elif isinstance(member, Block):
                         process_block(member)
+                
             
             # Helper for if statements (to handle nested if-else chains)
             def process_if(if_stmt):
@@ -470,6 +482,12 @@ class StaticChecker(BaseVisitor,Utils):
             if return_type is None:
                 return VoidType()
             
+            # if there is return type (other than void), and there is no return statement, raise TypeMismatch
+            if return_type is not None:
+                if not hasReturn:
+                    if not self.isSameType(return_type, VoidType()):
+                        raise TypeMismatch(expr)
+
             return return_type
 
 
@@ -488,6 +506,8 @@ class StaticChecker(BaseVisitor,Utils):
                 return False
             # check dimension
             return all(type1.dimens[i] == type2.dimens[i] for i in range(len(type1.dimens)))
+        if type(type1) is Id and type(type2) is Id:
+            return type1.name == type2.name
         return type(type1) is type(type2)
 
     def visitProgram(self,ast: Program, c: List[Symbol]):
@@ -500,28 +520,45 @@ class StaticChecker(BaseVisitor,Utils):
         res = self.lookup(
             ast.varName,
             # filter out SymbolType
-            list(filter(lambda x: not isinstance(x, SymbolType), c[0])),
+            list(filter(lambda x: not isinstance(x, SymbolType), c[0] + self.global_funcs)),
             lambda x: x.name)
         # lookup list of symbol in c, compare with varName
         if not res is None:
             raise Redeclared(Variable(), ast.varName) 
         if ast.varInit:
             initType = self.inferType(ast.varInit, c)
-            
+            if type(initType) is VoidType:
+                print("initType: ", initType)
+                raise TypeMismatch(ast)
             if ast.varType is None:
                 # if varType is None, infer type from initType
+
                 ast.varType = initType
             print("type: ", ast.varType, initType)
             # need special handling for StrucType and InterfaceType
 
-            
             if not self.isSameType(ast.varType, initType):
                 if isinstance(ast.varType, Id) and isinstance(initType, Id):
                     # check if the fields of the struct are the same
                     if ast.varType.name != initType.name:
                         # LHS can be interface, RHS can be struct IF the struct implements the interface methods
+                        # check if the struct implements the interface
+                        structSym = self.lookup(initType.name, self.global_types, lambda x: x.name)
+                        if not structSym or not isinstance(structSym, SymbolType):
+                            raise Undeclared(Type(), initType.name)
+                        interfaceSym = self.lookup(ast.varType.name, self.global_types, lambda x: x.name)
 
-                        raise TypeMismatch(ast)
+                        if not interfaceSym or not isinstance(interfaceSym, SymbolType):
+                            raise Undeclared(Type(), ast.varType.name)
+                        
+                        # check if the struct implements the interface
+                        for method in interfaceSym.method:
+                            
+                            if not any(m.name == method.name for m in structSym.method):
+                                raise TypeMismatch(ast)
+                        
+                        print("so lit")
+                        ast.varType = initType
                 elif type(initType) is IntType and type(ast.varType) is FloatType:
                     pass
                 else:
@@ -530,7 +567,7 @@ class StaticChecker(BaseVisitor,Utils):
             try:
                 # for varType is user-defined (ID), visit it
                 # if Undeclared occurs, raise Undeclared(Type) because the Id visitor will raise Undeclared(Identifier)
-                self.visit(ast.varType, c)
+                self.visit(ast.varType, c + [self.global_types])
             except Undeclared:
                 raise Undeclared(Type(), ast.varType.name)
         
@@ -539,7 +576,7 @@ class StaticChecker(BaseVisitor,Utils):
         return c
     
     def visitParamDecl(self, ast: ParamDecl, c: List[List[Symbol]]):
-        res = self.lookup(ast.parName, c[0], lambda x: x.name) 
+        res = self.lookup(ast.parName, c[0] + self.global_funcs, lambda x: x.name) 
         if not res is None:
             raise Redeclared(Parameter(), ast.parName)
         
@@ -548,7 +585,7 @@ class StaticChecker(BaseVisitor,Utils):
         return c
     
     def visitConstDecl(self, ast: ConstDecl, c: List[List[Symbol]]):
-        res = self.lookup(ast.conName, c[0], lambda x: x.name)
+        res = self.lookup(ast.conName, c[0] + self.global_types, lambda x: x.name)
         if not res is None:
             raise Redeclared(Constant(), ast.conName)
         
@@ -565,6 +602,7 @@ class StaticChecker(BaseVisitor,Utils):
             list(filter(lambda x: not isinstance(x, SymbolType), c[-1])),
             lambda x: x.name)
         if not res is None:
+            
             raise Redeclared(Function(), ast.name)
 
         # create new scope for function        
@@ -577,20 +615,28 @@ class StaticChecker(BaseVisitor,Utils):
 
         # Add function to the list of symbol, global
         env[-1].append(func_symbol)
-        # check body
+
+        # check body, create new scope (other than params), as the body can redeclare the params
+        env = [[]] + env
 
         self.visit(ast.body, env)
         
         # if not self.isSameType(returnType, ast.retType):
         #     raise TypeMismatch(ast)
-        self.inferType(ast.body, env, ast.retType)
+        try:
+            self.inferType(ast.body, env, ast.retType)
+        except TypeMismatch as e:
+            if type(e.err) is Block:
+                raise TypeMismatch(ast)
+            else:
+                raise e
         
 
         # just add the type of params instead of the whole symbol
-        
 
         c[-1].append(func_symbol)
 
+        
 
         return c
     
@@ -615,6 +661,7 @@ class StaticChecker(BaseVisitor,Utils):
         # check method for the same struct
         ret_env = self.visit(ast.fun, copy.deepcopy(c))
 
+        # take out the method body (the function)
         fun = ret_env[-1][-1]
 
         # take out the receiver from the list of parameter
@@ -714,24 +761,58 @@ class StaticChecker(BaseVisitor,Utils):
     # STATEMENT
 
     def visitBlock(self, ast, c: List[List[Symbol]]):
+        # First check all standalone function/method calls
+        for member in ast.member:
+            if isinstance(member, (FuncCall, MethCall)):
+                retType = self.inferType(member, c)
+                if not isinstance(retType, VoidType):
+                    raise TypeMismatch(member)
+
         return reduce(lambda acc, ele: self.visit(ele, acc), ast.member, c)
 
     def visitAssign(self, ast: Assign, c: List[List[Symbol]]):
         # check LHS
+        print("assign")
         lhsType = self.inferType(ast.lhs, c)
         # check RHS
         rhsType = self.inferType(ast.rhs, c)
 
         if not self.isSameType(lhsType, rhsType) and not (type(lhsType) is FloatType and type(rhsType) is IntType): 
             print("lhsType: ", lhsType)
-            print("rhsType: ", rhsType)   
-            raise TypeMismatch(ast)
+            print("rhsType: ", rhsType)
+            if type(lhsType) is Id and type(rhsType) is Id:
+                # check if the fields of the struct are the same
+                if lhsType.name != rhsType.name:
+                    # LHS can be interface, RHS can be struct IF the struct implements the interface methods
+                    # check if the struct implements the interface
+                    structSym = self.lookup(rhsType.name, self.global_types, lambda x: x.name)
+                    if not structSym or not isinstance(structSym, SymbolType):
+                        raise Undeclared(Type(), rhsType.name)
+                    interfaceSym = self.lookup(lhsType.name, self.global_types, lambda x: x.name)
+
+                    if not interfaceSym or not isinstance(interfaceSym, SymbolType):
+                        raise Undeclared(Type(), lhsType.name)
+                    
+                    # check if the struct implements the interface
+                    for method in interfaceSym.method:
+                        
+                        if not any(m.name == method.name for m in structSym.method):
+                            raise TypeMismatch(ast)
+
+                    # change the type of LHS to the type of RHS
+                    lhs_sym = self.lookup(ast.lhs.name, sum(c, []), lambda x: x.name)
+                    lhs_sym.mtype = rhsType
+                    pass
+            else:
+                raise TypeMismatch(ast)
 
         return c
 
     def visitIf(self, ast: If, c: List[List[Symbol]]):
         # check condition
-        self.inferType(ast.expr, c)
+        condType = self.inferType(ast.expr, c)
+        if type(condType) is not BoolType:
+            raise TypeMismatch(ast.expr)
 
         # if condType is not BoolType():
         #     raise TypeMismatch(ast.expr)
@@ -755,7 +836,9 @@ class StaticChecker(BaseVisitor,Utils):
 
     def visitForBasic(self, ast: ForBasic, c: List[List[Symbol]]):
         # check the condition
-        self.inferType(ast.cond, c)
+        condType = self.inferType(ast.cond, c)
+        if type(condType) is not BoolType:
+            raise TypeMismatch(ast.cond)
 
         env = [[]] + copy.deepcopy(c)
         self.visit(ast.loop, env)
@@ -773,10 +856,12 @@ class StaticChecker(BaseVisitor,Utils):
         elif isinstance(ast.init, Assign):
             env[0].append(Symbol(name=ast.init.lhs.name, mtype=self.inferType(ast.init.rhs, c), value=ast.init.rhs))
         
-        
-
         # checking condition
         self.visit(ast.cond, env)
+
+        condType = self.inferType(ast.cond, env)
+        if type(condType) is not BoolType:
+            raise TypeMismatch(ast.cond)
 
         # checking update
         self.visit(ast.upda, env)

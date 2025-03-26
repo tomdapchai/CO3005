@@ -51,19 +51,19 @@ TRUE: 'true';
 FALSE: 'false';
 
 // Built-in functions
-GET_INT: 'getInt';
-PUT_INT: 'putInt';
-PUT_INT_LN: 'putIntLn';
-GET_FLOAT: 'getFloat';
-PUT_FLOAT: 'putFloat';
-PUT_FLOAT_LN: 'putFloatLn';
-GET_BOOL: 'getBool';
-PUT_BOOL: 'putBool';
-PUT_BOOL_LN: 'putBoolLn';
-GET_STRING: 'getString';
-PUT_STRING: 'putString';
-PUT_STRING_LN: 'putStringLn';
-PUT_LN: 'putLn';
+// GET_INT: 'getInt';
+// PUT_INT: 'putInt';
+// PUT_INT_LN: 'putIntLn';
+// GET_FLOAT: 'getFloat';
+// PUT_FLOAT: 'putFloat';
+// PUT_FLOAT_LN: 'putFloatLn';
+// GET_BOOL: 'getBool';
+// PUT_BOOL: 'putBool';
+// PUT_BOOL_LN: 'putBoolLn';
+// GET_STRING: 'getString';
+// PUT_STRING: 'putString';
+// PUT_STRING_LN: 'putStringLn';
+// PUT_LN: 'putLn';
 
 // newline
 NEWLINE: '\r'?'\n' 
@@ -451,7 +451,7 @@ param_decl_tail: COMMA ID param_decl_tail | ;
 
 param_call_list: expr (COMMA param_call_list)?; // aka arr_init_list_body
 
-function_call: ID LPAREN param_call_list? RPAREN | built_in_function_call ;
+function_call: ID LPAREN param_call_list? RPAREN;
 func_decl: FUNC ID LPAREN param_decl? RPAREN types? block  ;
 method_decl: FUNC LPAREN ID compositeType RPAREN ID LPAREN param_decl? RPAREN types? block ;
 
@@ -460,17 +460,17 @@ block: LBRACE NEWLINE? stmt_list RBRACE ;
 /* loop_block: LBRACE NEWLINE? stmt_list RBRACE ;
 func_block: LBRACE NEWLINE? stmt_list RBRACE ; */
 
-built_in_function_call: GET_INT LPAREN RPAREN                      # GetIntCall
-                      | PUT_INT LPAREN expr RPAREN                 # PutIntCall
-                      | PUT_INT_LN LPAREN expr RPAREN              # PutIntLnCall
-                      | GET_FLOAT LPAREN RPAREN                    # GetFloatCall
-                      | PUT_FLOAT LPAREN expr RPAREN               # PutFloatCall
-                      | PUT_FLOAT_LN LPAREN expr RPAREN            # PutFloatLnCall
-                      | GET_BOOL LPAREN RPAREN                     # GetBoolCall
-                      | PUT_BOOL LPAREN expr RPAREN                # PutBoolCall
-                      | PUT_BOOL_LN LPAREN expr RPAREN             # PutBoolLnCall
-                      | GET_STRING LPAREN RPAREN                   # GetStringCall
-                      | PUT_STRING LPAREN expr RPAREN              # PutStringCall
-                      | PUT_STRING_LN LPAREN expr RPAREN           # PutStringLnCall
-                      | PUT_LN LPAREN RPAREN                       # PutLnCall ;
+// built_in_function_call: GET_INT LPAREN RPAREN                      # GetIntCall
+//                       | PUT_INT LPAREN expr RPAREN                 # PutIntCall
+//                       | PUT_INT_LN LPAREN expr RPAREN              # PutIntLnCall
+//                       | GET_FLOAT LPAREN RPAREN                    # GetFloatCall
+//                       | PUT_FLOAT LPAREN expr RPAREN               # PutFloatCall
+//                       | PUT_FLOAT_LN LPAREN expr RPAREN            # PutFloatLnCall
+//                       | GET_BOOL LPAREN RPAREN                     # GetBoolCall
+//                       | PUT_BOOL LPAREN expr RPAREN                # PutBoolCall
+//                       | PUT_BOOL_LN LPAREN expr RPAREN             # PutBoolLnCall
+//                       | GET_STRING LPAREN RPAREN                   # GetStringCall
+//                       | PUT_STRING LPAREN expr RPAREN              # PutStringCall
+//                       | PUT_STRING_LN LPAREN expr RPAREN           # PutStringLnCall
+//                       | PUT_LN LPAREN RPAREN                       # PutLnCall ;
 
