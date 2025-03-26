@@ -88,6 +88,13 @@ class CheckSuite(unittest.TestCase):
     def test3(self):
         input = """
 
+        var n int = fibonacci(10);
+
+        var m Person = Person{age: 1, name: "string", job: "string", isStudent: true, isTeacher: false, base: 1.2};
+
+        const x = -1;
+
+
         type Person struct {
             name string;
             age int;
@@ -97,20 +104,36 @@ class CheckSuite(unittest.TestCase):
             base float;
         }
 
+        type Boat struct {
+            driver Person;
+            speed float;
+            brand string;
+        }
+
         func (p Person) getAge() int {
             var x int;
             p := Person{age: 1, name: "string", job: "string", isStudent: true, isTeacher: false, base: 1.2};
             return x
         }
 
-        const x = -1;
+        func (p Person) getPerson(a int) Person {
+            var x int;
+            var c = Person{age: 1, name: "string", job: "string", isStudent: true, isTeacher: false, base: 1.2};
+            forLoop(10)
+            return c;
+        }
+
+        
         var y int = x;
         var a Person = Person{age: 1, name: "string", job: "string", isStudent: true, isTeacher: false, base: 1.2};
 
-        var b [10][3][3]int = [10][3][3]int{{{1, 2, 3}, {1, 2, 3}, {1,2, 3}}, {{1,2,3}, {1,2,3}, {2, 3, 4}}, {1}};
+        var b [10][3][3]int = [10][3][3]int{{{1, 2, 3}, {x, 2, 3}, {1,2, 3}}, {{1,2,3}, {1,2,3}, {2, 3, 4}}, {{1}}};
+
+        var boat Boat = Boat{driver: a, speed: 1.2, brand: "string"};
+        
 
 
-        func forLoop(a int) {
+        func forLoop(d int) {
             var i int = 0;
             for i < 10 {
                 i := i + i;
@@ -124,7 +147,13 @@ class CheckSuite(unittest.TestCase):
                 var x int;
             }
 
-            var x float = 1;
+            var x string = boat.driver.name;
+
+            var y int = boat.driver.getAge();
+
+            var z int = boat.driver.getPerson(i).getAge();
+
+            
         }
         
         
@@ -173,12 +202,12 @@ class CheckSuite(unittest.TestCase):
                     }
                 }
 
-
+            
 
                 return fibonacci(n - 1) + fibonacci(n - 2);
         }
 
-        var n float = 2.5 + fibonacci(10);
+        
 
 
 
