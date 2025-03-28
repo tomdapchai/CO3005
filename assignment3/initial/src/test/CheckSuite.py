@@ -92,14 +92,13 @@ class CheckSuite(unittest.TestCase):
             return foo()
         }
 
-
-
         func (c Car) getName() string {
             return c.name
         }
         type Car struct {
             name string
             owner [5][2] Student
+            
         }
         type Vehicle interface {
             getName() string
@@ -123,6 +122,12 @@ class CheckSuite(unittest.TestCase):
             return p.age
         }
 
+        func (s Student) getStudent() Student {
+
+            var a Student = Student { name: "abc", age: [3]float{1.0, 2.0, 3.0}}
+            return a.getStudent()
+        }
+
         func foo1(a int,b int) Car {
             var c Vehicle;
             c := Car { name: "abc"}
@@ -140,12 +145,22 @@ class CheckSuite(unittest.TestCase):
             return c;
         }
         
-        var arr [5]int;
+        var arr [3]int;
 
         func foo2(a int) int{
             var n int;
             
-            arr := [5]int {1,2,3,4,5}
+            arr := [3]int{10, 20, 30}
+            for index, value := range arr {
+                n := n + value
+                value := 1 % 2
+            }
+
+            for _, value := range arr {
+                n := n + value
+                continue
+                break;
+            }
             return 2;
         }
 
@@ -158,8 +173,54 @@ class CheckSuite(unittest.TestCase):
         var b Person = a.getOwner()[1][n]
         var c string = a.getOwner()[1][2].getName()
         
+        func foo3(a [2]int) int{
+            var n int;
+            
+            arr := [3]int{10, 20, 30}
+            var arr1 [3]int;
+            
+            for index, value := range arr {
+                n := n + value
+                value := 1 % 2
+            }
 
+            for _, value := range arr {
+                n := n + value
+                continue
+                break;
+            }
+            return 2;
+        }
+
+        var arr2 [n]Car;
+
+        func foo5(a int) {
+            var a int
+        }
+
+        func (c Car) putName(s string) {
+            var a int
+        }
         
+        func foo4(a int) int{
+            var n int;
+            arr2[1].putName("abc");
+            return n;
+        }
+
+        type I1 interface {
+            getName() int
+        }
+        
+        var x1 = 1 + 2 + 3 * 4 + (5 + 6) % 7 - -1;
+
+        var x2 = 5 * 6;
+
+        var x3 = x1 + 3;
+
+        const x4 = x3 * x2;
+
+        var x5 [30]int = [x2]int{1,2,3,4};
 
 
 

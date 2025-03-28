@@ -299,7 +299,10 @@ class ASTGenSuite(unittest.TestCase):
 #         self.assertTrue(TestAST.checkASTGen(input,expect,326))
     def test_327(self):
         input = """var arr [3]int = [3]int{1, 2, 3}; 
-        
+            func foo() {
+    arr2[1].putName("abc")
+}
+
            """
         expect = str(
             Program([VarDecl("arr",None,ArrayLiteral([IntLiteral(3)],IntType(),[IntLiteral(1),IntLiteral(2),IntLiteral(3)])),FuncDecl("Add",[],VoidType(),Block([ForEach(Id("index"),Id("value"),Id("arr"),Block([Assign(Id("x"),BinaryOp("+",Id("x"),Id("value")))]))]))])
