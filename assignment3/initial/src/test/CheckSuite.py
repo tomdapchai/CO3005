@@ -125,7 +125,8 @@ class CheckSuite(unittest.TestCase):
         func (s Student) getStudent() Student {
 
             var a Student = Student { name: "abc", age: [3]float{1.0, 2.0, 3.0}}
-            return a.getStudent()
+            var x = a.getStudent()
+            return x
         }
 
         func foo1(a int,b int) Car {
@@ -222,6 +223,28 @@ class CheckSuite(unittest.TestCase):
 
         var x5 [30]int = [x2]int{1,2,3,4};
 
+        type A interface{
+            getInt1() int
+        }
+        type B struct{
+            x int;
+        }
+        func (b B) getInt1() int{
+            return b.x
+        }
+        type C struct{
+            x int;
+        }
+        func (c C) getInt1() int{
+            return c.x;
+        }
+
+        func foo6(){
+            var a1 A = B{x:1}
+            foo4(a1.getInt1()) // type a was changed 
+            a1 := C{x:1} // but here C is valid to be assigned
+             
+        }
 
 
         """

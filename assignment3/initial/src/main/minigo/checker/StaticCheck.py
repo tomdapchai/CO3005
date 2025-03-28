@@ -382,6 +382,8 @@ class StaticChecker(BaseVisitor,Utils):
             if len(expr.args) != len(funcSym.mtype.partype):
                 raise TypeMismatch(expr)
             
+            print("In funccall")
+            printEnv(c)
             for i, arg in enumerate(expr.args):
                 argType = self.inferType(arg, c)
                 paramType = None
@@ -717,8 +719,8 @@ class StaticChecker(BaseVisitor,Utils):
         # check body, create new scope (other than params), as the body can redeclare the params
         env = [[]] + env
 
+        print(ast.body)
         self.visit(ast.body, env)
-        
 
         # if not self.isSameType(returnType, ast.retType):
         #     raise TypeMismatch(ast)
@@ -734,8 +736,6 @@ class StaticChecker(BaseVisitor,Utils):
         # just add the type of params instead of the whole symbol
 
         c[-1].append(func_symbol)
-
-        
 
         return c
     
@@ -876,15 +876,16 @@ class StaticChecker(BaseVisitor,Utils):
 
     def visitBlock(self, ast, c: List[List[Symbol]]):
         # First check all standalone function/method calls
+        # but it hasnt had the environment yet
+        env = c
+
         for member in ast.member:
             if isinstance(member, (FuncCall, MethCall)):
-                retType = self.inferType(member, c)
-                print("oh no")
-                if not isinstance(retType, VoidType):
-                    raise TypeMismatch(member)
-        
+                member._is_standalone = True
+            env = self.visit(member, env)
+            printEnv(env)
 
-        return reduce(lambda acc, ele: self.visit(ele, acc), ast.member, c)
+        return c
 
     def visitAssign(self, ast: Assign, c: List[List[Symbol]]):
         # check LHS
@@ -1048,7 +1049,13 @@ class StaticChecker(BaseVisitor,Utils):
         return c
 
     def visitFuncCall(self, ast: FuncCall,c: List[List[Symbol]]):
-        self.inferType(ast, c)
+        retType = self.inferType(ast, c)
+
+        is_standalone = ast._is_standalone if hasattr(ast, "_is_standalone") else False
+
+        # If standalone, it must return void
+        if is_standalone and not isinstance(retType, VoidType):
+            raise TypeMismatch(ast)
         return c
 
     def visitMethCall(self,ast : MethCall,c: List[List[Symbol]]):
@@ -1057,7 +1064,12 @@ class StaticChecker(BaseVisitor,Utils):
         # if res is None:
         #     raise Undeclared(Identifier(), ast.receiver)
         
-        self.inferType(ast, c)
+        retType = self.inferType(ast, c)
+
+        is_standalone = ast._is_standalone if hasattr(ast, "_is_standalone") else False
+    
+        if is_standalone and not isinstance(retType, VoidType):
+            raise TypeMismatch(ast)
 
         # check the type of caller (struct or interface) and check if the method is in the list of method of the caller
         # do later
