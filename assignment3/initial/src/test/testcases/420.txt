@@ -1,0 +1,7 @@
+
+        func main() {
+            var x int;
+            x := 10;
+            var x [1][2]int;
+        }
+        

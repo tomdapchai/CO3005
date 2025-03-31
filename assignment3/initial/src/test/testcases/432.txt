@@ -1,0 +1,7 @@
+
+        var b boolean;
+        var c int;
+        var a = c+d;
+        var d = b + c;
+        var e = b + 1;
+        

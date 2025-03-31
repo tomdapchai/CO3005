@@ -1,0 +1,4 @@
+
+        const x = getInt() + 5;
+        const x = 10;
+        

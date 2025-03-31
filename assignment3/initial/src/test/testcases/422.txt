@@ -1,0 +1,25 @@
+
+        type Pair struct {
+            first int;
+            second int;
+        }
+        func main(){
+            var x Pair;
+            x := Pair{first: 1, second: 2};
+            var y Pair;
+            y := x.swap();
+        }
+        func (p Pair) swap() Pair {
+            return Pair{first: p.second, second: p.first};
+        }
+        
+        func swap(a int, b int) {
+            var temp = a;
+            a := b;
+            b := temp;
+        }
+        
+        func (p Pair) swap() Pair {
+            return Pair{first: p.first, second: p.second};
+        }
+        

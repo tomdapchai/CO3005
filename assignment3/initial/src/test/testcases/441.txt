@@ -1,0 +1,15 @@
+
+        func (a A) test() int {
+            return a.test1();
+        }
+        type A struct {
+            x int;
+        }
+        func (a A) test1() int {
+            return a.test2();
+        }
+        func main(){
+            var a A;
+            putInt(a.test());
+        }
+        

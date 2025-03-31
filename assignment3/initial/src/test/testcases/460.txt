@@ -1,0 +1,22 @@
+
+        type A struct {
+            x int;
+            y float;
+            other B;
+        }
+        func (a A) test(x int, y float) {
+            var x int;
+            var y = x;
+            var z = y + 1;
+            var b B;
+            b := A{x: 1, y: 2.0};
+            putInt(b.x);
+        }
+        func main(){
+            var b B;
+            b := A{x: 1, y: 2.0};
+        }
+        type B interface {
+            test(x int, y float);
+        }
+        

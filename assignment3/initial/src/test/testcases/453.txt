@@ -1,0 +1,6 @@
+
+        var a int = 1;
+        var b float = 2.0;
+        var c = a + b;
+        var d = a > c;
+        

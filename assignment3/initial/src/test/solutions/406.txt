@@ -1,1 +1,0 @@
-Type Mismatch: FuncCall(foo4,[MethodCall(Id(a1),getInt1,[])])

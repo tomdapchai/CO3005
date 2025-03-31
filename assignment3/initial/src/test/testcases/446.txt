@@ -1,0 +1,17 @@
+
+        type Vehicle struct{
+            brand string;
+            year int;
+        }
+        type Truck interface {
+            drive() int;
+        }
+        func main(){
+            var t Truck;
+            t := Vehicle{brand: "Ford", year: 2020};
+            putInt(t.drive());
+        }
+        func (v Vehicle) drive() int {
+            return v.speed;
+        }
+        

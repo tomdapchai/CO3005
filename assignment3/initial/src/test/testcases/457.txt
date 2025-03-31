@@ -1,0 +1,5 @@
+
+        var a int = 1.0;
+        var b float = 2.0;
+        var c int;
+        

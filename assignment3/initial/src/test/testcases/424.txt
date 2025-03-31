@@ -1,0 +1,18 @@
+
+        func test() {
+            s := Subject{name: "Math", scores: [5]float{1.0, 2.0, 3.0, 4.0, 5.0}, scores: [5]int{1, 2, 3, 4, 5}};
+            putFloat(s.scores[0]);
+            s.putFloat();
+        }
+        func (s Subject) putFloat() float {
+            return s.scores[0];
+        }
+        type Subject struct {
+            name string;
+            scores [5]float;
+            scores [5]int;
+        }
+        func main() {
+            test();
+        }
+        

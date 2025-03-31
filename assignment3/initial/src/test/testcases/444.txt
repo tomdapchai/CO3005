@@ -1,0 +1,16 @@
+
+        type A struct {
+            x int;
+            other B;
+        }
+        func (a A) test() int {
+            return a.x;
+        }
+        type B struct {
+            x int;
+            other A;
+        }
+        func (b B) test() int {
+            return b.x + b.other.test() + b.other.test1();
+        }
+        

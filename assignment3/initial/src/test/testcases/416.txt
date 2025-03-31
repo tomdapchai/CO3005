@@ -1,0 +1,13 @@
+
+        type Vehicle struct {
+            brand string;
+        }
+        
+        func (v Vehicle) drive() {
+            return;
+        }
+        
+        func (v Vehicle) drive() int {
+            return 0;
+        }
+        

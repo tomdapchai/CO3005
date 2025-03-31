@@ -1,0 +1,17 @@
+
+        func foo() {
+            foo1();
+            foo2();
+        }
+        func foo1() {
+            return;
+        }
+        func foo2() {
+            return;
+        }
+        func main() {
+            foo();
+            putInt(1);
+            foo3(1,2);
+        }
+        

@@ -1,0 +1,15 @@
+
+        const a = 2;
+        const b = 3;
+        const c = a + b;
+        var d [a][b]int;
+        func foo(){
+            d := [a][b]int{{1,2,3},{4,5,6}};
+        }
+        func main(){
+            foo();
+            putInt(d[0][0]);
+            putInt(d[1][1]);
+            putFloat(d[0][1]);
+        }
+        

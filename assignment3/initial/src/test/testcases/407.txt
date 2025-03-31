@@ -1,0 +1,15 @@
+
+        var n int = 2;
+
+        func foo(a int, b int, c [n]int) [n]int {
+        var x1 = 1 + 2 * 3
+            var x2 int = 5 * 6;
+            var x3 [x2]int;
+            x3 := [30]int{1,2,3,4};
+            var x4 [x2]int = x3;
+            var x5 [2]int;
+            var x6 [2]int = c
+            const x7 = [x2]int{1,2,3,4};
+            return x5;
+        }
+        

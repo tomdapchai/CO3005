@@ -1,0 +1,16 @@
+
+        func calculate(x int) int {
+            var x int;
+            x := 1;
+            return x;
+        }
+        
+        func main() {
+            var x int;
+            x := calculate(x);
+        }
+        
+        func calculate(x float) {
+            return;
+        }
+        

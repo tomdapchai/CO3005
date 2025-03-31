@@ -1,0 +1,24 @@
+
+        type A struct {
+            x int;
+            other B;
+        }
+        func (a A) test() int {
+            return a.x;
+        }
+        func (a A) test1() int {
+            return a.other.test();
+        }
+        type B struct {
+            x int;
+        }
+        func (b B) test1() int {
+            return b.x;
+        }
+        func main(){
+            var a A;
+            a := A{x: 1, other: B{x: 2}};
+            putInt(a.test());
+            putInt(a.test1());
+        }
+        

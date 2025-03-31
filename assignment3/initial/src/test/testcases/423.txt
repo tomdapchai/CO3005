@@ -1,0 +1,20 @@
+
+        type Pair struct {
+            first int;
+            second int;
+        }
+        
+        func main(){
+            var x Pair;
+            x := Pair{first: 1, second: 2};
+            putInt(x.getInt());
+        }
+        var x = 10;
+        func (p Pair) getInt() int {
+            return p.first + x;
+        }
+        func (p Pair) getInt() int {
+            return p.second;
+        }
+        
+        

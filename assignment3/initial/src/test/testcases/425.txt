@@ -1,0 +1,26 @@
+
+        type Person struct {
+            name string;
+            age int;
+        }
+        func (p Person) getName() string {
+            return p.name;
+        }
+        func (s Student) getName() string {
+            return s.name;
+        }
+        type Student struct {
+            name string;
+            age int;
+        }
+        func (t Teacher) getName() string {
+            return t.person.getName();
+        }
+        type Teacher struct {
+            person Person;
+            students [5]Student;
+        }
+        func (p Person) getName() string {
+            return p.name;
+        }
+        

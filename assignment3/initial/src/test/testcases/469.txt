@@ -1,0 +1,27 @@
+
+        const a = logicEval(true, false);
+        const b = logicEval(true, true);
+        const c = 2;
+        func foo(){
+            if (a) {
+                putString("True");
+                if (a && b){
+                    putString("True");
+                } else {
+                    putString("False");
+                }
+            } else if (c){
+                putString("False");
+            }  else {
+                putString("True");
+            }  
+        }
+        func logicEval(a boolean, b boolean) boolean {
+            return a || b && a || b && !a || !b;
+        }
+        
+        func main(){
+            const c = true;
+            foo();
+        }
+        

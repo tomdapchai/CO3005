@@ -1,0 +1,10 @@
+
+        func testLoop(k int){
+            for i := 0; i < k; i+=1 {
+                putInt(i);
+            }
+            for var j = 1.0; j < k; j+=1 {
+                putInt(j);
+            }
+        }
+        

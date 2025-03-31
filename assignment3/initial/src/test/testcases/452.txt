@@ -1,0 +1,7 @@
+
+        var a string = "hello";
+        var b string = "world";
+        var c = a > b;
+        var d = a + b;
+        var e = c % d;
+        

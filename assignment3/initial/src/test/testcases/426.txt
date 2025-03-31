@@ -1,0 +1,8 @@
+
+        func test(x, y int, z float) {
+            var x int;
+            var z float;
+            t := 1;
+            const t = 2;
+        }
+        

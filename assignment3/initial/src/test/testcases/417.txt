@@ -1,0 +1,6 @@
+
+        type Drawable interface {
+            draw();
+            draw(color string);
+        }
+        

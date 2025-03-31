@@ -1,0 +1,11 @@
+
+        func foo(a, b int, c float) {
+            var a int;
+            var b float;
+            var c float;
+            putInt(a);
+            putFloat(c);
+            c := d + 1;
+        }
+        const d = 1;
+        

@@ -1,0 +1,22 @@
+
+        type A interface{
+            test1() int;
+        }
+        type B struct {
+            x int;
+        }
+        func (b B) test1() int {
+            return b.x;
+        }
+        func (b B) test2() int {
+            return b.x;
+        }
+        func (b B) test3() int {
+            return b.x;
+        }
+        func main(){
+            var a A;
+            a := B{x: 1};
+            putInt(a.test2());
+        }
+        
