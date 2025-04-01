@@ -1,1 +1,1 @@
-Type Mismatch: None
+Type Mismatch: BinaryOp(Id(j),<,Id(k))

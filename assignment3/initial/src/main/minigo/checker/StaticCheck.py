@@ -63,6 +63,12 @@ class StaticChecker(BaseVisitor,Utils):
         self.global_funcs : List[Symbol] = []
         self.orphan_methods = [] # methods that cannot be assigned to any struct
         self.in_first_scan = False
+        # Add a field to track the current function return type
+        self.current_function_rettype = None
+        # Add a field to track if a return statement was found
+        self.has_return = False
+        # Add a field to track the current function
+        self.current_function = None
  
     
     def check(self):
@@ -724,6 +730,10 @@ class StaticChecker(BaseVisitor,Utils):
         if not res is None:
             raise Redeclared(Variable(), ast.varName) 
         if ast.varInit:
+            try: 
+                self.inferType(ast.varInit, c)
+            except TypeMismatch:
+                raise TypeMismatch(ast.varInit)
             initType = self.inferType(ast.varInit, c)
             if type(initType) is VoidType:
                 print("initType: ", initType)
@@ -768,6 +778,20 @@ class StaticChecker(BaseVisitor,Utils):
                         print("so lit")
                         ast.varType = initType
                 elif type(initType) is IntType and type(ast.varType) is FloatType:
+                    pass
+                elif type(initType) is ArrayType and type(ast.varType) is ArrayType and type(initType.eleType) is IntType and type(ast.varType.eleType) is FloatType:
+                    if len(initType.dimens) != len(ast.varType.dimens):
+                        raise TypeMismatch(ast)
+                    # print("checking dimens")
+                    # check dimension
+                    for i in range(len(initType.dimens)):
+                        print("dimens: ", initType.dimens[i], ast.varType.dimens[i])
+                        value1 = self.inferValue(initType.dimens[i], c)
+                        value2 = self.inferValue(ast.varType.dimens[i], c)
+                        if value1 is None or value2 is None:
+                            raise TypeMismatch(ast)
+                        if int(value1) != int(value2):
+                            raise TypeMismatch(ast)
                     pass
                 else:
                     raise TypeMismatch(ast)
@@ -867,6 +891,12 @@ class StaticChecker(BaseVisitor,Utils):
         # Add function to the list of symbol, global
         env[-1].append(func_symbol)
 
+        # Store the current function's return type
+        self.current_function_rettype = ast.retType
+        
+        # Reset return statement tracking
+        self.has_return = False
+
         # check body, create new scope (other than params), as the body can redeclare the params
         env = [[]] + env
 
@@ -881,18 +911,25 @@ class StaticChecker(BaseVisitor,Utils):
         #         if value is not None:
         #             ast.retType.dimens[i] = IntLiteral(int(value))
 
-        try:
-            self.inferType(ast.body, env, ast.retType)
-        except TypeMismatch as e:
-            if type(e.err) is Block:
-                raise TypeMismatch(ast)
-            else:
-                raise e
+        # try:
+        #     self.inferType(ast.body, env, ast.retType)
+        # except TypeMismatch as e:
+        #     if type(e.err) is Block:
+        #         raise TypeMismatch(ast)
+        #     else:
+        #         raise e
         
 
         # just add the type of params instead of the whole symbol
 
         # c[-1].append(func_symbol)
+        # Check if a non-void function is missing a return statement
+
+        if not isinstance(ast.retType, VoidType) and not self.has_return:
+            raise TypeMismatch(ast)
+
+        # Reset the current function's return type
+        self.current_function_rettype = None
         
 
         return c
@@ -1094,7 +1131,10 @@ class StaticChecker(BaseVisitor,Utils):
             else:
                 raise e
         # check RHS
-        rhsType = self.inferType(ast.rhs, c)
+        try:
+            rhsType = self.inferType(ast.rhs, c)
+        except TypeMismatch as e:
+            raise TypeMismatch(ast.rhs)
         if not isDeclared:
             # add LHS to the list of symbol
             value = self.inferValue(ast.rhs, c)
@@ -1148,17 +1188,18 @@ class StaticChecker(BaseVisitor,Utils):
         # create local scope for then stmt
         env = [[]] + copy.deepcopy(c)
 
-        env = self.visit(ast.thenStmt, env)
+        self.visit(ast.thenStmt, env)
 
-        printEnv(env)
+        # printEnv(env)
 
         if ast.elseStmt is not None:
             # else stmt scope unrelated to then stmt
             if type(ast.elseStmt) is If:
                 env = copy.deepcopy(c)
+                self.visit(ast.elseStmt, env)
             else:
                 env = [[]] + copy.deepcopy(c)
-            self.visit(ast.elseStmt, env)
+                self.visit(ast.elseStmt, env)
 
         return c
 
@@ -1180,15 +1221,23 @@ class StaticChecker(BaseVisitor,Utils):
 
         # basically just add the init variable to the scope
         if isinstance(ast.init, VarDecl):
-            env[0].append(Symbol(name=ast.init.varName, mtype=self.inferType(ast.init.varType, c), value=ast.init.varInit))
+            print("hey yo")
+            varType = None
+            if ast.init.varType is None:
+                varType = self.inferType(ast.init.varInit, c)
+            else:
+                varType = ast.init.varType
+            env[0].append(Symbol(name=ast.init.varName, mtype=varType, value=ast.init.varInit))
         elif isinstance(ast.init, Assign):
             env[0].append(Symbol(name=ast.init.lhs.name, mtype=self.inferType(ast.init.rhs, c), value=ast.init.rhs))
         
+        
         # checking condition
         self.visit(ast.cond, env)
-
+        
         condType = self.inferType(ast.cond, env)
         if type(condType) is not BoolType:
+            
             raise TypeMismatch(ast.cond)
 
         # checking update
@@ -1224,6 +1273,28 @@ class StaticChecker(BaseVisitor,Utils):
         return c
 
     def visitReturn(self, ast, c: List[List[Symbol]]):
+        # Mark that we found a return statement
+        self.has_return = True
+        
+        # If there's no expression in the return statement
+        if ast.expr is None:
+            # If function expects a non-void return
+            if not isinstance(self.current_function_rettype, VoidType):
+                raise TypeMismatch(ast)
+        else:
+            # Return has an expression, get its type
+            expr_type = self.inferType(ast.expr, c)
+            
+            # If function expects void
+            if isinstance(self.current_function_rettype, VoidType):
+                raise TypeMismatch(ast)
+            
+            # Check if return type matches function return type
+            if not self.isSameType(expr_type, self.current_function_rettype, c):
+                # Special case for int to float conversion
+                if not (isinstance(self.current_function_rettype, FloatType) and isinstance(expr_type, IntType)):
+                    raise TypeMismatch(ast)
+        
         return c
 
     # LHS

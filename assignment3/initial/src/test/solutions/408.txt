@@ -1,1 +1,1 @@
-Type Mismatch: FuncCall(foo,[IntLiteral(1),IntLiteral(2),Id(x2)])
+Type Mismatch: Assign(Id(x3),ArrayLiteral([IntLiteral(30)],IntType,[IntLiteral(1),IntLiteral(2),IntLiteral(3),IntLiteral(4)]))

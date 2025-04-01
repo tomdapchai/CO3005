@@ -1,0 +1,1 @@
+Type Mismatch: FuncDecl(foo,[ParDecl(a,IntType),ParDecl(b,IntType),ParDecl(c,IntType)],IntType,Block([VarDecl(x,FloatType)]))

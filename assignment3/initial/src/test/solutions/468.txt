@@ -1,1 +1,1 @@
-Type Mismatch: IntLiteral(2)
+Type Mismatch: FuncCall(putInt,[Id(value)])

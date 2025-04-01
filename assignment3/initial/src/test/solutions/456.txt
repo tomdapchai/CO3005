@@ -1,1 +1,1 @@
-Type Mismatch: FloatLiteral(2.0)
+Type Mismatch: ArrayLiteral([IntLiteral(5)],IntType,[IntLiteral(1),FloatLiteral(2.0),IntLiteral(3),IntLiteral(4),IntLiteral(5)])
