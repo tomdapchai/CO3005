@@ -464,7 +464,7 @@ class StaticChecker(BaseVisitor,Utils):
         # this is so good lol
         elif isinstance(expr, FuncCall):
             print("here is func call ", expr)
-            funcSym = self.lookup(expr.funName, sum(c, []) + self.global_funcs, lambda x: x.name)
+            funcSym = self.lookup(expr.funName, filter(lambda x: isinstance(x.mtype, MType) ,sum(c, []) + self.global_funcs), lambda x: x.name)
             if not funcSym:
                 raise Undeclared(Function(), expr.funName)
             
@@ -499,7 +499,6 @@ class StaticChecker(BaseVisitor,Utils):
             print("expr: ", expr)
             receiverType = self.inferType(expr.receiver, c)
             print("receiverType: ", receiverType)
-            printEnv([self.global_types])
             if not isinstance(receiverType, Id):
                 raise TypeMismatch(expr)
 
@@ -521,7 +520,6 @@ class StaticChecker(BaseVisitor,Utils):
             # Find the method
             methodSym = None
             print("typeSym.method: ")
-            printEnv([typeSym.method])
             for method in typeSym.method:
                 if method.name == expr.metName:
                     print("method: ", method)
@@ -724,7 +722,7 @@ class StaticChecker(BaseVisitor,Utils):
         res = self.lookup(
             ast.varName,
             # filter out SymbolType
-            list(filter(lambda x: not isinstance(x, SymbolType), c[0] + self.global_funcs)),
+            list(filter(lambda x: not isinstance(x, SymbolType), c[0])),
             lambda x: x.name)
         # lookup list of symbol in c, compare with varName
         if not res is None:
@@ -831,7 +829,7 @@ class StaticChecker(BaseVisitor,Utils):
         return c
     
     def visitParamDecl(self, ast: ParamDecl, c: List[List[Symbol]]):
-        res = self.lookup(ast.parName, c[0] + self.global_funcs, lambda x: x.name) 
+        res = self.lookup(ast.parName, c[0], lambda x: x.name) 
         if not res is None:
             raise Redeclared(Parameter(), ast.parName)
         
@@ -849,7 +847,7 @@ class StaticChecker(BaseVisitor,Utils):
         return c
     
     def visitConstDecl(self, ast: ConstDecl, c: List[List[Symbol]]):
-        res = self.lookup(ast.conName, c[0] + self.global_types, lambda x: x.name)
+        res = self.lookup(ast.conName, c[0], lambda x: x.name)
         if not res is None: # not int value, for now
             raise Redeclared(Constant(), ast.conName)
         
@@ -867,15 +865,19 @@ class StaticChecker(BaseVisitor,Utils):
     def visitFuncDecl(self, ast: FuncDecl, c: List[List[Symbol]]):
         # might use isMethod to make sure the receiver cannot be used as a parameter, and being redeclared later in the function
         # in case of method, the receiver is the first parameter of the function
+
         res = self.lookup(
             ast.name, 
             list(filter(lambda x: not isinstance(x, SymbolType), c[-1] if hasattr(ast, 'isMethod') else self.global_funcs)),
             lambda x: x.name)
-        if not res is None:            
-            if res.isDeclared:
-                raise Redeclared(Function(), ast.name)
+        if not res is None:
+            if isinstance(res.mtype, MType):          
+                if res.isDeclared:
+                    raise Redeclared(Function(), ast.name)
+                else:
+                    res.isDeclared = True
             else:
-                res.isDeclared = True
+                raise Redeclared(Function(), ast.name)
 
         # create new scope for function        
         env = [[]] + copy.deepcopy(c)
@@ -945,7 +947,7 @@ class StaticChecker(BaseVisitor,Utils):
         if struct is None:
             raise Undeclared(Identifier(), ast.recType.name)
 
-        env = struct.method
+        env = struct.field + struct.method
 
         # check if the method is redeclared in the struct
         # res = self.lookup(ast.fun.name, env, lambda x: x.name)
@@ -965,8 +967,10 @@ class StaticChecker(BaseVisitor,Utils):
         # if not res is None:
         #     raise Redeclared(Method(), ast.fun.name)
 
-        # might need to add the receiver to the list of parameter
-        ast.fun.params.insert(0, ParamDecl(ast.receiver, ast.recType))
+        # receiver is first scope
+        env = [Symbol(ast.receiver, ast.recType, None)] + env
+
+        # ast.fun.params.insert(0, ParamDecl(ast.receiver, ast.recType))
 
         ast.fun.isMethod = True
         
@@ -974,7 +978,11 @@ class StaticChecker(BaseVisitor,Utils):
         try:
             ret_env = self.visit(ast.fun, [env + c[-1]])
         except Redeclared as e:
-            raise Redeclared(Method(), ast.fun.name)
+            print(e)
+            if isinstance(e.k, Function):
+                raise Redeclared(Method(), ast.fun.name)
+            else:
+                raise e
 
         # take out the method body (the function)
         # fun = ret_env[-1][-1]
@@ -1221,7 +1229,6 @@ class StaticChecker(BaseVisitor,Utils):
 
         # basically just add the init variable to the scope
         if isinstance(ast.init, VarDecl):
-            print("hey yo")
             varType = None
             if ast.init.varType is None:
                 varType = self.inferType(ast.init.varInit, c)
@@ -1242,6 +1249,9 @@ class StaticChecker(BaseVisitor,Utils):
 
         # checking update
         self.visit(ast.upda, env)
+        # check if the update is an assign statement, let not add it to the body scope - env[0]
+        if isinstance(ast.upda, Assign):
+            env[0].pop()
 
         # checking loop block
         self.visit(ast.loop, env)

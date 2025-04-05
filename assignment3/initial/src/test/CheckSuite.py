@@ -1158,31 +1158,109 @@ class CheckSuite(unittest.TestCase):
     #     """
     #     expect = "Type Mismatch: If(Id(c),Block([FuncCall(putString,[StringLiteral(\"False\")])]),Block([FuncCall(putString,[StringLiteral(\"True\")])]))\n"
     #     self.assertTrue(TestChecker.test(input,expect,469))
-    def test_470(self):
+    # def test_470(self):
+    #     input = """
+    #     const a = 2
+    #     const b = 3
+    #     const c = a + b
+    #     var d [a][b]float = [2][3]int{{1,2,3},{4,5,6}}
+
+    #     func foo(a int, b int) int {
+    #         if (a > b) {
+    #         var k int;
+    #             putInt(a)
+    #             if (a > b) {
+    #                 return k;
+    #             }
+    #         } else if (b < c){
+    #             putInt(b)
+    #         } else {
+    #             putInt(c)
+    #         }
+    #     }
+    #     func main(){
+    #         var c boolean = true;
+    #         var x = foo(1, 2);
+    #         putFloat(c);
+    #     }
+    #     """
+    #     expect = "Type Mismatch: FuncCall(putFloat,[Id(c)])\n"
+    #     self.assertTrue(TestChecker.test(input,expect,470))
+    
+    # def test_471(self):
+    #     input = """
+    #     const a = 2
+    #     const b = 3
+    #     const c = a + b
+    #     var d [a][b]float = [2][3]int{{1,2,3},{4,5,6}}
+
+        
+
+    #     const n = 12;
+
+    #     var x = Person{name: "Tam", inventory: [12]int{1,2,3,4,5,6,7,8,9,10,11,12}}
+
+    #     type Person struct {
+    #         name string;
+    #         inventory [n]int;
+    #     }
+
+        
+
+    #     func foo(a int, b int) int {
+    #         if (a > b) {
+    #         var k int;
+    #             putInt(a)
+    #             if (a > b) {
+    #                 return k;
+    #             }
+    #         } else if (b < c){
+    #             putInt(b)
+    #         } else {
+    #             putInt(c)
+    #         }
+    #     }
+    #     func main(){
+    #         var c boolean = true;
+    #         var x = foo(1, 2);
+    #         putFloat(c);
+    #     }
+    #     """
+    #     expect = "Type Mismatch: FuncCall(putFloat,[Id(c)])\n"
+    #     self.assertTrue(TestChecker.test(input,expect,471))
+    
+    def test_472(self):
         input = """
         const a = 2
         const b = 3
         const c = a + b
         var d [a][b]float = [2][3]int{{1,2,3},{4,5,6}}
 
-        func foo(a int, b int) int {
-            if (a > b) {
-            var k int;
-                putInt(a)
-                if (a > b) {
-                    return k;
-                }
-            } else if (b < c){
-                putInt(b)
-            } else {
-                putInt(c)
-            }
+        const n = 12;
+
+        var x = Person{name: "Tam", inventory: [12]int{1,2,3,4,5,6,7,8,9,10,11,12}}
+
+
+        func (p Person) foo() {
+            var n = 1;
         }
-        func main(){
-            var c boolean = true;
-            var x = foo(1, 2);
-            putFloat(c);
+
+        func a() {
+            n += 3;
         }
+
+
+
+        type Person struct {
+            name string;
+            inventory [n]int;
+        }
+
+        func main() int{
+            a();
+            return 0;
+        }
+        
         """
-        expect = "Type Mismatch: FuncCall(putFloat,[Id(c)])\n"
-        self.assertTrue(TestChecker.test(input,expect,470))
+        expect = ""
+        self.assertTrue(TestChecker.test(input,expect,472))

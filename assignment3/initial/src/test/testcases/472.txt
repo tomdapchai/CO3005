@@ -1,0 +1,32 @@
+
+        const a = 2
+        const b = 3
+        const c = a + b
+        var d [a][b]float = [2][3]int{{1,2,3},{4,5,6}}
+
+        const n = 12;
+
+        var x = Person{name: "Tam", inventory: [12]int{1,2,3,4,5,6,7,8,9,10,11,12}}
+
+
+        func (p Person) foo() {
+            var n = 1;
+        }
+
+        func a() {
+            n += 3;
+        }
+
+
+
+        type Person struct {
+            name string;
+            inventory [n]int;
+        }
+
+        func main() int{
+            a();
+            return 0;
+        }
+        
+        
