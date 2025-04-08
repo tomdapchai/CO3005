@@ -1,0 +1,1 @@
+Type Mismatch: ForEach(Id(a),Id(b),Id(c),Block([FuncCall(putInt,[Id(a)]),FuncCall(putInt,[Id(b)])]))

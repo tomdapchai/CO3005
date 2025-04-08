@@ -1,0 +1,17 @@
+
+        func main(){
+            var index int = 0;
+            var value string = "hello";
+            for _, value := range [5]int{1,2,3,4,5} {
+                putInt(value);
+                putInt(index);
+                index += value;
+            }
+            index := 1;
+            value := "world";
+            for index, value := range [5]int{1,2,3,4,5} {
+                putInt(value);
+                putString(index);
+            }
+        }
+        

@@ -1,0 +1,1 @@
+Type Mismatch: FuncCall(foo,[IntLiteral(1),FloatLiteral(2.0),StringLiteral("hello"),StructLiteral(A,[(x,IntLiteral(1)),(y,FloatLiteral(2.0))]),StructLiteral(A,[(x,IntLiteral(1)),(y,FloatLiteral(2.0))])])

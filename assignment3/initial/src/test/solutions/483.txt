@@ -1,0 +1,1 @@
+Type Mismatch: FuncCall(putFloat,[MethodCall(FieldAccess(Id(a),z),test,[])])

@@ -1,0 +1,16 @@
+
+        type A interface{
+            test() int;
+        }
+        type B struct {
+            x int;
+            y int;
+            z A;
+        }
+        func (b B) test() int {
+            var c B;
+            var d A;
+            b.z := B{x: 1, y: 2, z: d};
+            return b.x + b.y + b.z.test() + b.z.x;
+        }
+        

@@ -1,0 +1,12 @@
+
+        func foo() int{
+            var getInt int;
+            getInt := 1;
+            return getInt;
+        }
+        func main(){
+            var a int;
+            a := foo();
+            putFloat(a);
+        }
+        

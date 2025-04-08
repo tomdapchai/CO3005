@@ -1,1 +1,5 @@
-var a int = 1.2;
+
+        func putInt(x float) {
+            return;
+        }
+        

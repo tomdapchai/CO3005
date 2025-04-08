@@ -1,0 +1,11 @@
+
+        var a int;
+        var b int;
+        var c = 0;
+        func main(){
+            for a, b := range c{
+                putInt(a);
+                putInt(b);
+            }
+        }
+        

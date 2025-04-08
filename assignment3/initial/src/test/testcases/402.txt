@@ -1,1 +1,5 @@
-Program([VarDecl(a,IntType,Id(b))])
+
+        func putIntLn(x int, y int) {
+            return;
+        }
+        

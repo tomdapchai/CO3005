@@ -1,0 +1,14 @@
+
+        type A struct {
+            x int;
+            y float;
+        }
+        func (a A) test() int {
+            return a.x;
+        }
+        func main(){
+            var a A;
+            a := A{x: 1, y:2.0, x:1};
+            putInt(a.test());
+        }
+        

@@ -1,16 +1,6 @@
 
-        func foo() int { 
-            var c = Car { name: "abc"}
-            return foo()
+        var getBool = 1;
+        func getBool() string {
+            return "true";
         }
-
-        func (c Car) getName() string {
-            return c.name
-        }
-        type Car struct {
-            name string
-            owner [5][2] int
-        }
-        
-
         

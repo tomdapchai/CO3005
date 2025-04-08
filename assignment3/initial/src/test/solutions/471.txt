@@ -1,1 +1,1 @@
-Type Mismatch: FuncCall(putFloat,[Id(c)])
+Undeclared Identifier: a

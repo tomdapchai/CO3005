@@ -1,0 +1,19 @@
+
+        type A struct {
+            x int;
+            y int;
+            z B;
+        }
+        
+        type B interface {
+            test() int;
+        }
+        func (a A) foo() {
+            var z B;
+            a.z := A{x: 1, y: 2, z: z};
+            putFloat(a.z.test());
+        }
+        func (a A) test() int {
+            return a.x + a.y;
+        }
+        

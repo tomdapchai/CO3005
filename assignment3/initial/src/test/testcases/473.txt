@@ -1,0 +1,7 @@
+
+        func foo(){
+            a := foo();
+            var b int = 1;
+            putInt(b);
+        }
+        

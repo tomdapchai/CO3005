@@ -1,0 +1,14 @@
+
+        const a = 1;
+        const b = 2;
+        var c = a + b;
+        func main(){
+            foo();
+            arr := [c]int{1,2,3};
+            putInt(arr[0]);
+            putString(arr[1]);
+        }
+        func foo(){
+            c +=1;
+        }
+        

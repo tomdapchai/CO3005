@@ -1,0 +1,10 @@
+
+        const b = 2;
+        func main(){
+            for var a = 0; a < b; b := 1 {
+                const b = 3;
+                putInt(b);
+                putFloat(a);
+            }
+        }
+        

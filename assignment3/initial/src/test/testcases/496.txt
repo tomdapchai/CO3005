@@ -1,0 +1,8 @@
+
+        func foo(a int, b float, c string){
+            var a float;
+            var b int;
+            var c string;
+            putInt(a);
+        }
+        

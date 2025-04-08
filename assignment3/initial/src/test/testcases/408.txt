@@ -1,16 +1,8 @@
 
-        var n int = 2;
-        var i = 2
-        func foo(a int, b int, c [n]int) [n]int {
-            var x1 = 1 + 2 * 3
-            var x2 int = 5 * 6;
-            var x3 [x2]int;
-            x3 := [30]int{1,2,3,4};
-            var x4 [30]int = x3;
-            var x5 [n]int;
-            var x6 [2]int = x5
-            const x7 = [x2]int{1,2,3,4};
-            var x8 [i]int = foo(1, 2, x2)
-            return c;
+        type putBoolLn interface {
+            Add(a int) int;
+        }
+        func putBoolLn() int {
+            return 0;
         }
         

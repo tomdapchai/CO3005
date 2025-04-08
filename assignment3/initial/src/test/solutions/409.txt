@@ -1,1 +1,1 @@
-Undeclared Identifier: Person
+Redeclared Function: getString

@@ -2,15 +2,10 @@
         const a = 2
         const b = 3
         const c = a + b
-        var d [a][b]float = [2][3]int{{1,2,3},{4,5,6}}
-
-        func foo(a int, b int) int {
+        
+        func foo(a int, b int) {
             if (a > b) {
-            var k int;
                 putInt(a)
-                if (a > b) {
-                    return k;
-                }
             } else if (b < c){
                 putInt(b)
             } else {
@@ -19,7 +14,7 @@
         }
         func main(){
             var c boolean = true;
-            var x = foo(1, 2);
+            foo(1, 2);
             putFloat(c);
         }
         

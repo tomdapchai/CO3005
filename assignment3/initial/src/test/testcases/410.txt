@@ -1,35 +1,5 @@
 
-        var n int = 2;
-        var i = 2
-        func foo(a int, b int, c [n]int) int {
-            var x1 = 1 + 2 * 3
-            return a;
+        func putLn(message string) {
+            return;
         }
-
-        func foo1(a, b int) Person {
-            a := foo(a, b, [2]int{1, 2})
-            const p = Person { name: "abc", age: 1, salary: a}
-            return p;
-        }
-
-
-
-        type Person struct {
-            name string;
-            age int;
-            salary int;
-        }
-
-        func (p Person) foo() string {
-            return p.name;
-        }
-
-        func (p Person) getInt1() int {
-            return p.age;
-        }
-
-        func (p Person) getInt2() int {
-            return p.age;
-        }
-        
         

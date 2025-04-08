@@ -1,1 +1,1 @@
-Type Mismatch: Id(c)
+Type Mismatch: If(Id(c),Block([FuncCall(putString,[StringLiteral("False")])]),Block([FuncCall(putString,[StringLiteral("True")])]))
