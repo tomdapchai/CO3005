@@ -1,0 +1,18 @@
+
+        
+        type Person struct {
+            name string
+        }
+
+        const a = 1;
+        const b = 3;
+
+        func main() {
+            var n = a + b;
+            var arr [n]int = [4]int{1, 2, 3, 4}
+
+            for index, value := range arr1 {
+                n += 1;
+            }
+        }
+        

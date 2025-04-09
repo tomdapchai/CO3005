@@ -1,0 +1,12 @@
+
+
+        func (a Person) foo() {
+            var x int;
+        } 
+        type Person struct {
+            name string
+            age int
+            name float
+        }
+
+        

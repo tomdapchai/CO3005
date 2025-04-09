@@ -1,1 +1,1 @@
-Redeclared Method: getInt
+Redeclared Method: foo

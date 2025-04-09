@@ -1,5 +1,5 @@
 
         func getInt() int {
-            return 42;
+            return 10;
         }
         

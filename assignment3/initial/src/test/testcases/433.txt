@@ -1,14 +1,7 @@
 
         var a = 2 + 5 * 3;
-        var b = a + 1;
-        var c = a * b;
-        var d = c - 1;
-        var e = d / 2;
         func foo(){
             k := a + b;
-            putInt(k);
-            var c = d + e;
-            putInt(c);
             var e = h + 1;
         }
         

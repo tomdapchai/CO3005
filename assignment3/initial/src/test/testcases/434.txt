@@ -5,7 +5,6 @@
             b := [5]int{1,2,3,4,5};
             var c = a[0];
             putInt(c);
-            var d = e+1;
+            var d = e + 1;
         }
-        var e int = 2;
         

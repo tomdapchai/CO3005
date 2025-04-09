@@ -1,6 +1,5 @@
 
         func main(){
-            x := y;
-            putInt(x);
+            x += 1;
         }
         

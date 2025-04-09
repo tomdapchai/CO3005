@@ -1,6 +1,7 @@
 
-        type Student struct {
+        type Person struct {
+            height int;
             name string;
-            name int;
+            height float
         }
         

@@ -1,1 +1,1 @@
-Redeclared Function: add
+Redeclared Function: foo

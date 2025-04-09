@@ -1,1 +1,1 @@
-Redeclared Variable: test
+Redeclared Function: test

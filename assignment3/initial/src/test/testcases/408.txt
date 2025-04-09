@@ -1,5 +1,5 @@
 
-        type putBoolLn interface {
+        type putIntLn interface {
             Add(a int) int;
         }
         func putBoolLn() int {

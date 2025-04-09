@@ -1,5 +1,5 @@
 
         func putInt(x float) {
-            return;
+            x := 1
         }
         

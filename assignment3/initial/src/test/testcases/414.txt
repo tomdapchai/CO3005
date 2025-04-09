@@ -4,6 +4,6 @@
             age int;
         }
         type Person struct {
-            id int;
+            name int;
         }
         

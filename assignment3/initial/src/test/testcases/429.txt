@@ -10,10 +10,17 @@
             return a.x;
         }
         
-        const test = 1;
+        var test = 1;
+
+        func test() {
+            var x int;
+        }    
+
+        const test = 21.0
+        
         func foo(){
             putInt(test);
         }
         
-        var test = 2;
+        
         

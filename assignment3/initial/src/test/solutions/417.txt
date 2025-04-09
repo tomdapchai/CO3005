@@ -1,1 +1,1 @@
-Redeclared Prototype: draw
+Redeclared Prototype: getHeight

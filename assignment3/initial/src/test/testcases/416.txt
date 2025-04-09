@@ -1,13 +1,15 @@
 
-        type Vehicle struct {
-            brand string;
-        }
         
-        func (v Vehicle) drive() {
+        
+        func (c Car) crash() {
             return;
         }
         
-        func (v Vehicle) drive() int {
+        func (c Car) crash() int {
             return 0;
+        }
+
+        type Car struct {
+            brand string;
         }
         

@@ -1,1 +1,1 @@
-Redeclared Type: putBoolLn
+Redeclared Type: putIntLn

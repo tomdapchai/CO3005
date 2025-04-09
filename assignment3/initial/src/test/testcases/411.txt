@@ -1,4 +1,4 @@
 
-        var x int = getInt();
+        var x int = 5;
         var x float;
         

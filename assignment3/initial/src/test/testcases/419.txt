@@ -1,5 +1,7 @@
 
-        func main() {
+        var x int = 1;
+
+        func foo() {
             var x int;
             const x = 10;
         }

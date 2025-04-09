@@ -4,22 +4,21 @@
             second int;
         }
         func main(){
-            var x Pair;
+            var x Pair = Pair{first: 4, second: 5};
             x := Pair{first: 1, second: 2};
-            var y Pair;
-            y := x.swap();
+            var y = x.swap()
         }
         func (p Pair) swap() Pair {
             return Pair{first: p.second, second: p.first};
         }
         
-        func swap(a int, b int) {
-            var temp = a;
-            a := b;
-            b := temp;
+        func swap(a, b int) {
+            var tmp = a
+            a := b
+            b := tmp
         }
         
         func (p Pair) swap() Pair {
-            return Pair{first: p.first, second: p.second};
+            return 2;
         }
         

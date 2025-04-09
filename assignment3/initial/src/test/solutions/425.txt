@@ -1,1 +1,1 @@
-Redeclared Method: getName
+Redeclared Method: getAge

@@ -1,5 +1,5 @@
 
-        func test(a int, a float) {
+        func foo(a, b int, a string) {
             return;
         }
         

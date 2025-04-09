@@ -16,11 +16,15 @@
         func (t Teacher) getName() string {
             return t.person.getName();
         }
+        func (p Person) getAge() string {
+            return p.name;
+        }
+
         type Teacher struct {
             person Person;
             students [5]Student;
         }
-        func (p Person) getName() string {
+        func (p Person) getAge() string {
             return p.name;
         }
         

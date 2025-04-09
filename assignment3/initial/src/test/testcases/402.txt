@@ -1,5 +1,5 @@
 
-        func putIntLn(x int, y int) {
-            return;
+        func putIntLn(x, y int) {
+            x := y + 1; 
         }
         

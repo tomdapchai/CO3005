@@ -1,8 +1,5 @@
 
         func foo(x,y,z int, t float) int {
-            var x int;
-            y := 2;
-            z := 3;
             var t float = 1.0;
             k := 1;
             return k;
@@ -11,6 +8,6 @@
             t := foo(1,2,3,4.0);
             putInt(t);
         }
-        const k = 1;
+        var k = 1;
         var k = 2;
         

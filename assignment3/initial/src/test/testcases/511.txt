@@ -1,0 +1,1 @@
+Program([StructType(A,[(y,IntType)],[MethodDecl(a,Id(A),FuncDecl(test,[],IntType,Block([Return(FieldAccess(Id(a),y))]))),MethodDecl(a,Id(A),FuncDecl(y,[],IntType,Block([Return(FieldAccess(Id(a),y))])))])])
