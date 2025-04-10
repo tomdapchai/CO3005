@@ -1,1 +1,1 @@
-Redeclared Method: name
+Redeclared Field: name

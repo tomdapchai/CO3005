@@ -2,6 +2,6 @@
         func foo(x, y int) {
             a := x + y;
             b := a > y;
-            c := a && b;
+            c := a || b;
         }
         

@@ -1,4 +1,7 @@
 
+        func (a A) c() int {
+            return a.b();
+        }
         var a int;
         type A struct {
             c int;
@@ -6,8 +9,8 @@
         func (a A) b() int {
             return a.c;
         }
-        
-        func (a A) c() int {
+        func (a A) d() int {
             return a.b();
         }
+        
         

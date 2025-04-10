@@ -1,24 +1,8 @@
 
-        func foo(a A, b B) {
+        func foo(a, b, c int, c float, d string) {
             var a int;
             var b float;
-            var c string;
             putInt(a);
-        }
-        type A struct {
-            x int;
-            y float;
-        }
-        type B interface {
-            test() int;
-        }
-        func (a A) test() int {
-            return a.x;
-        }
-        func main(){
-            var c B;
-            var a A;
-            var b = a.z + 1;
-            
+            putFloat(b);
         }
         

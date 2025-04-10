@@ -1,12 +1,8 @@
 
-        func foo() int{
-            var getInt int;
-            getInt := 1;
-            return getInt;
+        func foo(a int, b float, c string){
+            putInt(a);
         }
         func main(){
-            var a int;
-            a := foo();
-            putFloat(a);
+            foo(foo(7, 24.0, "hi there"), 24.0, "hi there");
         }
         

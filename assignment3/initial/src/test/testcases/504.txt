@@ -1,18 +1,16 @@
 
-        
+        type Address struct {
+            street string
+            city string
+            country string
+        }
+        func (p Person) location() Address {
+            var a int
+            return Address{street: "123 Main St", city: "New York", country: "USA"}
+        }
         type Person struct {
             name string
         }
-
-        const a = 1;
-        const b = 3;
-
-        func main() {
-            var n = a + b;
-            var arr [n]int = [4]int{1, 2, 3, 4}
-
-            for index, value := range arr1 {
-                n += 1;
-            }
-        }
+        var huy Person;
+        var add = huy.location().location;
         

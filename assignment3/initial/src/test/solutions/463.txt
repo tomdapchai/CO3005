@@ -1,1 +1,1 @@
-Type Mismatch: FuncCall(foo,[FloatLiteral(2.0)])
+Type Mismatch: FuncCall(bar,[FloatLiteral(2.0)])

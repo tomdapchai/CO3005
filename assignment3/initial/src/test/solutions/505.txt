@@ -1,1 +1,1 @@
-Redeclared Field: name
+Redeclared Type: Person

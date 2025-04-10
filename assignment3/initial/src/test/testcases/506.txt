@@ -1,9 +1,13 @@
 
-        const a = 2
-        const b = 3
-        var arr[2][2]int;
-        func main(){
-            arr[0] := [3]int{1,2}
+        type Address struct {
+            street string
+            city string
+            country string
         }
-
+        type Person struct {
+            name string
+            address Address
+        }
+        var huy Person;
+        var loc = huy.address.location();
         

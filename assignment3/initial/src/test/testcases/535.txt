@@ -1,0 +1,11 @@
+
+        func foo(a int, b float, c string){
+            var a int;
+            var b float;
+            var c string;
+            putInt(a);
+        }
+        func main(){
+            foo(foo(1, 2.0, "hello"), 2.0, "hello");
+        }
+        

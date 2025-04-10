@@ -11,6 +11,6 @@
             var c B;
             var d A;
             b.z := B{x: 1, y: 2, z: d};
-            return b.x + b.y + b.z.test() + b.z.x;
+            return b.x + b.z.x;
         }
         

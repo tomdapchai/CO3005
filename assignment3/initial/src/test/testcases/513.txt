@@ -1,0 +1,13 @@
+
+        type Community struct {
+            commu [3]Person
+        }
+        type Person struct {
+            name string
+        }
+        
+        func main() {
+            var obj Community
+            var result = obj.commu[3].age
+        }
+        

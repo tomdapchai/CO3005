@@ -5,9 +5,6 @@
             other B;
         }
         func (a A) test(x int, y float) {
-            var x int;
-            var y = x;
-            var z = y + 1;
             var b B;
             b := A{x: 1, y: 2.0};
             putInt(b.x);

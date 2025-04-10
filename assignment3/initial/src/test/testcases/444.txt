@@ -11,6 +11,6 @@
             other A;
         }
         func (b B) test() int {
-            return b.x + b.other.test() + b.other.test1();
+            return b.x + b.other.test1();
         }
         

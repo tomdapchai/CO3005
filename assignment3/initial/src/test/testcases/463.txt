@@ -1,11 +1,11 @@
 
         func foo(a int) int{
-            return 0xFF;
+            return 0x1FA24;
         }
         func bar(b int) int{
-            return 0b101;
+            return 0b1111;
         }
         func main(){
-            putInt(foo(bar(foo(bar(foo(bar(foo(2.0))))))));
+            putInt(foo(bar(foo(bar(foo(bar(bar(2.0))))))));
         }
         

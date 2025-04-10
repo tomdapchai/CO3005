@@ -1,0 +1,9 @@
+ 
+    const a = 2
+    const b = 2
+    func foo () [a]int {
+        var arr[2][2]int;
+        arr[0] := [2]int{1,2};
+        return arr[0];
+    }
+    

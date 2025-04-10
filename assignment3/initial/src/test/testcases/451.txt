@@ -1,5 +1,5 @@
 
-        var a int;
+        const a = 1;
         var b float = 1.0;
         var c int = a;
         var d = c > b;

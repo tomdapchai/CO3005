@@ -1,13 +1,11 @@
 
-        
-        type Person struct {
-            name string
+        func foo(){
+            var a int;
+            var b float;
+            var c string;
+            putInt(a);
         }
-
-        func main() {
-        
-            var Person int = 1;
-
-            var n string = Person.name;
+        func main(){
+            var x = foo()
         }
         

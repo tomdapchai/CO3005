@@ -1,0 +1,11 @@
+
+        func (b A) foo() {
+            return
+        }
+        type A struct {
+            name string
+        }
+        func (a A) foo() {
+            return
+        }
+        

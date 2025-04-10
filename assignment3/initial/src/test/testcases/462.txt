@@ -1,11 +1,9 @@
 
         func complexFunc(a int, b float, c Person) {
-            var x int;
-            var y float;
             var z Person;
-            var w = x + y;
             var v = z.test();
-            putInt(x);
+
+            const y = 1.2
             putFloat(y);
         }
         type Person struct {

@@ -1,1 +1,1 @@
-Type Mismatch: FuncCall(putFloat,[Id(c)])
+Type Mismatch: BinaryOp(Id(c),*,Id(a))

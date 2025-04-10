@@ -1,0 +1,8 @@
+
+        func foo(){
+            return;
+        }
+        func main(){
+            a := foo();
+        }
+        

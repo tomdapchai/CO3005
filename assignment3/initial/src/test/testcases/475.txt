@@ -1,13 +1,14 @@
 
+        const n = 4;
         var i string;
         func main(){
-            for i:=0; i< 2 + 2; i+=1{
+            for i := 0; i < n * 2; i += 1{
                 if (i % 2 == 0){
                     putInt(i);
                 }
             }
             
-            i := "hello";
-            i += 0.12;
+            i := "hi there";
+            i += 1;
         }
         

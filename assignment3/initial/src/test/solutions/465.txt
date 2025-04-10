@@ -1,1 +1,1 @@
-Type Mismatch: BinaryOp(Id(a),<,StringLiteral("hello"))
+Type Mismatch: BinaryOp(Id(a),<,StringLiteral("hi there"))

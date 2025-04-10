@@ -1,1 +1,1 @@
-Type Mismatch: FuncCall(putString,[Id(value)])
+Type Mismatch: ForEach(Id(index),Id(value),ArrayLiteral([IntLiteral(4)],IntType,[IntLiteral(1),IntLiteral(2),IntLiteral(3)]),Block([FuncCall(putInt,[Id(value)])]))

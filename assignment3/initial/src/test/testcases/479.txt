@@ -5,7 +5,7 @@
         func main(){
             foo();
             arr := [c]int{1,2,3};
-            putInt(arr[0]);
+            putInt(arr[3]);
             putString(arr[1]);
         }
         func foo(){

@@ -1,0 +1,13 @@
+
+        func (p Person) getName() string {
+            return p.name;
+        }
+        type Person struct {
+            name string;
+            age int;
+        }
+        var p Person;
+        func main(){
+            p.print();
+        }
+        

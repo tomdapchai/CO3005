@@ -1,1 +1,1 @@
-Type Mismatch: FuncCall(putFloat,[Id(a)])
+Type Mismatch: FuncCall(putFloat,[Id(b)])

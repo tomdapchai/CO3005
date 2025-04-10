@@ -1,9 +1,7 @@
 
         func foo(a int){
-            foo(1)
-
-            var foo = 1;
-
+            foo(1);
+            var foo int;
             foo(2);
         }
         

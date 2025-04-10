@@ -8,8 +8,4 @@
         func (a A) test1() int {
             return a.test2();
         }
-        func main(){
-            var a A;
-            putInt(a.test());
-        }
         

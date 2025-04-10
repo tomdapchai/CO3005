@@ -1,1 +1,1 @@
-Type Mismatch: FieldAccess(Id(Person),name)
+Type Mismatch: VarDecl(x,FuncCall(foo,[]))

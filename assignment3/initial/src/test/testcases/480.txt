@@ -1,11 +1,10 @@
 
         var a int;
         var b int;
-        var c = 0;
+        var c = 10;
         func main(){
             for a, b := range c{
                 putInt(a);
-                putInt(b);
             }
         }
         

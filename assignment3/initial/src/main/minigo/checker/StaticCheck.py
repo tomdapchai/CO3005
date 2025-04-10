@@ -27,12 +27,13 @@ class Symbol:
         return "Symbol(" + str(self.name) + "," + str(self.mtype) + ("" if self.value is None else "," + str(self.value)) + ")"
 
 class SymbolType(Symbol): # for struct and interface
-    def __init__(self, name, mtype, field: List[Symbol] = None, method: List[Symbol] = [], value = None, isDeclared = False,):
+    def __init__(self, name, mtype, field: List[Symbol] = None, method: List[Symbol] = [], value = None, isDeclared = False, member: List[Symbol] = None):
         self.name = name
         self.mtype = mtype
         self.field = field # None if interface
         self.method = method
         self.isDeclared = isDeclared
+        self.member = member # only struct would use this, for combination of field and method in ordered way based on there apprearance
 
     def __str__(self):
         return "SymbolType(" + str(self.name) + "," + str(self.mtype) + ")"
@@ -98,14 +99,11 @@ class StaticChecker(BaseVisitor,Utils):
             struct_sym = next((sym for sym in self.global_types if sym.name == method_decl.recType.name), None)
             
             if struct_sym:
-                # Check if method with same name already exists
+                # Check if method with same name already exists in struct.methods
                 existing_method = next((m for m in struct_sym.method if m.name == method_decl.fun.name), None)
                 if existing_method:
-                    # Skip this method if it already exists
-                    # Later on will raise Redeclared error
                     continue
                 
-                # Add method to struct
                 method_sym = Symbol(
                     name=method_decl.fun.name,
                     mtype=MType(
@@ -114,7 +112,17 @@ class StaticChecker(BaseVisitor,Utils):
                     ),
                     isDeclared=False  # Not fully declared yet
                 )
+                # Add method to struct
                 struct_sym.method.insert(0, method_sym)
+
+                # Check if method with same name already exists in struct.member
+                existing_method_member = next((m for m in struct_sym.member if m.name == method_decl.fun.name), None)
+                if existing_method_member:
+                    # remove the existing method from member and add the new method to member to the head of the list
+                    struct_sym.member.remove(existing_method_member)
+
+                struct_sym.member.insert(0, method_sym)
+                
             else:
                 # Keep in orphans for error reporting during regular visit
                 remaining_orphans.append(method_decl)
@@ -155,6 +163,8 @@ class StaticChecker(BaseVisitor,Utils):
                 if not res is None:
                     continue
 
+                members = []
+
                 fields = []
 
                 for elt in decl.elements:
@@ -169,6 +179,7 @@ class StaticChecker(BaseVisitor,Utils):
                         isDeclared=False  # Not fully declared yet
                     )
                     fields.append(field_sym)
+                    members.append(field_sym)
 
                 methods = []
                 for method in decl.methods:
@@ -184,6 +195,7 @@ class StaticChecker(BaseVisitor,Utils):
                             isDeclared=False  # Not fully declared yet
                         )   
                     methods.append(method_sym)
+                    members.append(method_sym)
 
 
                 struct_sym = SymbolType(
@@ -191,8 +203,10 @@ class StaticChecker(BaseVisitor,Utils):
                     mtype=type(decl),
                     field=fields,
                     method=methods,
-                    isDeclared=False
+                    isDeclared=False,
+                    member=members
                 )
+                
                 self.global_types.insert(0, struct_sym)
             
             elif isinstance(decl, InterfaceType):
@@ -249,6 +263,7 @@ class StaticChecker(BaseVisitor,Utils):
                         isDeclared=False  # Not fully declared yet
                     )
                     struct_sym.method.insert(0, method_sym)
+                    struct_sym.member.append(method_sym)
                 else:
                     # Store as an orphan method to be processed later
                     self.orphan_methods.append(decl)
@@ -479,20 +494,33 @@ class StaticChecker(BaseVisitor,Utils):
                 if type(idxType) is not IntType:
                     raise TypeMismatch(expr)
             
-            # Determine the return type based on dimensions accessed
+            # Check if indices are within bounds
             num_indices = len(expr.idx)
             total_dimensions = len(arrType.dimens)
             
+            if num_indices > total_dimensions:
+                # We're accessing more dimensions than the array has, which is an error
+                raise TypeMismatch(expr)
+            
+            # Check if indices are within the declared bounds
+            for i in range(min(num_indices, total_dimensions)):
+                idx_value = self.inferValue(expr.idx[i], c)
+                dim_value = self.inferValue(arrType.dimens[i], c)
+                
+                # If we can determine both values at compile time
+                if idx_value is not None and dim_value is not None:
+                    # Check if the index is out of bounds (negative or >= dimension size)
+                    if idx_value < 0 or idx_value > dim_value:
+                        raise TypeMismatch(expr)
+            
+            # Determine the return type based on dimensions accessed
             if num_indices < total_dimensions:
                 # We're accessing a subset of dimensions, return an array type with remaining dimensions
                 remaining_dimens = arrType.dimens[num_indices:]
                 return ArrayType(dimens=remaining_dimens, eleType=arrType.eleType)
-            elif num_indices == total_dimensions:
+            else:  # num_indices == total_dimensions
                 # We're accessing all dimensions, return the element type
                 return arrType.eleType
-            else:
-                # We're accessing more dimensions than the array has, which is an error
-                raise TypeMismatch(expr)
         
         elif isinstance(expr, FieldAccess):
             # should be Id()
@@ -782,10 +810,11 @@ class StaticChecker(BaseVisitor,Utils):
                 raise Redeclared(Variable(), ast.varName)
 
         if ast.varInit:
-            try: 
-                self.inferType(ast.varInit, c)
-            except TypeMismatch:
-                raise TypeMismatch(ast.varInit)
+            # try: 
+            #     self.inferType(ast.varInit, c)
+            # except TypeMismatch:
+            #     raise TypeMismatch(ast.varInit)
+            self.inferType(ast.varInit, c)
             initType = self.inferType(ast.varInit, c)
             if type(initType) is VoidType:
                 raise TypeMismatch(ast)
@@ -920,18 +949,40 @@ class StaticChecker(BaseVisitor,Utils):
         #     lambda x: x.name)
 
         # CASE: things in global scope cannot have the same name, including structs, interfaces, and functions, and global variables as var decl and const decl
+
+        # res = self.lookup(
+        #     ast.name, 
+        #     list(filter(lambda x: not isinstance(x, SymbolType), c[-1])),
+        #     lambda x: x.name)
+        # if not res is None:
+        #     if isinstance(res.mtype, MType):          
+        #         if res.isDeclared:
+        #             raise Redeclared(Function(), ast.name)
+        #         else:
+        #             res.isDeclared = True
+        #     else:
+        #         raise Redeclared(Function(), ast.name)
+
         res = self.lookup(
             ast.name, 
             list(filter(lambda x: not isinstance(x, SymbolType), c[-1])),
             lambda x: x.name)
         if not res is None:
-            if isinstance(res.mtype, MType):          
+            if hasattr(ast, 'isMethod'):
+                # The env now just have fields and methods of the struct        
                 if res.isDeclared:
-                    raise Redeclared(Function(), ast.name)
-                else:
+                    raise Redeclared(Method(), ast.name)
+                elif isinstance(res.mtype, MType):
                     res.isDeclared = True
+                
             else:
-                raise Redeclared(Function(), ast.name)
+                if isinstance(res.mtype, MType):          
+                    if res.isDeclared:
+                        raise Redeclared(Function(), ast.name)
+                    else:
+                        res.isDeclared = True
+                else:
+                    raise Redeclared(Function(), ast.name)
 
         # create new scope for function        
         env = [[]] + copy.deepcopy(c)
@@ -1004,7 +1055,7 @@ class StaticChecker(BaseVisitor,Utils):
         # if not hasattr(struct, 'field'):
         #     raise Undeclared(Identifier(), ast.recType.name)
 
-        env = struct.field + struct.method
+        env = struct.member
 
         # check if the method is redeclared in the struct
         # res = self.lookup(ast.fun.name, env, lambda x: x.name)
@@ -1145,13 +1196,12 @@ class StaticChecker(BaseVisitor,Utils):
             field_name = element[0]
             # Check if field is already in fields list
             # existing_field = next((f for f in fields if f.name == field_name), None)
-            existing_field = self.lookup(field_name, res.field + res.method, lambda x: x.name) # guarantee that there always be a result in the struct (field/method) as we have added in first scan
+            existing_field = self.lookup(field_name, res.member, lambda x: x.name) # guarantee that there always be a result in the struct (field/method) as we have added in first scan
             
             if existing_field.isDeclared:
                 raise Redeclared(Field(), field_name)
             else:
                 self.visit(element[1], c)
-                
                 existing_field.isDeclared = True
            
         for method in ast.methods:
@@ -1174,9 +1224,12 @@ class StaticChecker(BaseVisitor,Utils):
         
         # check prototypes
         # c here is a list of symbol of prototypes of an interface
-        c[-1].insert(0, SymbolType(name=ast.name, mtype=type(ast), field=None, method=[]))
+        # need to check more on this, as global_types already been added to c[-1]
+        env = copy.deepcopy(c)
 
-        reduce(lambda acc, ele: self.visit(ele, acc), ast.methods, c)
+        env[-1].insert(0, SymbolType(name=ast.name, mtype=type(ast), field=None, method=[]))
+
+        reduce(lambda acc, ele: self.visit(ele, acc), ast.methods, env)
 
         return c
 
@@ -1209,10 +1262,11 @@ class StaticChecker(BaseVisitor,Utils):
             else:
                 raise e
         # check RHS
-        try:
-            rhsType = self.inferType(ast.rhs, c)
-        except TypeMismatch as e:
-            raise TypeMismatch(ast.rhs)
+        # try:
+        #     rhsType = self.inferType(ast.rhs, c)
+        # except TypeMismatch as e:
+        #     raise TypeMismatch(ast.rhs)
+        rhsType = self.inferType(ast.rhs, c)
         
         if isinstance(rhsType, VoidType):
             raise TypeMismatch(ast)
@@ -1337,12 +1391,13 @@ class StaticChecker(BaseVisitor,Utils):
         self.visit(ast.upda, env)
         # check if the update is an assign statement, let not add it to the body scope - env[0]
         if isinstance(ast.upda, Assign):
-            symUpda = env[0][-1]
-            symInit = env[0][0]
-            if symUpda.name != symInit.name:
-                env[0].pop()
+            if len(env[0]) > 1: # means there is a new declaration in the update
+            # then init would be at index 1, and update at index 0 because the declaration is added to the head of the list
+                symUpda = env[0][0]
+                symInit = env[0][1]
+                if symUpda.name != symInit.name:
+                    env[0].pop(0)
         
-
 
         # checking loop block
         self.visit(ast.loop, env)
@@ -1359,8 +1414,17 @@ class StaticChecker(BaseVisitor,Utils):
 
         # ignore if _ is used instead of index
         if ast.idx.name != '_':
-            env[0].insert(0, Symbol(name=ast.idx.name, mtype=IntType()))
-        env[0].insert(0, Symbol(name=ast.value.name, mtype=arrayTyp.eleType))
+            # env[0].insert(0, Symbol(name=ast.idx.name, mtype=IntType()))
+            self.visit(ast.idx, env)
+            idxType = self.inferType(ast.idx, env)
+            if not isinstance(idxType, IntType):
+                raise TypeMismatch(ast)
+        # env[0].insert(0, Symbol(name=ast.value.name, mtype=arrayTyp.eleType))
+        self.visit(ast.value, env)
+
+        valueType = self.inferType(ast.value, env)
+        if not self.isSameType(valueType, arrayTyp.eleType, env):
+            raise TypeMismatch(ast)
         
         self.visit(ast.loop, env)
         return c

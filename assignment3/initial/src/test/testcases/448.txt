@@ -1,14 +1,11 @@
 
         func main(){
             var a A;
-            a := A{x: 1, y:2};
+            a := A{x: 1, z:2};
             putInt(a.test());
         }
         func (a A) test() int {
             return a.test1();
-        }
-        func (a A) test1() int {
-            return a.x;
         }
         type A struct {
             x int;

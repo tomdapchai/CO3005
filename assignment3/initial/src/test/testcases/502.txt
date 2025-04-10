@@ -1,8 +1,6 @@
 
-        func (a Person) name() {
-            return
-        }
-        type Person struct {
-            name string
+        type A struct {
+            getInt int;
+            getFloat float;
         }
         

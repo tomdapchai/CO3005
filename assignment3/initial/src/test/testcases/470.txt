@@ -15,6 +15,6 @@
         func main(){
             var c boolean = true;
             foo(1, 2);
-            putFloat(c);
+            putFloat(c * a - b);
         }
         

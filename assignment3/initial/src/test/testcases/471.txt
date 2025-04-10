@@ -1,7 +1,14 @@
 
-        func foo(){
-            a+=1;
-            a:= 1;
-            putInt(a);
+        var n int = 2;
+        var i = 2
+        func foo(a int, b int, c [n]int) int {
+            var x1 = 1 + 2 * 3
+            return a;
+        }
+
+        func foo1(a, b int) Person {
+            a := foo(a, b, [2]int{1, 2})
+
+            return a;
         }
         

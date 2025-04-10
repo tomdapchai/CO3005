@@ -1,0 +1,13 @@
+
+
+        type Person struct {
+            name string
+        }
+
+        func main() {
+
+            var Person int = 1;
+
+            var n string = Person.name;
+        }
+        

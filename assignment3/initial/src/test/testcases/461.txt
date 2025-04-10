@@ -5,7 +5,6 @@
         }
         func (a A) foo(){
             putInt(a.x);
-            putFloat(a.y);
         }
         func (a A) bar() int{
             return a.x + 1;

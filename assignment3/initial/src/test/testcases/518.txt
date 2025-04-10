@@ -1,0 +1,4 @@
+
+        var a[2][2]int;
+        var b[2] int = a[0];
+        

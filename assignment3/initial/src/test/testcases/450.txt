@@ -1,1 +1,1 @@
-Program([StructType(A,[(x,IntType)],[MethodDecl(a,Id(A),FuncDecl(test,[],IntType,Block([Return(FieldAccess(Id(a),y))])))])])
+Program([StructType(B,[(x,IntType)],[MethodDecl(a,Id(B),FuncDecl(test,[],IntType,Block([Return(FieldAccess(Id(a),z))])))])])

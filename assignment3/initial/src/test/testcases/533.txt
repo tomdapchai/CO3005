@@ -1,0 +1,13 @@
+
+        type A interface {
+            test() int
+        }
+        type B interface {
+            test() int
+        }
+        func foo() A{
+            var a A
+            var b B
+            return b;
+        }
+        

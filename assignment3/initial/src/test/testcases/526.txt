@@ -1,0 +1,11 @@
+
+        type Person struct {
+            name string;
+            age int
+        }
+        const a = 5
+        func foo() [5]Person{
+            arr := [5]Person{Person{name: "Alice", age: 25},Person{name: "Bob", age: 30},Person{name: "Charlie", age: 35},Person{name: "David", age: 40},Person{name: "Eve", age: 45}}
+            return arr
+        }
+        

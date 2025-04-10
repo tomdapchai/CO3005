@@ -1,0 +1,9 @@
+
+        type Person struct {
+            name string
+            age int
+        }
+        func main(){
+            arr := [5]Person{Person{name: "Alice", age: 25},Person{name: "Bob", age: 30},Person{name: "Charlie", age: 35},Person{name: "David", age: 40},Person{name: "Eve", age: 45}}
+        }
+        

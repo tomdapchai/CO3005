@@ -16,14 +16,12 @@
         func (b B) foo(a int) int {
             return b.x + a;
         }
-        func (b B) foo1(c int) int {
-            return b.x;
+        func (b B) foo1(a int) int {
+            return a;
         }
         func main(){
             var a A;
             a := foo();
-            putInt(a.test1());
-            putInt(a.foo(1));
             putInt(a.foo1(2));
             putInt(a.foo2(3));
         }

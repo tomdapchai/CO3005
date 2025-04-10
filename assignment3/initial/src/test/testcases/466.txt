@@ -2,7 +2,7 @@
         func main(){
             var a int;
             var b float;
-            for a < b {
+            for a <= b {
                 putInt(a);
                 a += 1;
             }

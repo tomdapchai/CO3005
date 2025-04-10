@@ -3,14 +3,6 @@
             a int;
             b float;
         }
-        func main(){
-            var c C;
-            c := C{a: 1, b: 2.0};
-            putInt(c.test());
-            var d D;
-            d := C{a: 1, b: 2.0};
-            putInt(d.test());
-        }
         func (c C) test() int {
             return c.a + c.b + c.d;
         }

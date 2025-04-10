@@ -1,0 +1,8 @@
+
+        func main(){
+            var value_ int;
+            for index, value_ := range [5]int{1,2,3,4,5} {
+                putInt(value_);
+            }
+        }
+        

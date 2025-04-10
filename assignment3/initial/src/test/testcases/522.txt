@@ -1,0 +1,10 @@
+
+        func main(){
+            var index int
+            var value int
+            for index, value := range arr {
+                putInt(value);
+            }
+            
+        }
+        

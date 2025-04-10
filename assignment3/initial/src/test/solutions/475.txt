@@ -1,1 +1,1 @@
-Type Mismatch: BinaryOp(Id(i),+,FloatLiteral(0.12))
+Type Mismatch: BinaryOp(Id(i),+,IntLiteral(1))

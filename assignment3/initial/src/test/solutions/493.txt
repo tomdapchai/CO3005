@@ -1,1 +1,1 @@
-Type Mismatch: FuncCall(putFloat,[Id(a)])
+Type Mismatch: FuncCall(foo,[FuncCall(foo,[IntLiteral(7),FloatLiteral(24.0),StringLiteral("hi there")]),FloatLiteral(24.0),StringLiteral("hi there")])

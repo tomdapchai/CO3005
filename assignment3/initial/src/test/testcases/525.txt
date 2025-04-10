@@ -1,0 +1,10 @@
+
+        type A interface {
+            test()
+        }
+        func main(){
+            var b A
+            var c A
+            var arr[2]A = [2]A{b,c}
+        }
+        

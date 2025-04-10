@@ -15,10 +15,4 @@
         func (b B) test1() int {
             return b.x;
         }
-        func main(){
-            var a A;
-            a := A{x: 1, other: B{x: 2}};
-            putInt(a.test());
-            putInt(a.test1());
-        }
         

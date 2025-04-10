@@ -3,7 +3,7 @@
             x int;
             y float;
         }
-        func (a A) foo(a int) int{
-            return a.x;
+        func (a A) foo(a int) float{
+            return a.y;
         }
         

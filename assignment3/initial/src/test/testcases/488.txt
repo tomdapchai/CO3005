@@ -5,7 +5,7 @@
         }
         func main(){
             var p Person;
-            p := Person{age: 25, name: "Alice"};
+            p := Person{age: 25, name: "Tom"};
             putFloat(p.age);
         }
         
