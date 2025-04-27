@@ -3,8 +3,7 @@ from StaticCheck import *
 from StaticError import *
 import CodeGenerator as cgen
 from MachineCode import JasminCode
-
-
+from main.minigo.codegen.CodeGenError import IllegalOperandException
 
 class Emitter():
     def __init__(self, filename):
@@ -576,6 +575,15 @@ class Emitter():
         if type(in_) is IntType:
             frame.pop()
             return self.jvm.emitIRETURN()
+        elif type(in_) is FloatType:
+            frame.pop()
+            return self.jvm.emitFRETURN()
+        elif type(in_) is StringType:
+            frame.pop()
+            return self.jvm.emitARETURN()
+        elif type(in_) is ArrayType:
+            frame.pop()
+            return self.jvm.emitARETURN()
         elif type(in_) is VoidType:
             return self.jvm.emitRETURN()
 

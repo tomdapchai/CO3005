@@ -29,3 +29,36 @@ class CheckCodeGenSuite(unittest.TestCase):
         expect = "5000"
         self.assertTrue(TestCodeGen.test(input,expect,506))
     
+    def test_1(self):
+        input = """
+        func main() {
+            var a int = 5;
+            var b int = 10;
+            putInt(a + b);
+        };"""
+        expect = "15"
+        self.assertTrue(TestCodeGen.test(input,expect,507))
+
+    def test_2(self):
+        input = """
+        func main() {
+            var a int = 5;
+            var b int = 10;
+            var c int = 15;
+            putInt(a + b + c);
+        };"""
+        expect = "30"
+        self.assertTrue(TestCodeGen.test(input,expect,508))
+
+    def test_3(self):
+        input = """
+        func main() {
+            var a int = 5;
+            var b int = 10;
+            var c int = 15;
+            var d int = 20;
+            putInt(a + b + c + d % a);
+        };"""
+        expect = "30"
+        self.assertTrue(TestCodeGen.test(input,expect,509))
+    

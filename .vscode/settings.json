@@ -2,6 +2,7 @@
     "python.analysis.extraPaths": [
         "./assignment2/initial/src/main/minigo/utils",
         "./assignment2/initial/target",
-        "./assignment3/initial/src/main/minigo/utils"
+        "./assignment3/initial/src/main/minigo/utils",
+        "./assignment4/initial/src/main/minigo/checker"
     ]
 }
