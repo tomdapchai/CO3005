@@ -1,0 +1,12 @@
+
+        var a = 5 + 0
+        var y = 15.5
+
+        func main() {
+            var b = 10;
+            var c = 15;
+            var d int = 20;
+            putFloat((a + b + c + d % a) * a - y);
+        };
+        
+        

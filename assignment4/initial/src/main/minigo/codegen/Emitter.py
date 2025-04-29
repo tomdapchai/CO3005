@@ -15,6 +15,10 @@ class Emitter():
         typeIn = type(inType)
         if typeIn is IntType:
             return "I"
+        elif typeIn is FloatType:
+            return "F"
+        elif typeIn is BoolType:
+            return "Z"
         elif typeIn is StringType:
             return "Ljava/lang/String;"
         elif typeIn is VoidType:
@@ -36,6 +40,10 @@ class Emitter():
             return "java/lang/String"
         elif typeIn is VoidType:
             return "void"
+        elif typeIn is StructType:
+            return "java/lang/Object"
+        elif typeIn is ArrayType:
+            return "java/lang/Object"
 
     def emitPUSHICONST(self, in_, frame):
         #in: Int or Sring
@@ -125,6 +133,13 @@ class Emitter():
     *   @param fromLabel the starting label of the scope where the variable is active.
     *   @param toLabel the ending label  of the scope where the variable is active.
     '''
+
+    def emitNEWARRAY(self, inType, frame):
+        return self.jvm.emitNEWARRAY(self.getJVMType(inType))
+    
+    def emitANEWARRAY(self, inType, frame):
+        pass
+
     def emitVAR(self, in_, varName, inType, fromLabel, toLabel, frame):
         #in_: Int
         #varName: String
@@ -204,10 +219,12 @@ class Emitter():
         #in_: Type
         #isFinal: Boolean
         #value: String
+
+        # isFinal is used to determine whether the field is a constant or not.
         if isStatic:
             return self.jvm.emitSTATICFIELD(lexeme, self.getJVMType(in_), isFinal, value)
         else:
-            return self.jvm.emitFIELD(lexeme, self.getJVMType(in_), isFinal, value)
+            return self.jvm.emitINSTANCEFIELD(lexeme, self.getJVMType(in_), isFinal, value)
 
     def emitGETSTATIC(self, lexeme, in_, frame):
         #lexeme: String
@@ -634,6 +651,7 @@ class Emitter():
 
     def emitEPILOG(self):
         file = open(self.filename, "w")
+        print("self.buff", self.buff)
         file.write(''.join(self.buff))
         file.close()
 

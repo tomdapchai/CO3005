@@ -1,6 +1,8 @@
 .source MiniGoClass.java
 .class public MiniGoClass
 .super java.lang.Object
+.field static a I = 10
+.field static y I = 15
 
 .method public static main([Ljava/lang/String;)V
 Label0:
@@ -27,6 +29,10 @@ Label2:
 	iload_1
 	irem
 	iadd
+	iload_1
+	imul
+	getstatic MiniGoClass/y I
+	idiv
 	invokestatic io/putInt(I)V
 Label3:
 Label1:
@@ -44,4 +50,12 @@ Label1:
 	return
 .limit stack 1
 .limit locals 1
+.end method
+
+.method public static <clinit>()V
+Label0:
+Label1:
+	return
+.limit stack 0
+.limit locals 0
 .end method

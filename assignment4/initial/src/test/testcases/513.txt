@@ -1,0 +1,9 @@
+
+        const a = 20 * 10
+        var y = 15.5 * 2
+
+        func main() {
+            putFloat(a + y)
+        };
+        
+        

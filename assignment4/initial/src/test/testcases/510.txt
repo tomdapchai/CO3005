@@ -1,11 +1,11 @@
 
         var a int = 10
-        var y int = 15
+        var y float = 15.5
 
         func main() {
             var a int = 5;
             var b int = 10;
             var c int = 15;
             var d int = 20;
-            putInt((a + b + c + d % a) * a / y);
+            putFloat((a + b + c + d % a) * a + y);
         };

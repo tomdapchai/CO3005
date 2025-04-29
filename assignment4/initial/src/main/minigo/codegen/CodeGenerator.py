@@ -13,6 +13,26 @@ from Frame import Frame
 from abc import ABC, abstractmethod
 from functools import reduce
 
+class Symbol:
+    def __init__(self,name,mtype, value = None):
+        self.name = name
+        self.mtype = mtype
+        self.value = value
+
+    def __str__(self):
+        return "Symbol(" + str(self.name) + "," + str(self.mtype) + ("" if self.value is None else "," + str(self.value)) + ")"
+
+class SymbolType(Symbol): # for struct and interface
+    def __init__(self, name, mtype, field: List[Symbol] = None, method: List[Symbol] = [], value = None, isDeclared = False, member: List[Symbol] = None):
+        self.name = name
+        self.mtype = mtype
+        self.field = field # None if interface
+        self.method = method
+        self.isDeclared = isDeclared
+        self.member = member # only struct would use this, for combination of field and method in ordered way based on there apprearance
+
+    def __str__(self):
+        return "SymbolType(" + str(self.name) + "," + str(self.mtype) + ")"
 
 class Val(ABC):
     pass
@@ -23,7 +43,19 @@ class Index(Val):
 
         self.value = value
 
+class Access(Val):
+    def __init__(self, frame: Frame, symbol: Symbol, env: List[List[Symbol]], isLeft: bool):
+        #frame: Frame
+        #symbol: Symbol
+        #env: Env
+        #isLeft: Bool
+        self.frame = frame
+        self.symbol = symbol
+        self.env = env
+        self.isLeft = isLeft
+
 class CName(Val):
+    # This is used to tell which class this symbol belongs to
     def __init__(self, value,isStatic=True):
         #value: String
         self.isStatic = isStatic
@@ -41,62 +73,168 @@ class CodeGenerator(BaseVisitor,Utils):
         self.astTree = None
         self.path = None
         self.emit = None
+        self.globalSym = []
+        self.initCode = [] # List of tuples (name, type, expr) for delayed initialization
 
     def init(self):
-        mem = [Symbol("putInt",MType([IntType()],VoidType()),CName("io",True)),
-                Symbol("putIntLn",MType([IntType()],VoidType()),CName("io",True))]
+        mem = [Symbol("getInt", MType([],IntType()), CName("io",True)),
+                Symbol("putInt",MType([IntType()],VoidType()),CName("io",True)),
+                Symbol("putIntLn",MType([IntType()],VoidType()),CName("io",True)),
+                Symbol("getFloat",MType([],FloatType()),CName("io",True)),
+                Symbol("putFloat",MType([FloatType()],VoidType()),CName("io",True)),
+                Symbol("putFloatLn",MType([FloatType()],VoidType()),CName("io",True)),
+                Symbol("getBool",MType([],BoolType()), CName("io", True)),
+                Symbol("putBool",MType([BoolType()],VoidType()),CName("io",True)),
+                Symbol("putBoolLn",MType([BoolType()],VoidType()),CName("io",True)),
+                Symbol("getString",MType([],StringType()), CName("io", True)),
+                Symbol("putString",MType([StringType()],VoidType()),CName("io",True)),
+                Symbol("putStringLn",MType([StringType()],VoidType()),CName("io",True)),
+                Symbol("putLn",MType([],VoidType()),CName("io",True)),
+                ]
         return mem
 
     def gen(self, ast, dir_):
-        gl = self.init()
+        gl = self.init() # builtin method
         self.astTree = ast
         self.path = dir_
         self.emit = Emitter(dir_ + "/" + self.className + ".j")
         self.visit(ast, gl)
        
-        
-    def emitObjectInit(self):
+    # can use this for references on creating new method in class
+    def emitObjectInit(self, name):
         frame = Frame("<init>", VoidType())  
-        self.emit.printout(self.emit.emitMETHOD("<init>", MType([], VoidType()), False, frame))  # Bắt đầu định nghĩa phương thức <init>
+        self.emit.printout(self.emit.emitMETHOD("<init>", MType([], VoidType()), False, frame))  # Start defining method <init>
         frame.enterScope(True)  
-        self.emit.printout(self.emit.emitVAR(frame.getNewIndex(), "this", ClassType(self.className), frame.getStartLabel(), frame.getEndLabel(), frame))  # Tạo biến "this" trong phương thức <init>
+        self.emit.printout(self.emit.emitVAR(frame.getNewIndex(), "this", ClassType(name), frame.getStartLabel(), frame.getEndLabel(), frame))  # create "this" variable in <init>
         
         self.emit.printout(self.emit.emitLABEL(frame.getStartLabel(), frame))
-        self.emit.printout(self.emit.emitREADVAR("this", ClassType(self.className), 0, frame))  
+        self.emit.printout(self.emit.emitREADVAR("this", ClassType(name), 0, frame))  
         self.emit.printout(self.emit.emitINVOKESPECIAL(frame))  
-    
         
         self.emit.printout(self.emit.emitLABEL(frame.getEndLabel(), frame))
         self.emit.printout(self.emit.emitRETURN(VoidType(), frame))  
         self.emit.printout(self.emit.emitENDMETHOD(frame))  
         frame.exitScope()  
+    
+    def emitObjectClinitMain(self):
+        # perform creating clinic instance here
+        frame = Frame("<clinit>", VoidType())
+        self.emit.printout(self.emit.emitMETHOD("<clinit>", MType([], VoidType()), True, frame))  # Start defining method <clinit>, static
+
+        frame.enterScope(True)
+        self.emit.printout(self.emit.emitLABEL(frame.getStartLabel(), frame))
+
+        # Emit delayed initializations
+        for name, typ, expr in self.initCode:
+            eInit, tInit = self.visit(expr, {'frame': frame, 'env': [[]], 'isLeft': False})
+            self.emit.printout(eInit)
+            self.emit.printout(self.emit.emitPUTSTATIC(f"{self.className}/{name}", typ, frame))
+        
+        self.emit.printout(self.emit.emitLABEL(frame.getEndLabel(), frame))
+        self.emit.printout(self.emit.emitRETURN(VoidType(), frame))
+        self.emit.printout(self.emit.emitENDMETHOD(frame))  # End of <clinit>
+
 
     def visitProgram(self, ast, c):
+        # first scan for function
         self.list_function = c + [Symbol(item.name, MType(list(map(lambda x: x.parType, item.params)), item.retType), CName(self.className)) for item in ast.decl if isinstance(item, FuncDecl)]
+
+
         env ={}
         env['env'] = [c]
         self.emit.printout(self.emit.emitPROLOG(self.className, "java.lang.Object"))
         env = reduce(lambda a,x: self.visit(x,a), ast.decl, env)
-        self.emitObjectInit()
+        self.emitObjectInit(self.className)
+        self.emitObjectClinitMain()
         self.emit.printout(self.emit.emitEPILOG())
         return env
 
     # ====================================DECLARATIONS====================================
-    def visitVarDecl(self, ast, o):
-        if 'frame' not in o: # global var
-            o['env'][0].append(Symbol(ast.varName, ast.varType, CName(self.className)))
-            self.emit.printout(self.emit.emitATTRIBUTE(ast.varName, ast.varType, True, False, str(ast.varInit.value) if ast.varInit else None))
+    # Workaround for basic literals for now
+    def visitVarDecl(self, ast: VarDecl, o):
+        if 'frame' not in o: # global var, need to be fixed as there is no frame to use
+            if ast.varType:
+                o['env'][-1].append(Symbol(ast.varName, ast.varType, CName(self.className)))
+                if isinstance(ast.varInit, (IntLiteral, FloatLiteral, StringLiteral, BooleanLiteral)):
+                    # For simple literals, emit directly as attribute value
+                    self.emit.printout(self.emit.emitATTRIBUTE(ast.varName, ast.varType, True, False, str(ast.varInit.value) if ast.varInit else None))
+                else:
+                    # For complex expressions, delay initialization to <init>
+                    self.emit.printout(self.emit.emitATTRIBUTE(ast.varName, ast.varType, True, False, None))
+                    self.initCode.append((ast.varName, ast.varType, ast.varInit))
+            else:
+                # For variables without explicit type, create a temporary frame to infer the type
+                temp_frame = Frame("temp", VoidType())
+                temp_env = o.copy()
+                temp_env['frame'] = temp_frame
+                _, tInit = self.visit(ast.varInit, temp_env)
+                
+                o['env'][-1].append(Symbol(ast.varName, tInit, CName(self.className)))
+                
+                if isinstance(ast.varInit, (IntLiteral, FloatLiteral, StringLiteral, BooleanLiteral)):
+                    # For simple literals, emit directly
+                    self.emit.printout(self.emit.emitATTRIBUTE(ast.varName, tInit, True, False, str(ast.varInit.value) if ast.varInit else None))
+                else:
+                    # For complex expressions, delay initialization to <init>
+                    self.emit.printout(self.emit.emitATTRIBUTE(ast.varName, tInit, True, False, None))
+                    self.initCode.append((ast.varName, tInit, ast.varInit))
         else:
             frame = o['frame']
             index = frame.getNewIndex()
-            o['env'][0].append(Symbol(ast.varName, ast.varType, Index(index)))
-            self.emit.printout(self.emit.emitVAR(index, ast.varName, ast.varType, frame.getStartLabel(), frame.getEndLabel(), frame))  
-            if ast.varInit:
-                self.emit.printout(self.emit.emitPUSHICONST(ast.varInit.value, frame))
-                self.emit.printout(self.emit.emitWRITEVAR(ast.varName, ast.varType, index,  frame))
+            if ast.varType:
+                # need further fix, this now only works for integer and float and string and bool not array/struct/interface
+                o['env'][0].append(Symbol(ast.varName, ast.varType, Index(index)))
+                self.emit.printout(self.emit.emitVAR(index, ast.varName, ast.varType, frame.getStartLabel(), frame.getEndLabel(), frame))  
+                if ast.varInit:
+                    eInit, tInit = self.visit(ast.varInit, o)
+                    self.emit.printout(eInit)
+                else:
+                    print("no varInit")
+                    eInit = self.get_default_value(ast.varType)
+                    self.emit.printout(self.emit.emitPUSHCONST(eInit, frame))
+                
+                self.emit.printout(self.emit.emitWRITEVAR(ast.varName, ast.varType, index, frame))
+                
+            else:
+                # there obviously is varInit if no varType here
+                eInit, tInit = self.visit(ast.varInit, o)
+                o['env'][0].append(Symbol(ast.varName, tInit, Index(index)))
+                self.emit.printout(self.emit.emitVAR(index, ast.varName, tInit, frame.getStartLabel(), frame.getEndLabel(), frame))
+                self.emit.printout(eInit)
+                self.emit.printout(self.emit.emitWRITEVAR(ast.varName, tInit, index,  frame))
+                # self.printEnv(o['env'])
+        
         return o
     
-    def visitConstDecl(self, ast, o):
+    def visitConstDecl(self, ast: ConstDecl, o):
+        # would perform the exact global var in vardecl with isFinal = True
+        if 'frame' not in o: # global const
+            # For variables without explicit type, create a temporary frame to infer the type
+            temp_frame = Frame("temp", VoidType())
+            temp_env = o.copy()
+            temp_env['frame'] = temp_frame
+            
+            _, tInit = self.visit(ast.iniExpr, temp_env)
+            
+            o['env'][-1].append(Symbol(ast.conName, tInit, CName(self.className)))
+            
+            if isinstance(ast.iniExpr, (IntLiteral, FloatLiteral, StringLiteral, BooleanLiteral)):
+                # For simple literals, emit directly
+                self.emit.printout(self.emit.emitATTRIBUTE(ast.conName, tInit, True, True, str(ast.iniExpr.value) ))
+            else:
+                initValue = self.inferValueConstant(ast.iniExpr)
+                self.emit.printout(self.emit.emitATTRIBUTE(ast.conName, tInit, True, True, str(initValue)))
+        else:
+            # when const declaration in local, treat is exactly the same as var
+            frame = o['frame']
+            e, typ = self.visit(ast.iniExpr, o)
+            index = frame.getNewIndex()
+            o['env'][0].append(Symbol(ast.conName, typ, Index(index)))
+            self.emit.printout(self.emit.emitVAR(index, ast.conName, typ, frame.getStartLabel(), frame.getEndLabel(), frame))
+            self.emit.printout(e)
+            self.emit.printout(self.emit.emitWRITEVAR(ast.conName, typ, index, frame))
+            # self.printEnv(o['env'])
+        
         return o
     
     def visitParamDecl(self, ast, o):
@@ -109,10 +247,12 @@ class CodeGenerator(BaseVisitor,Utils):
             mtype = MType([ArrayType([None],StringType())], VoidType())
         else:
             mtype = MType(list(map(lambda x: x.parType, ast.params)), ast.retType)
-        o['env'][0].append(Symbol(ast.name, mtype, CName(self.className)))
+        o['env'][-1].append(Symbol(ast.name, mtype, CName(self.className)))
         env = o.copy()
         env['frame'] = frame
         self.emit.printout(self.emit.emitMETHOD(ast.name, mtype,True, frame))
+
+
         frame.enterScope(True)
         self.emit.printout(self.emit.emitLABEL(frame.getStartLabel(), frame))
         env['env'] = [[]] + env['env']
@@ -126,6 +266,8 @@ class CodeGenerator(BaseVisitor,Utils):
             self.emit.printout(self.emit.emitRETURN(VoidType(), frame)) 
         self.emit.printout(self.emit.emitENDMETHOD(frame))
         frame.exitScope()
+
+
         return o
     
 
@@ -136,6 +278,54 @@ class CodeGenerator(BaseVisitor,Utils):
         return o
     
 
+    def visitArrayType(self, ast: ArrayType, o):
+        # @dimens: List[int]
+        # @eleType: Type
+        
+        o['isLeft'] = False
+        code = ""
+
+        for dim in ast.dimens:
+            e, t = self.visit(dim, o)
+            code += e
+        
+        if len(ast.dimens) > 1:
+            pass
+        else:
+            pass
+        
+
+        return o
+    
+    def visitStructType(self, ast: StructType, o):
+        # @name: str
+        # @elements:List[Tuple[str,Type]]
+        # @methods:List[MethodDecl]
+        # @implements:List[InterfaceType] =  field(default_factory=list)
+
+        frame = Frame(ast.name, VoidType())
+        o['env'][-1].append(Symbol(ast.name, ClassType(ast.name), None))
+
+
+        # use emitPROLOG
+        self.emit.printout(self.emit.emitPROLOG(ast.name, "java.lang.Object"))
+
+        # process field
+        for element in ast.elements:
+            self.emit.printout(self.emit.emitATTRIBUTE(element[0], element[1], True, False, None))
+
+        # would be methods here, saved for later
+        
+
+        # init - constructor
+        self.emitObjectInit(ast.name)
+
+        
+        return o
+    
+    def visitInterfaceType(self, ast, o):
+        return o
+
     
     # ====================================EXPRESSIONS====================================
     
@@ -143,15 +333,21 @@ class CodeGenerator(BaseVisitor,Utils):
         sym = next(filter(lambda x: x.name == ast.name, [j for i in o['env'] for j in i]),None)
         if type(sym.value) is Index:
             # local var
-            return self.emit.emitREADVAR(ast.name, sym.mtype, sym.value.value, o['frame']),sym.mtype
+            if o['isLeft'] is False:
+                return self.emit.emitREADVAR(ast.name, sym.mtype, sym.value.value, o['frame']), sym.mtype
+            else:
+                return self.emit.emitWRITEVAR(ast.name, sym.mtype, sym.value.value, o['frame']), sym.mtype
         else:         
             # global var
-            return self.emit.emitGETSTATIC(f"{self.className}/{sym.name}",sym.mtype,o['frame']),sym.mtype
+            if o['isLeft'] is False:
+                return self.emit.emitGETSTATIC(f"{self.className}/{sym.name}",sym.mtype,o['frame']), sym.mtype
+            else:
+                return self.emit.emitPUTSTATIC(f"{self.className}/{sym.name}",sym.mtype,o['frame']), sym.mtype
     
-    def visitArrayCell(self, ast, o):
+    def visitArrayCell(self, ast: ArrayCell, o):
         return o
     
-    def visitFieldAccess(self, ast, o):
+    def visitFieldAccess(self, ast: FieldAccess, o):
         return o
     
     def visitBinaryOp(self, ast: BinaryOp, o):
@@ -199,13 +395,28 @@ class CodeGenerator(BaseVisitor,Utils):
             code += self.emit.emitNOT(BoolType(), o['frame'])
             return code, BoolType()
     
-    def visitFuncCall(self, ast, o):
-        sym = next(filter(lambda x: x.name == ast.funName, o['env'][-1]),None)
+    def visitFuncCall(self, ast: FuncCall, o):
+        # would be two case: being statement (voidtype) and expression, stmt would return o and exp return code + type
+        sym = next(filter(lambda x: x.name == ast.funName, self.list_function),None)
+
         env = o.copy()
         env['isLeft'] = False
-        [self.emit.printout(self.visit(x, env)[0]) for x in ast.args]
-        self.emit.printout(self.emit.emitINVOKESTATIC(f"{sym.value.value}/{ast.funName}",sym.mtype, o['frame']))
-        return o
+
+        if type(sym.mtype.rettype) is VoidType:
+            [self.emit.printout(self.visit(x, env)[0]) for x in ast.args]
+            
+            # sym.value.value is classname
+
+            self.emit.printout(self.emit.emitINVOKESTATIC(f"{sym.value.value}/{ast.funName}", sym.mtype, o['frame']))
+            return o
+        else:
+            code = ""
+            for arg in ast.args:
+                code += self.visit(arg, env)[0]
+            
+            code += self.emit.emitINVOKESTATIC(f"{sym.value.value}/{ast.funName}", sym.mtype, o['frame'])
+            return code, sym.mtype.rettype
+            
     
     def visitMethCall(self, ast, o):
         # likely invokestatic
@@ -254,14 +465,6 @@ class CodeGenerator(BaseVisitor,Utils):
     def visitVoidType(self, ast, o):
         return o
     
-    def visitArrayType(self, ast, o):
-        return o
-    
-    def visitStructType(self, ast, o):
-        return o
-    
-    def visitInterfaceType(self, ast, o):
-        return o
     
     # ====================================STATEMENTS====================================
 
@@ -275,16 +478,21 @@ class CodeGenerator(BaseVisitor,Utils):
         env['frame'].exitScope()
         return o
     
-    def visitAssign(self, ast, o):
+    def visitAssign(self, ast: Assign, o):
         env = o.copy()
+        env['isLeft'] = False
+        rhs, _ = self.visit(ast.rhs, env)
+        self.emit.printout(rhs)
+
         env['isLeft'] = True
-        lhs = self.visit(ast.lhs,env)[0]
-        rhs = self.visit(ast.rhs,env)[0]
-        if type(lhs) is CName:
-            self.emit.printout(self.emit.emitPUTSTATIC(f"{self.className}/{lhs}",rhs,o['frame']))
-        else:
-            self.emit.printout(lhs)
-            self.emit.printout(rhs)
+        lhs, _ = self.visit(ast.lhs, env)
+        self.emit.printout(lhs)
+
+        # if type(lhs) is CName:
+        #     self.emit.printout(self.emit.emitPUTSTATIC(f"{self.className}/{lhs}",rhs,o['frame']))
+        # else:
+        #     self.emit.printout(lhs)
+        #     self.emit.printout(rhs)
         return o
     
     def visitIf(self, ast: If, o):
@@ -306,7 +514,31 @@ class CodeGenerator(BaseVisitor,Utils):
             self.emit.printout(self.emit.emitLABEL(label0, env['frame']))
         return o
     
-    def visitForBasic(self, ast, o):
+    def visitForBasic(self, ast: ForBasic, o):
+        env = o.copy()
+        env['frame'].enterLoop() # trigger enterLoop to get break and continue label
+        Break = env['frame'].getBreakLabel()
+        Continue = env['frame'].getContinueLabel()
+        
+        self.emit.printout(self.emit.emitLABEL(Continue, env['frame']))
+        # only check condition here in for basic
+        env['isLeft'] = False
+        e = self.visit(ast.cond, env)[0]
+        self.emit.printout(e)
+        self.emit.printout(self.emit.emitIFFALSE(Break, env['frame']))
+
+        # go to body of for loop
+        env['isLeft'] = False
+
+        self.visit(ast.loop, env)
+
+        # go to continue label
+        self.emit.printout(self.emit.emitGOTO(Continue, env['frame']))
+
+        # emit break label
+        self.emit.printout(self.emit.emitLABEL(Break, env['frame']))
+        env['frame'].exitLoop()
+
         return o
     
     def visitForStep(self, ast: ForStep, o):
@@ -377,6 +609,110 @@ class CodeGenerator(BaseVisitor,Utils):
         self.emit.printout(self.emit.emitRETURN(t, env['frame']))
         return o
 
+    # ====================================HELPER FUNCTIONS====================================
+
+    def infer_type(self, ast, o): # this would be very likely to get type of global var
+        pass
+
+    def get_default_value(self, t):
+        if isinstance(t, IntType):
+            return 0
+        elif isinstance(t, FloatType):
+            return 0.0
+        elif isinstance(t, BoolType):
+            return False
+        elif isinstance(t, StringType):
+            return ""
+        elif isinstance(t, ArrayType):
+            return None
+        else:
+            return None
     
+    def firstScan(self, ast: Program):
+        for decl in ast.decl:
+            if isinstance(decl, FuncDecl) or isinstance(decl, StructType) or isinstance(decl, InterfaceType):
+                self.globalSym.append(decl)
     
+
+    def inferValueConstant(self, ast): 
+        if isinstance(ast, IntLiteral):
+            if type(ast.value) is str:
+                if ast.value.startswith("0x") or ast.value.startswith("0X"):
+                    return int(ast.value, 16)
+                elif ast.value.startswith("0b") or ast.value.startswith("0B"):
+                    return int(ast.value, 2)
+                elif ast.value.startswith("0o") or ast.value.startswith("0O"):
+                    return int(ast.value, 8)
+                return int(ast.value)
+            return int(ast.value)
+        elif isinstance(ast, FloatLiteral):
+            return ast.value
+        elif isinstance(ast, StringLiteral):
+            return ast.value
+        elif isinstance(ast, BooleanLiteral):
+            return ast.value
+        elif isinstance(ast, ArrayLiteral):
+            return [self.inferValueConstant(x) for x in ast.value]
+        elif isinstance(ast, BinaryOp):
+            left = self.inferValueConstant(ast.left)
+            right = self.inferValueConstant(ast.right)
+            if ast.op == '+':
+                return left + right
+            elif ast.op == '-':
+                return left - right
+            elif ast.op == '*':
+                return left * right
+            elif ast.op == '/':
+                return left / right
+            elif ast.op == '%':
+                return left % right
+            elif ast.op == '==':
+                return left == right
+            elif ast.op == '!=':
+                return left != right
+            elif ast.op == '<':
+                return left < right
+            elif ast.op == '<=':
+                return left <= right
+            elif ast.op == '>':
+                return left > right
+            elif ast.op == '>=':
+                return left >= right
+        elif isinstance(ast, UnaryOp):
+            value = self.inferValueConstant(ast.body)
+            if ast.op == '-':
+                return -value
+            elif ast.op == '!':
+                return not value
+            
+    
+    def printEnv(self, c: List[List[Symbol]]):
+        result = []
+        for scope in c:
+            scope_info = []
+            for symbol in scope:
+                if isinstance(symbol, SymbolType):
+                    symbol_info = {
+                        "name": symbol.name,
+                        "fields": [field[0] if isinstance(field, tuple) else (field.name, field.mtype) for field in symbol.field] if symbol.field else None,
+                        "methods": [method.name for method in symbol.method] if symbol.method else None
+                    }
+                    scope_info.append(symbol_info)
+                else:
+                    if isinstance(symbol.mtype, MType):
+                        symbol_info = {
+                            "name": symbol.name,
+                            "mtype": symbol.mtype.rettype,
+                            "partype": [(partype.name, partype.mtype) if hasattr(partype, 'name') else partype for partype in symbol.mtype.partype]
+                        }
+                    else:
+                        symbol_info = {
+                            "name": symbol.name,
+                            "mtype": symbol.mtype,
+                            "value": symbol.value.value
+                        }
+                    scope_info.append(symbol_info)
+            result.append(scope_info)
+        
+        print(result)
 

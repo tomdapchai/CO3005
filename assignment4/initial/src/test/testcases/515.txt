@@ -1,0 +1,16 @@
+
+        const a = 20 * 10
+        var y = 15.5
+
+        func main() {
+            const x = 10 * 2 + 3
+            var a = 20
+            putFloatLn(a + y)
+            a := a + 10
+            putIntLn(x * a)
+            y += 10
+            putFloat(y)
+
+        };
+        
+        

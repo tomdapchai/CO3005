@@ -1,0 +1,18 @@
+
+        const a = 20 * 10
+        var y = 15.5
+
+        type Person struct {
+            name string
+            age int
+        }
+
+        func main() {
+            putInt(a + foo())
+
+        };
+        
+        func foo() int {
+            return 1 + 2;
+        }
+        
