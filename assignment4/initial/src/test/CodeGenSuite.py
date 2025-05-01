@@ -191,20 +191,122 @@ class CheckCodeGenSuite(unittest.TestCase):
     #     self.assertTrue(TestCodeGen.test(input,expect,516))
 
 
-    # ARRAY TEST CASES
-    def test_11(self):
-        input = """
-        const a = 20 * 10
-        var y = 15.5
+    # def test_11(self):
+    #     input = """
+    #     const a = 20 * 10
+    #     var y = 15.5
 
-        func main() {
-            putInt(a + foo())
-
-        };
+    #     func main() {
+    #         if (y >= 16) {
+    #             putInt(a + foo())
+    #         } else {
+    #             putInt(a + foo() + 1)
+    #         }
+    #     };
         
-        func foo() int {
-            return 1 + 2;
+    #     func foo() int {
+    #         return 1 + 2;
+    #     }
+    #     """
+    #     expect = "204"
+    #     self.assertTrue(TestCodeGen.test(input,expect,517))
+
+    # def test_12(self):
+    #     input = """
+    #     const a = 20 * 10
+    #     var y = 15.5
+
+    #     func main() {
+    #         if (y >= 16) {
+    #             putInt(a + foo())
+    #         } else {
+    #             if (a + 10 >= 211) {
+    #                 putIntLn(234)
+    #             } else {
+    #                 var x = 5;
+    #                 for x < 10 {
+    #                     putIntLn(567)
+    #                     x += 1;
+    #                 }
+    #             }
+    #             putInt(a + foo() + 1)
+    #         }
+    #         for i := 0; i < 10; i += 1 {
+    #             putInt(i)
+    #         }
+    #     };
+        
+    #     func foo() int {
+    #         return 1 + 2;
+    #     }
+    #     """
+    #     expect = "567\n567\n567\n567\n567\n2040123456789"
+    #     self.assertTrue(TestCodeGen.test(input,expect,518))
+
+    # def test_13(self):
+    #     input = """
+    #     const a = 20 * 10
+    #     var y = 15.5
+    #     var x = "Hello World"
+    #     func main() {
+    #         putStringLn(x)
+    #         putString("Welcome 2025")
+    #     };
+    #     """
+    #     expect = "Hello World\nWelcome 2025"
+    #     self.assertTrue(TestCodeGen.test(input,expect,519))
+
+    # def test_14(self):
+    #     input = """
+    #     const a = 20 * 10
+    #     var y = 15.5
+
+    #     func main() {
+    #         if (y >= 16) {
+    #             putInt(a + foo())
+    #         } else {
+    #             if (a + 10 >= 211) {
+    #                 putIntLn(234)
+    #             } else {
+    #                 var x = 5;
+    #                 for x < 10 {
+    #                     putIntLn(567)
+    #                     x += 1;
+    #                 }
+    #             }
+    #             putInt(a + foo() + 1)
+    #         }
+    #         for i := 0; i < 10; i += 1 {
+    #             if (i <= 4) {
+    #                 if (foo() > 2 && i < 3) {
+    #                     continue;
+    #                 }
+    #             }
+    #             putInt(i)
+    #             if (i == 8) {
+    #                 break;
+    #             }
+
+    #         }
+    #     };
+        
+    #     func foo() int {
+    #         return 1 + 2;
+    #     }
+    #     """
+    #     expect = "567\n567\n567\n567\n567\n204345678"
+    #     self.assertTrue(TestCodeGen.test(input,expect,520))
+
+    # ARRAY
+    def test_15(self):
+        input = """
+        const a = 5;
+        func main() {
+            var b = 3;
+            var arr [4]int = [4]int{1, 2, 3}
+            var x = 10;
+            putIntLn(x)
         }
         """
-        expect = "33"
-        self.assertTrue(TestCodeGen.test(input,expect,517))
+        expect = "10\n"
+        self.assertTrue(TestCodeGen.test(input,expect,521))

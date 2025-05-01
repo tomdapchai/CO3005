@@ -2,14 +2,12 @@
         const a = 20 * 10
         var y = 15.5
 
-        type Person struct {
-            name string
-            age int
-        }
-
         func main() {
-            putInt(a + foo())
-
+            if (y >= 16) {
+                putInt(a + foo())
+            } else {
+                putInt(a + foo() + 1)
+            }
         };
         
         func foo() int {

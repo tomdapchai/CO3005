@@ -24,7 +24,7 @@ class Emitter():
         elif typeIn is VoidType:
             return "V"
         elif typeIn is ArrayType:
-            return "[" + self.getJVMType(inType.eleType)
+            return "[" * len(inType.dimens) + self.getJVMType(inType.eleType)
         elif typeIn is MType:
             return "(" + "".join(list(map(lambda x: self.getJVMType(x), inType.partype))) + ")" + self.getJVMType(inType.rettype)
         elif typeIn is cgen.ClassType:
@@ -32,7 +32,7 @@ class Emitter():
         else:
             return str(typeIn)
 
-    def getFullType(inType):
+    def getFullType(self, inType):
         typeIn = type(inType)
         if typeIn is IntType:
             return "int"
@@ -40,10 +40,8 @@ class Emitter():
             return "java/lang/String"
         elif typeIn is VoidType:
             return "void"
-        elif typeIn is StructType:
-            return "java/lang/Object"
-        elif typeIn is ArrayType:
-            return "java/lang/Object"
+        elif typeIn is BoolType:
+            return "boolean"
 
     def emitPUSHICONST(self, in_, frame):
         #in: Int or Sring
@@ -134,11 +132,21 @@ class Emitter():
     *   @param toLabel the ending label  of the scope where the variable is active.
     '''
 
-    def emitNEWARRAY(self, inType, frame):
-        return self.jvm.emitNEWARRAY(self.getJVMType(inType))
+    def emitNEWARRAY(self, in_: ArrayType, frame):
+        # in_: ArrayType
+        if len(in_.dimens) == 1:
+            # 1D array
+            if isinstance(in_.eleType, (IntType, FloatType, BoolType)):
+                # For primitive types
+                eleTypeStr = self.getFullType(in_.eleType)
+                return self.jvm.emitNEWARRAY(eleTypeStr)
+            else:
+                # For reference types like String, arrays, or user-defined types
+                return self.jvm.emitANEWARRAY(self.getJVMType(in_.eleType))
+        else:
+            # Multi-dimensional array without initialization
+            return self.jvm.emitMULTIANEWARRAY(self.getJVMType(in_), str(len(in_.dimens)))
     
-    def emitANEWARRAY(self, inType, frame):
-        pass
 
     def emitVAR(self, in_, varName, inType, fromLabel, toLabel, frame):
         #in_: Int
@@ -330,12 +338,12 @@ class Emitter():
         label1 = frame.getNewLabel()
         label2 = frame.getNewLabel()
         result = list()
-        result.append(emitIFTRUE(label1, frame))
-        result.append(emitPUSHCONST("true", in_, frame))
-        result.append(emitGOTO(label2, frame))
-        result.append(emitLABEL(label1, frame))
-        result.append(emitPUSHCONST("false", in_, frame))
-        result.append(emitLABEL(label2, frame))
+        result.append(self.emitIFTRUE(label1, frame))
+        result.append(self.emitPUSHCONST("true", in_, frame))
+        result.append(self.emitGOTO(label2, frame))
+        result.append(self.emitLABEL(label1, frame))
+        result.append(self.emitPUSHCONST("false", in_, frame))
+        result.append(self.emitLABEL(label2, frame))
         return ''.join(result)
 
     '''
@@ -428,18 +436,36 @@ class Emitter():
 
         frame.pop()
         frame.pop()
-        if op == ">":
-            result.append(self.jvm.emitIFICMPLE(labelF))
-        elif op == ">=":
-            result.append(self.jvm.emitIFICMPLT(labelF))
-        elif op == "<":
-            result.append(self.jvm.emitIFICMPGE(labelF))
-        elif op == "<=":
-            result.append(self.jvm.emitIFICMPGT(labelF))
-        elif op == "!=":
-            result.append(self.jvm.emitIFICMPEQ(labelF))
-        elif op == "==":
-            result.append(self.jvm.emitIFICMPNE(labelF))
+        
+        # Handle different types of comparisons
+        if type(in_) is IntType:  # Integer comparison
+            if op == ">":
+                result.append(self.jvm.emitIFICMPLE(labelF))
+            elif op == ">=":
+                result.append(self.jvm.emitIFICMPLT(labelF))
+            elif op == "<":
+                result.append(self.jvm.emitIFICMPGE(labelF))
+            elif op == "<=":
+                result.append(self.jvm.emitIFICMPGT(labelF))
+            elif op == "!=":
+                result.append(self.jvm.emitIFICMPEQ(labelF))
+            elif op == "==":
+                result.append(self.jvm.emitIFICMPNE(labelF))
+        elif type(in_) is FloatType:  # Floating-point comparison
+            result.append(self.jvm.emitFCMPL())  # Use FCMPL for all comparisons
+            if op == ">":
+                result.append(self.jvm.emitIFLE(labelF))  # Jump if not greater
+            elif op == ">=":
+                result.append(self.jvm.emitIFLT(labelF))  # Jump if less
+            elif op == "<":
+                result.append(self.jvm.emitIFGE(labelF))  # Jump if not less
+            elif op == "<=":
+                result.append(self.jvm.emitIFGT(labelF))  # Jump if greater
+            elif op == "!=":
+                result.append(self.jvm.emitIFEQ(labelF))  # Jump if equal
+            elif op == "==":
+                result.append(self.jvm.emitIFNE(labelF))  # Jump if not equal
+            
         result.append(self.emitPUSHCONST("1", IntType(), frame))
         frame.pop()
         result.append(self.emitGOTO(labelO, frame))
@@ -622,7 +648,7 @@ class Emitter():
         #label: Int
         #frame: Frame
 
-        return self.jvm.emitGOTO(label)
+        return self.jvm.emitGOTO(str(label))
 
     ''' generate some starting directives for a class.<p>
     *   .source MPC.CLASSNAME.java<p>
@@ -651,7 +677,6 @@ class Emitter():
 
     def emitEPILOG(self):
         file = open(self.filename, "w")
-        print("self.buff", self.buff)
         file.write(''.join(self.buff))
         file.close()
 
@@ -670,4 +695,4 @@ class Emitter():
 
 
 
-        
+

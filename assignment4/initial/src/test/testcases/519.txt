@@ -1,0 +1,9 @@
+
+        const a = 20 * 10
+        var y = 15.5
+        var x = "Hello World"
+        func main() {
+            putStringLn(x)
+            putString("Welcome 2025")
+        };
+        

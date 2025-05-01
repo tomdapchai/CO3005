@@ -1,0 +1,9 @@
+
+        const a = 5;
+        func main() {
+            var b = 3;
+            var arr [4]int = [4]int{1, 2, 3}
+            var x = 10;
+            putIntLn(x)
+        }
+        
