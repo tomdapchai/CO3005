@@ -30,34 +30,65 @@ Label2:
 	iconst_4
 	iastore
 	astore_2
-.var 3 is arr [I from Label2 to Label3
-	iconst_5
-	newarray int
+.var 3 is arr [[I from Label2 to Label3
+	iconst_3
+	iconst_4
+	multianewarray [[I 2
 	dup
+	iconst_0
+	aaload
+	iconst_0
+	iconst_1
+	iastore
+	dup
+	iconst_0
+	aaload
+	iconst_1
+	iconst_2
+	iastore
+	dup
+	iconst_0
+	aaload
+	iconst_2
+	iconst_3
+	iastore
+	dup
+	iconst_1
+	aaload
+	iconst_0
+	iconst_1
+	iastore
+	dup
+	iconst_1
+	aaload
+	iconst_1
+	iconst_2
+	iastore
+	dup
+	iconst_1
+	aaload
+	iconst_2
+	iconst_3
+	iastore
+	dup
+	iconst_1
+	aaload
+	iconst_3
+	iconst_4
+	iastore
+	dup
+	iconst_2
+	aaload
 	iconst_0
 	bipush 10
 	iastore
 	dup
+	iconst_2
+	aaload
 	iconst_1
 	bipush 20
-	iastore
-	dup
-	iconst_2
-	bipush 30
-	iastore
-	dup
-	iconst_3
-	bipush 40
-	iastore
-	dup
-	iconst_4
-	bipush 50
 	iastore
 	astore_3
-	aload_2
-	iconst_1
-	bipush 20
-	iastore
 .var 4 is x I from Label2 to Label3
 	bipush 10
 	istore 4
@@ -65,20 +96,36 @@ Label2:
 	iconst_0
 	iaload
 	aload_3
-	iconst_0
+	iconst_2
+	aaload
+	iconst_1
 	iaload
 	iconst_2
 	imul
 	iadd
-	aload_2
-	iconst_1
+	invokestatic io/putIntLn(I)V
+	aload_3
+	iconst_0
+	aaload
+	iconst_3
 	iaload
-	iadd
+	invokestatic io/putIntLn(I)V
+	aload_3
+	iconst_0
+	aaload
+	iconst_3
+	bipush 10
+	iastore
+	aload_3
+	iconst_0
+	aaload
+	iconst_3
+	iaload
 	invokestatic io/putIntLn(I)V
 Label3:
 Label1:
 	return
-.limit stack 22
+.limit stack 41
 .limit locals 5
 .end method
 

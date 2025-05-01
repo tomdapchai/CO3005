@@ -1,0 +1,14 @@
+
+        const a = 5;
+        func main() {
+            var b = 3;
+            var a [4]int = [4]int{5, 2, 3, 4}
+            var arr [3][4]int = [3][4]int{{1, 2, 3}, {1, 2, 3, 4}, {10, 20}}
+            
+            var x = 10;
+            putIntLn(a[0] + arr[2][1] * 2)
+            putIntLn(arr[0][3])
+            arr[0][3] := 10
+            putIntLn(arr[0][3])
+        }
+        

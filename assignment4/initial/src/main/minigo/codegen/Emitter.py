@@ -104,6 +104,10 @@ class Emitter():
         frame.pop()
         if type(in_) is IntType:
             return self.jvm.emitIALOAD()
+        elif type(in_) is FloatType:
+            return self.jvm.emitFALOAD()
+        elif type(in_) is BoolType:
+            return self.jvm.emitBALOAD()
         elif type(in_) is cgen.ArrayType or type(in_) is cgen.ClassType or type(in_) is StringType:
             return self.jvm.emitAALOAD()
         else:
@@ -121,6 +125,10 @@ class Emitter():
             return self.jvm.emitIASTORE()
         elif type(in_) is cgen.ArrayType or type(in_) is cgen.ClassType or type(in_) is StringType:
             return self.jvm.emitAASTORE()
+        elif type(in_) is FloatType:
+            return self.jvm.emitFASTORE()
+        elif type(in_) is BoolType:
+            return self.jvm.emitBASTORE()
         else:
             raise IllegalOperandException(str(in_))
 
@@ -144,9 +152,8 @@ class Emitter():
                 # For reference types like String, arrays, or user-defined types
                 return self.jvm.emitANEWARRAY(self.getJVMType(in_.eleType))
         else:
-            # Multi-dimensional array without initialization
+            # Multi-dimensional array - use multianewarray
             return self.jvm.emitMULTIANEWARRAY(self.getJVMType(in_), str(len(in_.dimens)))
-    
 
     def emitVAR(self, in_, varName, inType, fromLabel, toLabel, frame):
         #in_: Int

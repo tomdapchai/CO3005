@@ -303,10 +303,53 @@ class CheckCodeGenSuite(unittest.TestCase):
         const a = 5;
         func main() {
             var b = 3;
-            var arr [4]int = [4]int{1, 2, 3}
+            var a [4]int = [4]int{5, 2, 3, 4}
+            var arr [5]int = [5]int{10, 20, 30, 40, 50}
+            a[1] := 20
             var x = 10;
-            putIntLn(x)
+            putIntLn(a[0] + arr[0] * 2 + a[1])
         }
         """
-        expect = "10\n"
+        expect = "45\n"
         self.assertTrue(TestCodeGen.test(input,expect,521))
+
+    def test_16(self):
+        input = """
+        const a = 5;
+        func main() {
+            var b = 3;
+            var a [4]int = [4]int{5, 2, 3, 4}
+            var arr [3][4]int = [3][4]int{{1, 2, 3}, {1, 2, 3, 4}, {10, 20}}
+            
+            var x = 10;
+            putIntLn(a[0] + arr[2][1] * 2)
+            putIntLn(arr[0][3])
+            arr[0][3] := 10
+            putIntLn(arr[0][3])
+        }
+        """
+        expect = "45\n0\n10\n"
+        self.assertTrue(TestCodeGen.test(input,expect,522))
+    
+    def test_17(self):
+        input = """
+        const a = 5;
+        func main() {
+
+            var b = foo()[0] + 1
+            putIntLn(b)
+        }
+
+        // somehow this test works so well idk lololol
+
+        func foo() [3]int {
+        
+            return [3]int{1, 2, 3}
+        }
+        """
+        expect = "2\n"
+        self.assertTrue(TestCodeGen.test(input,expect,523))
+
+    
+
+    

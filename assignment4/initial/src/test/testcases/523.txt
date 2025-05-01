@@ -1,0 +1,14 @@
+
+        const a = 5;
+        func main() {
+
+            var b = foo()[0] + 1
+            putIntLn(b)
+        }
+
+
+        func foo() [3]int {
+        
+            return [3]int{1, 2, 3}
+        }
+        

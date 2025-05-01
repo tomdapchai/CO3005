@@ -225,25 +225,43 @@ class CodeGenerator(BaseVisitor,Utils):
                 
                 if ast.varInit:
                     if isinstance(ast.varType, ArrayType) and isinstance(ast.varInit, ArrayLiteral):
-                        # Handle array initialization
-                        eInit, tInit = self.visit(ast.varInit, o)
+                        # Handle array initialization - push array onto stack
+                        eInit, _ = self.visit(ast.varInit, o)
                         self.emit.printout(eInit)
                     else:
-                        # Handle non-array initialization
-                        eInit, tInit = self.visit(ast.varInit, o)
+                        eInit, _ = self.visit(ast.varInit, o)
                         self.emit.printout(eInit)
+                    self.emit.printout(self.emit.emitWRITEVAR(ast.varName, ast.varType, index, frame))
                 else:
                     if isinstance(ast.varType, ArrayType):
                         # Create empty array
-                        code, _ = self.visit(ast.varType, o)
-                        self.emit.printout(code)
+                        if len(ast.varType.dimens) == 1:
+                            # 1D array - use newarray/anewarray
+                            dimCode, _ = self.visit(ast.varType.dimens[0], o)
+                            self.emit.printout(dimCode)
+                            
+                            if isinstance(ast.varType.eleType, (IntType, FloatType, BoolType)):
+                                eleTypeStr = self.emit.getFullType(ast.varType.eleType)
+                                self.emit.printout(self.emit.jvm.emitNEWARRAY(eleTypeStr))
+                            else:
+                                self.emit.printout(self.emit.jvm.emitANEWARRAY(self.emit.getJVMType(ast.varType.eleType)))
+                        else:
+                            # Multi-dimensional array - use multianewarray
+                            for dim in ast.varType.dimens:
+                                dimCode, _ = self.visit(dim, o)
+                                self.emit.printout(dimCode)
+                            
+                            self.emit.printout(self.emit.jvm.emitMULTIANEWARRAY(
+                                self.emit.getJVMType(ast.varType), 
+                                str(len(ast.varType.dimens))
+                            ))
+                        
+                        self.emit.printout(self.emit.emitWRITEVAR(ast.varName, ast.varType, index, frame))
                     else:
                         # Use default value for non-array types
                         eInit = self.get_default_value(ast.varType)
                         self.emit.printout(self.emit.emitPUSHCONST(eInit, frame))
-                
-                # Store the value in the variable
-                self.emit.printout(self.emit.emitWRITEVAR(ast.varName, ast.varType, index, frame))
+                        self.emit.printout(self.emit.emitWRITEVAR(ast.varName, ast.varType, index, frame))
             else:
                 # there obviously is varInit if no varType here
                 eInit, tInit = self.visit(ast.varInit, o)
@@ -396,7 +414,7 @@ class CodeGenerator(BaseVisitor,Utils):
     
     def visitArrayCell(self, ast: ArrayCell, o):
         code = ""
-
+        mtype = None
         # find the symbol of array to get index
         if isinstance(ast.arr, Id):
             sym = next(filter(lambda x: x.name == ast.arr.name, [j for i in o['env'] for j in i]),None)
@@ -410,16 +428,37 @@ class CodeGenerator(BaseVisitor,Utils):
                     # global var
                     code += self.emit.emitGETSTATIC(f"{self.className}/{sym.name}",sym.mtype,o['frame'])
 
-        if o['isLeft'] is False:
-            pass
+            mtype = sym.mtype.eleType if isinstance(sym.mtype, ArrayType) else sym.mtype
         else:
+            e, t = self.visit(ast.arr, o)
+            code += e
+        
+        # for 1D array first
+        if len(ast.idx) == 1:
+            e, t = self.visit(ast.idx[0], o)
+            code += e
+            mtype = t
+        else:
+            # load each array
+            for i in range(len(ast.idx)):
+                e, t = self.visit(ast.idx[i], o)
+                code += e
+                if i < len(ast.idx) - 1:
+                    code += self.emit.emitALOAD(ArrayType([None], t), o['frame'])
+
+        if o['isLeft'] is False:
+            # normal case first
+            code += self.emit.emitALOAD(IntType(), o['frame'])
+        else:
+            # store would appear after RHS, so nothing here
             pass
-        return code
+        return code, mtype
     
     def visitFieldAccess(self, ast: FieldAccess, o):
         return o
     
     def visitBinaryOp(self, ast: BinaryOp, o):
+        o['isLeft'] = False
         e1, t1 = self.visit(ast.left, o)
         e2, t2 = self.visit(ast.right, o)
 
@@ -514,35 +553,74 @@ class CodeGenerator(BaseVisitor,Utils):
         # else:
         return self.emit.emitPUSHCONST(ast.value, StringType(), o['frame']), StringType()    
 
-        
-
     def visitBooleanLiteral(self, ast, o):
         return self.emit.emitPUSHICONST(1 if ast.value else 0, o['frame']), BoolType()
     
     def visitArrayLiteral(self, ast: ArrayLiteral, o):
-        # For multi-dimensional arrays, we need to create arrays level by level
-        # This approach works for both uniform and non-uniform arrays
-        
+        code = ""
         dimensions = ast.dimens
         eleType = ast.eleType
         values = ast.value
         
-        # Generate code for multi-dimensional array creation and initialization
-        code = self.initArrayLiteral(dimensions, eleType, values, 0, o)
+        # Handle array creation based on dimensions
+        if len(dimensions) == 1:
+            # 1D array - use newarray or anewarray
+            dimValue = dimensions[0].value if hasattr(dimensions[0], 'value') else len(values)
+            code += self.emit.emitPUSHICONST(dimValue, o['frame'])
+            
+            if isinstance(eleType, (IntType, FloatType, BoolType)):
+                # For primitive types
+                eleTypeStr = self.emit.getFullType(eleType)
+                code += self.emit.jvm.emitNEWARRAY(eleTypeStr)
+            else:
+                # For reference types like String, arrays, or user-defined types
+                code += self.emit.jvm.emitANEWARRAY(self.emit.getJVMType(eleType))
+            
+            # Initialize array elements
+            for i, val in enumerate(values):
+                code += self.emit.emitDUP(o['frame'])  # Duplicate array reference
+                code += self.emit.emitPUSHICONST(i, o['frame'])  # Array index
+                
+                # Push value
+                valCode, _ = self.visit(val, o)
+                code += valCode
+                
+                # Store in array
+                code += self.emit.emitASTORE(eleType, o['frame'])
+        else:
+            # Multi-dimensional array - use multianewarray
+            for dim in dimensions:
+                dimValue = dim.value if hasattr(dim, 'value') else len(values)
+                code += self.emit.emitPUSHICONST(dimValue, o['frame'])
+            
+            # Create the multi-dimensional array
+            code += self.emit.jvm.emitMULTIANEWARRAY(
+                self.emit.getJVMType(ArrayType(dimensions, eleType)), 
+                str(len(dimensions))
+            )
+            
+            # For 2D arrays, we need to handle initialization differently
+            if len(dimensions) == 2:
+                # For each row
+                for i, row in enumerate(values):
+                    # For each column in this row
+                    for j, val in enumerate(row):
+                        code += self.emit.emitDUP(o['frame'])  # Duplicate array reference
+                        code += self.emit.emitPUSHICONST(i, o['frame'])  # Row index
+                        code += self.emit.jvm.emitAALOAD()  # Get row array
+                        code += self.emit.emitPUSHICONST(j, o['frame'])  # Column index
+                        
+                        # Push value
+                        valCode, _ = self.visit(val, o)
+                        code += valCode
+                        
+                        # Store value
+                        code += self.emit.emitASTORE(eleType, o['frame'])
+            else:
+                # For 3D+ arrays, use recursive initialization
+                code += self.initMultiDimArray(values, [], dimensions, eleType, o)
         
         return code, ArrayType(dimensions, eleType)
-
-    # def getJVMBasicType(self, eleType):
-    #     if isinstance(eleType, IntType):
-    #         return "I"
-    #     elif isinstance(eleType, FloatType):
-    #         return "F"
-    #     elif isinstance(eleType, BoolType):
-    #         return "Z" 
-    #     elif isinstance(eleType, StringType):
-    #         return "Ljava/lang/String;"
-    #     else:
-    #         return "L" + eleType.name + ";"
 
     def visitStructLiteral(self, ast, o):
         return o
@@ -584,7 +662,8 @@ class CodeGenerator(BaseVisitor,Utils):
         env = o.copy()
         env['isLeft'] = False
         rhs, rTyp = self.visit(ast.rhs, env)
-        self.emit.printout(rhs)
+        if not isinstance(ast.lhs, ArrayCell):
+            self.emit.printout(rhs)
 
         # := quick declaration, so we need to check if the lhs is declared, else declare it
 
@@ -598,6 +677,10 @@ class CodeGenerator(BaseVisitor,Utils):
             self.emit.printout(self.emit.emitWRITEVAR(ast.lhs.name, rTyp, index, env['frame']))
 
         self.emit.printout(lhs)
+
+        if isinstance(ast.lhs, ArrayCell):
+            self.emit.printout(rhs)
+            self.emit.printout(self.emit.emitASTORE(IntType(), o['frame']))
 
         # if type(lhs) is CName:
         #     self.emit.printout(self.emit.emitPUTSTATIC(f"{self.className}/{lhs}",rhs,o['frame']))
@@ -826,38 +909,43 @@ class CodeGenerator(BaseVisitor,Utils):
             result.append(scope_info)
         
         print(result)
-    
-    def initArrayLiteral(self, dimensions, eleType, values, level, o):
-        """Recursively initialize a multi-dimensional array"""
+
+    def initMultiDimArray(self, values, indices, dimensions, eleType, o):
+        """Initialize elements in a multi-dimensional array"""
+        if not values:
+            return ""
+        
         code = ""
         
-        if level == len(dimensions) - 1:
-            # Base case: 1D array at the innermost level
-            # Create array of the specified size
-            code += self.emit.emitPUSHICONST(dimensions[level].value if hasattr(dimensions[level], 'value') else len(values), o['frame'])
-            
-            if isinstance(eleType, (IntType, FloatType, BoolType)):
-                # For primitive types
-                eleTypeStr = self.emit.getFullType(eleType)
-                code += self.emit.jvm.emitNEWARRAY(eleTypeStr)
-            else:
-                # For reference types
-                code += self.emit.jvm.emitANEWARRAY(self.getJVMType(eleType))
-            
-            # Initialize the array elements
+        if len(indices) == len(dimensions) - 1:
+            # At innermost level (1D array) - we need to get the row array first
             for i, val in enumerate(values):
-                code += self.emit.emitDUP(o['frame'])  # Duplicate array reference
-                code += self.emit.emitPUSHICONST(i, o['frame'])  # Array index
+                if i >= dimensions[-1].value if hasattr(dimensions[-1], 'value') else len(values):
+                    break
+                    
+                code += self.emit.emitDUP(o['frame'])  # Duplicate main array reference
                 
-                if isinstance(val, (IntLiteral, FloatLiteral, BooleanLiteral)):
-                    valCode, valType = self.visit(val, {'frame': o['frame'], 'env': o['env'], 'isLeft': False})
-                    code += valCode
+                # For 2D arrays, first get the row array
+                if len(dimensions) == 2:
+                    # Push row index
+                    code += self.emit.emitPUSHICONST(indices[0], o['frame'])
+                    # Get the row array (a[row])
+                    code += self.emit.jvm.emitAALOAD()
+                    # Push column index
+                    code += self.emit.emitPUSHICONST(i, o['frame'])
                 else:
-                    # Handle non-literal values if needed
-                    valCode, valType = self.visit(val, {'frame': o['frame'], 'env': o['env'], 'isLeft': False})
-                    code += valCode
+                    # For deeper dimensions, push all indices except the last
+                    for idx in indices:
+                        code += self.emit.emitPUSHICONST(idx, o['frame'])
+                        code += self.emit.jvm.emitAALOAD()  # Get the sub-array at each level
+                    # Push final index
+                    code += self.emit.emitPUSHICONST(i, o['frame'])
                 
-                # Store value in array
+                # Push value
+                valCode, _ = self.visit(val, o)
+                code += valCode
+                
+                # Store using appropriate type
                 if isinstance(eleType, IntType):
                     code += self.emit.jvm.emitIASTORE()
                 elif isinstance(eleType, FloatType):
@@ -867,30 +955,18 @@ class CodeGenerator(BaseVisitor,Utils):
                 else:
                     code += self.emit.jvm.emitAASTORE()
         else:
-            # Create array of arrays for higher dimensions
-            code += self.emit.emitPUSHICONST(dimensions[level].value if hasattr(dimensions[level], 'value') else len(values), o['frame'])
-            
-            # Determine the element type descriptor for the current level
-            if level == len(dimensions) - 2:
-                # Next level is the last dimension, so elementType is the base type
-                nextLevelType = "[" + self.emit.getJVMType(eleType)
-                    
-            else:
-                # More dimensions to go
-                nextLevelType = "[" * (len(dimensions) - level - 1) + self.emit.getJVMType(eleType)
-            
-            code += self.emit.jvm.emitANEWARRAY(nextLevelType)
-            
-            # Initialize each sub-array
+            # For higher dimensions, we need to handle nested arrays differently
             for i, subarray in enumerate(values):
-                code += self.emit.emitDUP(o['frame'])  # Duplicate parent array reference
-                code += self.emit.emitPUSHICONST(i, o['frame'])  # Index in parent array
+                if i >= dimensions[len(indices)].value if hasattr(dimensions[len(indices)], 'value') else len(values):
+                    break
                 
-                # Recursively create and initialize sub-array
-                code += self.initArrayLiteral(dimensions, eleType, subarray, level + 1, o)
+                # For each sub-array at current dimension, we need to:
+                # 1. Get the array at the current level of indices
+                # 2. Then continue recursive initialization
                 
-                # Store sub-array in parent array
-                code += self.emit.jvm.emitAASTORE()
+                # Create path to the current sub-array
+                new_indices = indices + [i]
+                code += self.initMultiDimArray(subarray, new_indices, dimensions, eleType, o)
         
         return code
 
