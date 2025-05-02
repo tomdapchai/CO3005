@@ -379,25 +379,52 @@ class CheckCodeGenSuite(unittest.TestCase):
     #     expect = "30\nJohn\n25\nDoe\n30\nJohn\n"
     #     self.assertTrue(TestCodeGen.test(input,expect,524))
     
-    def test_19(self):
+    # def test_19(self):
+    #     input = """
+    #     type Person struct {
+    #         name string;
+    #         age int;
+    #     }
+
+    #     func main() {
+    #         var x Person = Person{name: "John", age: 30}
+    #         x.age := 35 * 2
+    #         var y Person = Person{name: "Jane", age: 25}
+    #         y.name += " Doe"
+    #         putIntLn(x.age)
+    #         putStringLn(y.name)
+    #     }
+
+        
+    #     """
+    #     expect = "70\nJane Doe\n"
+    #     self.assertTrue(TestCodeGen.test(input,expect,525))
+    
+    def test_20(self):
         input = """
         type Person struct {
             name string;
             age int;
+            height float;
         }
 
+        func foo() Person {
+            var k Person = Person{name: "Doe", age: 25, height: 180.5}
+            return k
+        } 
+
         func main() {
-            var x Person = Person{name: "John", age: 30}
-            x.age := 35 * 2
-            var y Person = Person{name: "Doe", age: 25}
-            y.name := "Jane" + " Doe"
+            var x Person = Person{age: 30, height: 177.3, name: "John"}
             putIntLn(x.age)
-            putStringLn(y.name)
+            putFloatLn(x.height)
+            putStringLn(x.name)
+            var y int = foo().age
+            putIntLn(y)
         }
 
         
         """
-        expect = "70\nJane Doe\n"
-        self.assertTrue(TestCodeGen.test(input,expect,525))
+        expect = "30\n177.3\nJohn\n25\n"
+        self.assertTrue(TestCodeGen.test(input,expect,526))
 
     

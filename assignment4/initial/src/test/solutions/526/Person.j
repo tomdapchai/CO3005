@@ -3,11 +3,13 @@
 .super java/lang/Object
 .field name Ljava/lang/String;
 .field age I
+.field height F
 
-.method public <init>(Ljava/lang/String;I)V
+.method public <init>(Ljava/lang/String;IF)V
 .var 0 is this LPerson; from Label0 to Label1
 .var 1 is name Ljava/lang/String; from Label0 to Label1
 .var 2 is age I from Label0 to Label1
+.var 3 is height F from Label0 to Label1
 Label0:
 	aload_0
 	invokespecial java/lang/Object/<init>()V
@@ -17,8 +19,11 @@ Label0:
 	aload_0
 	iload_2
 	putfield Person/age I
+	aload_0
+	fload_3
+	putfield Person/height F
 Label1:
 	return
 .limit stack 2
-.limit locals 3
+.limit locals 4
 .end method

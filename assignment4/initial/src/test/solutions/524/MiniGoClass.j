@@ -11,25 +11,17 @@ Label2:
 .var 1 is x LPerson; from Label2 to Label3
 	new Person
 	dup
-	invokespecial Person/<init>()V
-	astore_1
-	aload_1
 	ldc "John"
-	putfield Person/name Ljava/lang/String;
-	aload_1
 	bipush 30
-	putfield Person/age I
+	invokespecial Person/<init>(Ljava/lang/String;I)V
+	astore_1
 .var 2 is y LPerson; from Label2 to Label3
 	new Person
 	dup
-	invokespecial Person/<init>()V
-	astore_2
-	aload_2
 	ldc "Doe"
-	putfield Person/name Ljava/lang/String;
-	aload_2
 	bipush 25
-	putfield Person/age I
+	invokespecial Person/<init>(Ljava/lang/String;I)V
+	astore_2
 	aload_1
 	getfield Person/age I
 	invokestatic io/putIntLn(I)V
@@ -51,7 +43,7 @@ Label2:
 Label3:
 Label1:
 	return
-.limit stack 3
+.limit stack 4
 .limit locals 3
 .end method
 

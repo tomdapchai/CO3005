@@ -649,7 +649,7 @@ class Emitter():
         elif type(in_) is StringType:
             frame.pop()
             return self.jvm.emitARETURN()
-        elif type(in_) is ArrayType:
+        elif type(in_) is ArrayType or type(in_) is cgen.ClassType or type(in_) is Id:
             frame.pop()
             return self.jvm.emitARETURN()
         elif type(in_) is VoidType:

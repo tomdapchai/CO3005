@@ -1,0 +1,23 @@
+
+        type Person struct {
+            name string;
+            age int;
+            height float;
+        }
+
+        func foo() Person {
+            var k Person = Person{name: "Doe", age: 25, height: 180.5}
+            return k
+        } 
+
+        func main() {
+            var x Person = Person{age: 30, height: 177.3, name: "John"}
+            putIntLn(x.age)
+            putFloatLn(x.height)
+            putStringLn(x.name)
+            var y int = foo().age
+            putIntLn(y)
+        }
+
+        
+        

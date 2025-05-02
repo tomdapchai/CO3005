@@ -222,6 +222,7 @@ class CodeGenerator(BaseVisitor,Utils):
                 self.emit.printout(self.emit.emitVAR(index, ast.varName, ast.varType, frame.getStartLabel(), frame.getEndLabel(), frame))
                 
                 if ast.varInit:
+                    o['isLeft'] = False
                     if isinstance(ast.varType, ArrayType) and isinstance(ast.varInit, ArrayLiteral):
                         # Handle array initialization - push array onto stack
                         eInit, _ = self.visit(ast.varInit, o)
@@ -231,16 +232,6 @@ class CodeGenerator(BaseVisitor,Utils):
                         self.emit.printout(eInit)
                     self.emit.printout(self.emit.emitWRITEVAR(ast.varName, ast.varType, index, frame))
 
-                    if isinstance(ast.varType, Id):
-                        struct = next(filter(lambda x: isinstance(x, SymbolType) and x.name == ast.varType.name, [j for i in o['env'] for j in i]),None)
-                        fields = struct.field
-                        for field in fields:
-                            self.emit.printout(self.emit.emitREADVAR(ast.varName, ast.varType, index, frame))
-                            _, expr = next(filter(lambda x: x[0] == field[0], ast.varInit.elements), None)
-
-                            self.emit.printout(self.visit(expr, o)[0])
-
-                            self.emit.printout(self.emit.emitPUTFIELD(f"{ast.varType.name}/{field[0]}", field[1], o['frame']))
                 else:
                     if isinstance(ast.varType, ArrayType):
                         # Create empty array
@@ -414,12 +405,38 @@ class CodeGenerator(BaseVisitor,Utils):
         
         # Generate constructor
         frame = Frame("<init>", VoidType())
-        structEmit.printout(structEmit.emitMETHOD("<init>", MType([], VoidType()), False, frame))
+        structEmit.printout(structEmit.emitMETHOD("<init>", MType([x[1] for x in ast.elements], VoidType()), False, frame))
         frame.enterScope(True)
         structEmit.printout(structEmit.emitVAR(frame.getNewIndex(), "this", ClassType(ast.name), frame.getStartLabel(), frame.getEndLabel(), frame))
+        
+        # Generate fields variables
+        # Convert each field tuple to include the index
+        new_elements = []
+        for field in ast.elements:
+            fieldName, fieldType = field
+            index = frame.getNewIndex()
+            # Create new tuple with three elements: (name, type, index)
+            new_elements.append((fieldName, fieldType, index))
+            structEmit.printout(structEmit.emitVAR(index, fieldName, fieldType, frame.getStartLabel(), frame.getEndLabel(), frame))
+
+        # Replace the original elements with the new ones that include indices
+        new_elements
+
         structEmit.printout(structEmit.emitLABEL(frame.getStartLabel(), frame))
         structEmit.printout(structEmit.emitREADVAR("this", ClassType(ast.name), 0, frame))
         structEmit.printout(structEmit.emitINVOKESPECIAL(frame))
+
+        # Initialize fields
+        for field in new_elements:
+            fieldName, fieldType, index = field
+            # frame.push()
+            structEmit.printout(structEmit.emitREADVAR("this", ClassType(ast.name), 0, frame))
+            # frame.push()
+            structEmit.printout(structEmit.emitREADVAR(fieldName, fieldType, index, frame))
+            # frame.pop() x 2
+            structEmit.printout(structEmit.emitPUTFIELD(f"{ast.name}/{fieldName}", fieldType, frame))
+
+
         structEmit.printout(structEmit.emitLABEL(frame.getEndLabel(), frame))
         structEmit.printout(structEmit.emitRETURN(VoidType(), frame))
         structEmit.printout(structEmit.emitENDMETHOD(frame))
@@ -533,6 +550,14 @@ class CodeGenerator(BaseVisitor,Utils):
             else:
                 e, t = self.visit(ast.receiver, o)
                 code += e
+
+                # find struct
+                struct = next(filter(lambda x: isinstance(x, SymbolType) and x.name == t.name, [j for i in o['env'] for j in i]),None)
+
+                # find the type of the field from struct
+                mtype = next(filter(lambda x: x[0] == ast.field, struct.field),None)[1]
+
+                code += self.emit.emitGETFIELD(f"{t.name}/{ast.field}", mtype, o['frame'])
             
         else:
             # always be Id
@@ -731,7 +756,13 @@ class CodeGenerator(BaseVisitor,Utils):
         code += self.emit.emitNEW(ast.name, o['frame'])
         code += self.emit.emitDUP(o['frame'])
 
-        code += self.emit.emitINVOKESPECIAL(lexeme=f"{ast.name}/<init>", in_=MType([], VoidType()), frame=o['frame'])
+        fields = sym.field
+        for field in fields:
+            # find in ast.elements
+            _, expr = next(filter(lambda x: x[0] == field[0], ast.elements), None)
+            code += self.visit(expr, o)[0]
+
+        code += self.emit.emitINVOKESPECIAL(lexeme=f"{ast.name}/<init>", in_=MType([x[1] for x in fields], VoidType()), frame=o['frame'])
 
         return code, ClassType(ast.name)
     
@@ -934,6 +965,7 @@ class CodeGenerator(BaseVisitor,Utils):
     
     def visitReturn(self, ast, o):
         env = o.copy()
+        env['isLeft'] = False
         e, t = self.visit(ast.expr, env)
         # printout the expr of the return
         self.emit.printout(e)

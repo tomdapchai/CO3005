@@ -7,8 +7,8 @@
         func main() {
             var x Person = Person{name: "John", age: 30}
             x.age := 35 * 2
-            var y Person = Person{name: "Doe", age: 25}
-            y.name := "Jane" + " Doe"
+            var y Person = Person{name: "Jane", age: 25}
+            y.name += " Doe"
             putIntLn(x.age)
             putStringLn(y.name)
         }
