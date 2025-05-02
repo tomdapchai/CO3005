@@ -1,0 +1,17 @@
+
+        type Person struct {
+            name string;
+            age int;
+        }
+
+        func main() {
+            var x Person = Person{name: "John", age: 30}
+            x.age := 35 * 2
+            var y Person = Person{name: "Doe", age: 25}
+            y.name := "Jane" + " Doe"
+            putIntLn(x.age)
+            putStringLn(y.name)
+        }
+
+        
+        

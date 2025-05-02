@@ -1,0 +1,26 @@
+
+        const a = 5;
+        var b = 5;
+
+        func (p Person) foo() {
+            var x = 10;
+        }
+
+        type Person struct {
+            name string;
+            age int;
+        }
+
+        func main() {
+            var x Person = Person{name: "John", age: 30}
+            var y Person = Person{name: "Doe", age: 25}
+            putIntLn(x.age)
+            putStringLn(x.name)
+            putIntLn(y.age)
+            putStringLn(y.name)
+            putIntLn(x.age)
+            putStringLn(x.name)
+        }
+
+        
+        

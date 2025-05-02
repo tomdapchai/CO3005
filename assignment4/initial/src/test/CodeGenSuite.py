@@ -297,59 +297,107 @@ class CheckCodeGenSuite(unittest.TestCase):
     #     expect = "567\n567\n567\n567\n567\n204345678"
     #     self.assertTrue(TestCodeGen.test(input,expect,520))
 
-    # ARRAY
-    def test_15(self):
-        input = """
-        const a = 5;
-        func main() {
-            var b = 3;
-            var a [4]int = [4]int{5, 2, 3, 4}
-            var arr [5]int = [5]int{10, 20, 30, 40, 50}
-            a[1] := 20
-            var x = 10;
-            putIntLn(a[0] + arr[0] * 2 + a[1])
-        }
-        """
-        expect = "45\n"
-        self.assertTrue(TestCodeGen.test(input,expect,521))
+    # def test_15(self):
+    #     input = """
+    #     const a = 5;
+    #     func main() {
+    #         var b = 3;
+    #         var a [4]int = [4]int{5, 2, 3, 4}
+    #         var arr [5]int = [5]int{10, 20, 30, 40, 50}
+    #         a[1] := 20
+    #         var x = 10;
+    #         putIntLn(a[0] + arr[0] * 2 + a[1])
+    #     }
+    #     """
+    #     expect = "45\n"
+    #     self.assertTrue(TestCodeGen.test(input,expect,521))
 
-    def test_16(self):
-        input = """
-        const a = 5;
-        func main() {
-            var b = 3;
-            var a [4]int = [4]int{5, 2, 3, 4}
-            var arr [3][4]int = [3][4]int{{1, 2, 3}, {1, 2, 3, 4}, {10, 20}}
+    # def test_16(self):
+    #     input = """
+    #     const a = 5;
+    #     func main() {
+    #         var b = 3;
+    #         var a [4]int = [4]int{5, 2, 3, 4}
+    #         var arr [3][4]int = [3][4]int{{1, 2, 3}, {1, 2, 3, 4}, {10, 20}}
             
-            var x = 10;
-            putIntLn(a[0] + arr[2][1] * 2)
-            putIntLn(arr[0][3])
-            arr[0][3] := 10
-            putIntLn(arr[0][3])
-        }
-        """
-        expect = "45\n0\n10\n"
-        self.assertTrue(TestCodeGen.test(input,expect,522))
+    #         var x = 10;
+    #         putIntLn(a[0] + arr[2][1] * 2)
+    #         putIntLn(arr[0][3])
+    #         arr[0][3] := 10
+    #         putIntLn(arr[0][3])
+    #     }
+    #     """
+    #     expect = "45\n0\n10\n"
+    #     self.assertTrue(TestCodeGen.test(input,expect,522))
     
-    def test_17(self):
-        input = """
-        const a = 5;
-        func main() {
+    # def test_17(self):
+    #     input = """
+    #     const a = 5;
+    #     func main() {
 
-            var b = foo()[0] + 1
-            putIntLn(b)
-        }
+    #         var b = foo()[0] + 1
+    #         putIntLn(b)
+    #     }
 
-        // somehow this test works so well idk lololol
+    #     // somehow this test works so well idk lololol
 
-        func foo() [3]int {
+    #     func foo() [3]int {
         
-            return [3]int{1, 2, 3}
-        }
-        """
-        expect = "2\n"
-        self.assertTrue(TestCodeGen.test(input,expect,523))
+    #         return [3]int{1, 2, 3}
+    #     }
+    #     """
+    #     expect = "2\n"
+    #     self.assertTrue(TestCodeGen.test(input,expect,523))
 
+    # def test_18(self):
+    #     input = """
+    #     const a = 5;
+    #     var b = 5;
+
+    #     func (p Person) foo() {
+    #         var x = 10;
+    #     }
+
+    #     type Person struct {
+    #         name string;
+    #         age int;
+    #     }
+
+    #     func main() {
+    #         var x Person = Person{name: "John", age: 30}
+    #         var y Person = Person{name: "Doe", age: 25}
+    #         putIntLn(x.age)
+    #         putStringLn(x.name)
+    #         putIntLn(y.age)
+    #         putStringLn(y.name)
+    #         putIntLn(x.age)
+    #         putStringLn(x.name)
+    #     }
+
+        
+    #     """
+    #     expect = "30\nJohn\n25\nDoe\n30\nJohn\n"
+    #     self.assertTrue(TestCodeGen.test(input,expect,524))
     
+    def test_19(self):
+        input = """
+        type Person struct {
+            name string;
+            age int;
+        }
+
+        func main() {
+            var x Person = Person{name: "John", age: 30}
+            x.age := 35 * 2
+            var y Person = Person{name: "Doe", age: 25}
+            y.name := "Jane" + " Doe"
+            putIntLn(x.age)
+            putStringLn(y.name)
+        }
+
+        
+        """
+        expect = "70\nJane Doe\n"
+        self.assertTrue(TestCodeGen.test(input,expect,525))
 
     

@@ -27,7 +27,7 @@ class Emitter():
             return "[" * len(inType.dimens) + self.getJVMType(inType.eleType)
         elif typeIn is MType:
             return "(" + "".join(list(map(lambda x: self.getJVMType(x), inType.partype))) + ")" + self.getJVMType(inType.rettype)
-        elif typeIn is cgen.ClassType:
+        elif typeIn is cgen.ClassType or typeIn is cgen.Id:
             return "L" + inType.name + ";"
         else:
             return str(typeIn)
@@ -155,6 +155,12 @@ class Emitter():
             # Multi-dimensional array - use multianewarray
             return self.jvm.emitMULTIANEWARRAY(self.getJVMType(in_), str(len(in_.dimens)))
 
+
+    def emitNEW(self, in_, frame):
+        # in_: Class name
+        # frame: Frame
+        return self.jvm.emitNEW(in_)
+
     def emitVAR(self, in_, varName, inType, fromLabel, toLabel, frame):
         #in_: Int
         #varName: String
@@ -175,7 +181,11 @@ class Emitter():
         frame.push()
         if type(inType) is IntType:
             return self.jvm.emitILOAD(index)
-        elif type(inType) is cgen.ArrayType or type(inType) is cgen.ClassType or type(inType) is StringType:
+        elif type(inType) is FloatType:
+            return self.jvm.emitFLOAD(index)
+        elif type(inType) is BoolType:
+            return self.jvm.emitILOAD(index)
+        elif type(inType) is cgen.ArrayType or type(inType) is cgen.ClassType or type(inType) is StringType or type(inType) is Id:
             return self.jvm.emitALOAD(index)
         else:
             raise IllegalOperandException(name)
@@ -203,11 +213,17 @@ class Emitter():
         #frame: Frame
         #..., value -> ...
         
-        frame.pop()
+        # workaround for the stack size
+        if frame.getStackSize() > 0:
+            frame.pop()
 
         if type(inType) is IntType:
             return self.jvm.emitISTORE(index)
-        elif type(inType) is cgen.ArrayType or type(inType) is cgen.ClassType or type(inType) is StringType:
+        elif type(inType) is FloatType:
+            return self.jvm.emitFSTORE(index)
+        elif type(inType) is BoolType:
+            return self.jvm.emitISTORE(index)
+        elif type(inType) is cgen.ArrayType or type(inType) is cgen.ClassType or type(inType) is StringType or type(inType) is Id:
             return self.jvm.emitASTORE(index)
         else:
             raise IllegalOperandException(name)
@@ -368,8 +384,10 @@ class Emitter():
         if lexeme == "+":
             if type(in_) is IntType:
                 return self.jvm.emitIADD()
-            else:
+            elif type(in_) is FloatType:
                 return self.jvm.emitFADD()
+            elif type(in_) is StringType:
+                return self.jvm.emitINVOKEVIRTUAL("java/lang/String/concat(Ljava/lang/String;)","Ljava/lang/String;")
         else:
             if type(in_) is IntType:
                 return self.jvm.emitISUB()

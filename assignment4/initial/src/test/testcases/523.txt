@@ -6,6 +6,7 @@
             putIntLn(b)
         }
 
+        // somehow this test works so well idk lololol
 
         func foo() [3]int {
         
