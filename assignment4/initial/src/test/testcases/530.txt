@@ -1,0 +1,41 @@
+
+        type Car struct {
+            name string;
+            year int;
+        }
+
+        type Person struct {
+            name string;
+            age int;
+            height float;
+            car Car
+        }
+
+        func init(name string, age int, height float, car Car) Person {
+            return Person{name: name, age: age, height: height, car: car}
+        }
+
+        func (c Car) init(name string, year int) Car {
+            return Car{name: name, year: year}
+        }
+
+        func (c Car) print() {
+            putStringLn(c.name)
+            putIntLn(c.year)
+        }
+
+        func (p Person) bar() {
+            putStringLn(p.name)
+            putIntLn(p.age)
+            putFloatLn(p.height)
+            p.car.print()
+        }
+
+        func main() {
+            var car Car = Car{name: "Toyota", year: 2020}
+            var x Person = init("John", 30, 177.3, car)
+            x.bar()
+        }
+
+        
+        

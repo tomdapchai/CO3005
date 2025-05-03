@@ -159,6 +159,7 @@ class Emitter():
     def emitNEW(self, in_, frame):
         # in_: Class name
         # frame: Frame
+        frame.push()
         return self.jvm.emitNEW(in_)
 
     def emitVAR(self, in_, varName, inType, fromLabel, toLabel, frame):

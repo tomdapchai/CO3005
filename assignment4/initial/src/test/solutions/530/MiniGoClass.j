@@ -2,52 +2,47 @@
 .class public MiniGoClass
 .super java.lang.Object
 
-.method public static foo()LPerson;
+.method public static init(Ljava/lang/String;IFLCar;)LPerson;
 Label0:
+.var 0 is name Ljava/lang/String; from Label0 to Label1
+.var 1 is age I from Label0 to Label1
+.var 2 is height F from Label0 to Label1
+.var 3 is car LCar; from Label0 to Label1
 Label2:
-.var 0 is k LPerson; from Label2 to Label3
 	new Person
 	dup
-	ldc "Doe"
-	bipush 25
-	ldc 180.5
-	invokespecial Person/<init>(Ljava/lang/String;IF)V
-	astore_0
 	aload_0
+	iload_1
+	fload_2
+	aload_3
+	invokespecial Person/<init>(Ljava/lang/String;IFLCar;)V
 	areturn
 Label3:
 Label1:
 .limit stack 6
-.limit locals 1
+.limit locals 4
 .end method
 
 .method public static main([Ljava/lang/String;)V
 Label0:
 .var 0 is args [Ljava/lang/String; from Label0 to Label1
 Label2:
-.var 1 is x LPerson; from Label2 to Label3
-	new Person
+.var 1 is car LCar; from Label2 to Label3
+	new Car
 	dup
+	ldc "Toyota"
+	sipush 2020
+	invokespecial Car/<init>(Ljava/lang/String;I)V
+	astore_1
+.var 2 is x LPerson; from Label2 to Label3
 	ldc "John"
 	bipush 30
 	ldc 177.3
-	invokespecial Person/<init>(Ljava/lang/String;IF)V
-	astore_1
 	aload_1
-	getfield Person/age I
-	invokestatic io/putIntLn(I)V
-	aload_1
-	getfield Person/height F
-	invokestatic io/putFloatLn(F)V
-	aload_1
-	getfield Person/name Ljava/lang/String;
-	invokestatic io/putStringLn(Ljava/lang/String;)V
-.var 2 is y I from Label2 to Label3
-	invokestatic MiniGoClass/foo()LPerson;
-	getfield Person/age I
-	istore_2
-	iload_2
-	invokestatic io/putIntLn(I)V
+	invokestatic MiniGoClass/init(Ljava/lang/String;IFLCar;)LPerson;
+	astore_2
+	aload_2
+	invokevirtual Person/bar()V
 Label3:
 Label1:
 	return

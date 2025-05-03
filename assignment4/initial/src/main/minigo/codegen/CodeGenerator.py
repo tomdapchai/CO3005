@@ -327,6 +327,13 @@ class CodeGenerator(BaseVisitor,Utils):
             self.emit.printout(self.emit.emitVAR(frame.getNewIndex(), "args", ArrayType([None],StringType()), frame.getStartLabel(), frame.getEndLabel(), frame))
         else:
             env = reduce(lambda acc,e: self.visit(e,acc),ast.params,env)
+            for param in ast.params:
+                paramName = param.parName
+                paramType = param.parType
+                index = frame.getNewIndex()
+                env['env'][0].insert(0, Symbol(paramName, paramType, Index(index)))
+                self.emit.printout(self.emit.emitVAR(index, paramName, paramType, frame.getStartLabel(), frame.getEndLabel(), frame))
+
         self.visit(ast.body,env)
         self.emit.printout(self.emit.emitLABEL(frame.getEndLabel(), frame))
         if type(ast.retType) is VoidType:
@@ -349,12 +356,29 @@ class CodeGenerator(BaseVisitor,Utils):
         o['env'][-1].insert(0, Symbol(ast.fun.name, mtype, CName(ast.recType.name)))
         env = o.copy()
         env['frame'] = Frame(ast.fun.name, ast.fun.retType)
-        self.emit.printout(self.emit.emitMETHOD(ast.fun.name, mtype, True, env['frame']))
+        self.emit.printout(self.emit.emitMETHOD(ast.fun.name, mtype, False, env['frame']))
 
         env['frame'].enterScope(True)
+        # emit this
+        self.emit.printout(self.emit.emitVAR(env['frame'].getNewIndex(), "this", ClassType(ast.recType.name), env['frame'].getStartLabel(), env['frame'].getEndLabel(), env['frame']))
+
         self.emit.printout(self.emit.emitLABEL(env['frame'].getStartLabel(), env['frame']))
         env['env'] = [[]] + env['env']
+
+        # add receiver to env - workaround for now, would fix, this would actually take the object call it but no idea now
+        env['env'][0].insert(0, Symbol(ast.receiver, ast.recType, Index(0))) # "this" - receiver
+        
+        # add params to env
+        env['env'] = [[]] + env['env']
         env = reduce(lambda acc,e: self.visit(e,acc),ast.fun.params,env)
+
+        for param in ast.fun.params:
+            paramName = param.parName
+            paramType = param.parType
+            index = env['frame'].getNewIndex()
+            env['env'][0].insert(0, Symbol(paramName, paramType, Index(index)))
+            self.emit.printout(self.emit.emitVAR(index, paramName, paramType, env['frame'].getStartLabel(), env['frame'].getEndLabel(), env['frame']))
+
         env = self.visit(ast.fun.body, env)
         self.emit.printout(self.emit.emitLABEL(env['frame'].getEndLabel(), env['frame']))
         if type(ast.fun.retType) is VoidType:
@@ -583,6 +607,7 @@ class CodeGenerator(BaseVisitor,Utils):
         o['isLeft'] = False
         e1, t1 = self.visit(ast.left, o)
         e2, t2 = self.visit(ast.right, o)
+        print("type: ", t1, t2)
 
         if isinstance(t1, FloatType) or isinstance(t2, FloatType):
             mtype = FloatType()
@@ -655,11 +680,51 @@ class CodeGenerator(BaseVisitor,Utils):
             return code, sym.mtype.rettype
             
     
-    def visitMethCall(self, ast, o):
+    def visitMethCall(self, ast: MethCall, o):
+        print("AST: ", ast)
         # likely invokestatic
+        env = o.copy()
+        sym = None # would store the method
+        code = ""
+        struct = None # would store the struct
+        if isinstance(ast.receiver, Id):
+            caller = next(filter(lambda x: x.name == ast.receiver.name, [j for i in o['env'] for j in i]),None)
 
-        return o
+            # find the struct from sym.mtype - the struct
+            struct = next(filter(lambda x: isinstance(x, SymbolType) and x.name == caller.mtype.name, [j for i in env['env'] for j in i]),None)
+
+            # there will always be struct, find the method from struct
+            sym = next(filter(lambda x: x.fun.name == ast.metName, struct.method),None)
+            if type(caller.value) is Index:
+                code += self.emit.emitREADVAR(ast.receiver.name, caller.mtype, caller.value.value , env['frame'])
+            else:
+                code += self.emit.emitGETSTATIC(f"{self.className}/{caller.name}",caller.mtype,env['frame'])
         
+        else:
+            o['isLeft'] = False
+            e, t = self.visit(ast.receiver, o)
+            code += e
+            # find struct
+            struct = next(filter(lambda x: isinstance(x, SymbolType) and x.name == t.name, [j for i in env['env'] for j in i]),None)
+
+            # find the method from struct
+            sym = next(filter(lambda x: x.fun.name == ast.metName, struct.method),None)
+
+        # args
+        for arg in ast.args:
+            e, t = self.visit(arg, o)
+            code += e
+        
+        # invoke method
+        code += self.emit.emitINVOKEVIRTUAL(f"{struct.name}/{ast.metName}", MType([x.parType for x in sym.fun.params], sym.fun.retType), env['frame'])
+
+        if type(sym.fun.retType) is VoidType:
+            print("void type")
+            self.emit.printout(code)
+            return o
+        else:
+            return code, sym.fun.retType
+    
     # ====================================LITERALS====================================
 
     def visitIntLiteral(self, ast, o):
@@ -794,7 +859,7 @@ class CodeGenerator(BaseVisitor,Utils):
         env['env'] = [[]] + env['env']
         env['frame'].enterScope(False)
         self.emit.printout(self.emit.emitLABEL(env['frame'].getStartLabel(), env['frame']))
-        env = reduce(lambda acc,e: self.visit(e,acc),ast.member,env)
+        env = reduce(lambda acc,e: self.visit(e,acc),ast.member, env)
         self.emit.printout(self.emit.emitLABEL(env['frame'].getEndLabel(), env['frame']))
         env['frame'].exitScope()
         return o

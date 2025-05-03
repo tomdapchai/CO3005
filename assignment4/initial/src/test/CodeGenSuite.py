@@ -400,31 +400,163 @@ class CheckCodeGenSuite(unittest.TestCase):
     #     expect = "70\nJane Doe\n"
     #     self.assertTrue(TestCodeGen.test(input,expect,525))
     
-    def test_20(self):
+    # def test_20(self):
+    #     input = """
+    #     type Person struct {
+    #         name string;
+    #         age int;
+    #         height float;
+    #     }
+
+    #     func foo() Person {
+    #         var k Person = Person{name: "Doe", age: 25, height: 180.5}
+    #         return k
+    #     } 
+
+    #     func main() {
+    #         var x Person = Person{age: 30, height: 177.3, name: "John"}
+    #         putIntLn(x.age)
+    #         putFloatLn(x.height)
+    #         putStringLn(x.name)
+    #         var y int = foo().age
+    #         putIntLn(y)
+    #     }
+
+        
+    #     """
+    #     expect = "30\n177.3\nJohn\n25\n"
+    #     self.assertTrue(TestCodeGen.test(input,expect,526))
+    
+    # def test_21(self):
+    #     input = """
+    #     type Person struct {
+    #         name string;
+    #         age int;
+    #         height float;
+    #     }
+
+    #     func foo(a int, n string, h float) Person {
+    #         var k Person = Person{name: n, age: a, height: h}
+    #         return k
+    #     } 
+
+    #     func main() {
+    #         var x Person = foo(30, "John", 177.3)
+    #         putIntLn(x.age)
+    #     }
+
+        
+    #     """
+    #     expect = "30\n"
+    #     self.assertTrue(TestCodeGen.test(input,expect,527))
+
+    # def test_22(self):
+    #     input = """
+    #     type Person struct {
+    #         name string;
+    #         age int;
+    #         height float;
+    #     }
+
+    #     func (p Person) foo(a, b int) int {
+    #         var x = 10;
+
+    #         var c int = x + p.age + a * b
+    #         var d Person = Person{name: "Doe", age: 25, height: 180.5}
+    #         var p int = 20 + d.age // try to shadowing
+    #         return c + p
+    #     }
+
+    #     func (p Person) bar() {
+    #         putStringLn(p.name)
+    #         putIntLn(p.age)
+    #         putFloatLn(p.height)
+    #     }
+
+    #     func main() {
+    #         var x Person = Person{name: "John", age: 30, height: 177.3}
+    #         putIntLn(x.foo(2, 5))
+    #         x.bar()
+    #     }
+
+        
+    #     """
+    #     expect = "95\nJohn\n30\n177.3\n"
+    #     self.assertTrue(TestCodeGen.test(input,expect,528))
+
+    # def test_23(self):
+    #     input = """
+    #     type Person struct {
+    #         name string;
+    #         age int;
+    #         height float;
+    #     }
+
+    #     func (p Person) foo(a, b int) Person {
+            
+    #         var d Person = Person{name: "Doe", age: 25, height: 180.5}
+    #         d.name += " " + p.name
+    #         return d
+    #     }
+
+    #     func (p Person) bar() {
+    #         putStringLn(p.name)
+    #         putIntLn(p.age)
+    #         putFloatLn(p.height)
+    #     }
+    #     func main() {
+    #         var x Person = Person{name: "John", age: 30, height: 177.3}
+    #         x.foo(2, 5).bar()
+    #     }
+
+        
+    #     """
+    #     expect = "Doe John\n25\n180.5\n"
+    #     self.assertTrue(TestCodeGen.test(input,expect,529))
+
+    def test_24(self):
         input = """
+        type Car struct {
+            name string;
+            year int;
+        }
+
         type Person struct {
             name string;
             age int;
             height float;
+            car Car
         }
 
-        func foo() Person {
-            var k Person = Person{name: "Doe", age: 25, height: 180.5}
-            return k
-        } 
+        func init(name string, age int, height float, car Car) Person {
+            return Person{name: name, age: age, height: height, car: car}
+        }
+
+        func (c Car) init(name string, year int) Car {
+            return Car{name: name, year: year}
+        }
+
+        func (c Car) print() {
+            putStringLn(c.name)
+            putIntLn(c.year)
+        }
+
+        func (p Person) bar() {
+            putStringLn(p.name)
+            putIntLn(p.age)
+            putFloatLn(p.height)
+            p.car.print()
+        }
 
         func main() {
-            var x Person = Person{age: 30, height: 177.3, name: "John"}
-            putIntLn(x.age)
-            putFloatLn(x.height)
-            putStringLn(x.name)
-            var y int = foo().age
-            putIntLn(y)
+            var car Car = Car{name: "Toyota", year: 2020}
+            var x Person = init("John", 30, 177.3, car)
+            x.bar()
         }
 
         
         """
-        expect = "30\n177.3\nJohn\n25\n"
-        self.assertTrue(TestCodeGen.test(input,expect,526))
+        expect = "John\n30\n177.3\nToyota\n2020\n"
+        self.assertTrue(TestCodeGen.test(input,expect,530))
 
     
