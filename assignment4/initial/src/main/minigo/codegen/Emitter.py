@@ -690,6 +690,33 @@ class Emitter():
         result.append(self.jvm.emitCLASS("public " + name))
         result.append(self.jvm.emitSUPER("java/land/Object" if parent == "" else parent))
         return ''.join(result)
+    
+    def emitINTERFACE(self, name, parent, methods: List[Prototype]):
+        #name: String
+        result = list()
+        result.append(self.jvm.emitSOURCE(name + ".java"))
+        result.append(".class public interface " + name + "\n")
+        result.append(self.jvm.emitSUPER("java/land/Object" if parent == "" else parent))
+        result.append("\n")
+        for method in methods:
+            result.append(".method public abstract " + method.name + "(" + "".join(list(map(lambda x: self.getJVMType(x), method.params))) + ")" + self.getJVMType(method.retType) + "\n")
+            result.append(".end method\n")
+            result.append("\n")
+            
+        return ''.join(result)
+    
+    def emitINVOKEINTERFACE(self, lexeme, in_, frame, paramCount):
+        #lexeme: String
+        #in_: Type
+        #frame: Frame
+        # paramCount: Int
+        typ = in_
+        list(map(lambda x: frame.pop(), typ.partype))
+        frame.pop()
+        if not type(typ) is VoidType:
+            frame.push()
+        return self.jvm.INDENT + "invokeinterface " + lexeme + str(self.getJVMType(in_)) + " " + str(paramCount + 1) + self.jvm.END
+        
 
     def emitLIMITSTACK(self, num):
         #num: Int

@@ -73,6 +73,9 @@ class CodeGenerator(BaseVisitor,Utils):
         self.emit = None
         self.globalSym = []
         self.initCode = [] # List of tuples (name, type, expr) for delayed initialization
+        self.structs = []
+        self.interfaces = []
+        self.list_function = [] # List of functions in the program
 
     def init(self):
         mem = [Symbol("getInt", MType([],IntType()), CName("io",True)),
@@ -97,47 +100,16 @@ class CodeGenerator(BaseVisitor,Utils):
         self.path = dir_
         self.emit = Emitter(dir_ + "/" + self.className + ".j")
         self.visit(ast, gl)
-
-    # def genStructClass(self, structName, fields, methods, o):
-    #     classFile = self.path + "/" + structName + ".j"
-    #     structEmit = Emitter(classFile)
-        
-    #     # Generate class
-    #     structEmit.printout(structEmit.emitPROLOG(structName, "java/lang/Object"))
-        
-    #     # Generate fields
-    #     for field in fields:
-    #         fieldName, fieldType = field
-    #         structEmit.printout(structEmit.emitATTRIBUTE(fieldName, fieldType, True, False, None))
-        
-    #     # Generate constructor
-    #     frame = Frame("<init>", VoidType())
-    #     structEmit.printout(structEmit.emitMETHOD("<init>", MType([], VoidType()), False, frame))
-    #     frame.enterScope(True)
-    #     structEmit.printout(structEmit.emitVAR(frame.getNewIndex(), "this", ClassType(structName), frame.getStartLabel(), frame.getEndLabel(), frame))
-    #     structEmit.printout(structEmit.emitLABEL(frame.getStartLabel(), frame))
-    #     structEmit.printout(structEmit.emitREADVAR("this", ClassType(structName), 0, frame))
-    #     structEmit.printout(structEmit.emitINVOKESPECIAL(frame))
-    #     structEmit.printout(structEmit.emitLABEL(frame.getEndLabel(), frame))
-    #     structEmit.printout(structEmit.emitRETURN(VoidType(), frame))
-    #     structEmit.printout(structEmit.emitENDMETHOD(frame))
-    #     frame.exitScope()
-        
-    #     # Generate methods
-    #     for method in methods:
-    #         pass
-        
-    #     structEmit.emitEPILOG()
        
     # can use this for references on creating new method in class
-    def emitObjectInit(self, name):
+    def emitObject(self):
         frame = Frame("<init>", VoidType())  
         self.emit.printout(self.emit.emitMETHOD("<init>", MType([], VoidType()), False, frame))  # Start defining method <init>
         frame.enterScope(True)  
-        self.emit.printout(self.emit.emitVAR(frame.getNewIndex(), "this", ClassType(name), frame.getStartLabel(), frame.getEndLabel(), frame))  # create "this" variable in <init>
+        self.emit.printout(self.emit.emitVAR(frame.getNewIndex(), "this", ClassType(self.className), frame.getStartLabel(), frame.getEndLabel(), frame))  # create "this" variable in <init>
         
         self.emit.printout(self.emit.emitLABEL(frame.getStartLabel(), frame))
-        self.emit.printout(self.emit.emitREADVAR("this", ClassType(name), 0, frame))  
+        self.emit.printout(self.emit.emitREADVAR("this", ClassType(self.className), 0, frame))  
         self.emit.printout(self.emit.emitINVOKESPECIAL(frame))  
 
         
@@ -146,7 +118,7 @@ class CodeGenerator(BaseVisitor,Utils):
         self.emit.printout(self.emit.emitENDMETHOD(frame))  
         frame.exitScope()  
     
-    def emitObjectClinitMain(self):
+    def emitObjectClinit(self):
         # perform creating clinic instance here
         frame = Frame("<clinit>", VoidType())
         self.emit.printout(self.emit.emitMETHOD("<clinit>", MType([], VoidType()), True, frame))  # Start defining method <clinit>, static
@@ -172,13 +144,16 @@ class CodeGenerator(BaseVisitor,Utils):
 
         # scan for methods
         self.MethScan(ast)
+        for struct in self.structs:
+            implemented = self.ImplementScan(struct)
+            struct.implements = implemented
 
         env ={}
         env['env'] = [c]
         self.emit.printout(self.emit.emitPROLOG(self.className, "java.lang.Object"))
         env = reduce(lambda a,x: self.visit(x,a), ast.decl, env)
-        self.emitObjectInit(self.className)
-        self.emitObjectClinitMain()
+        self.emitObject()
+        self.emitObjectClinit()
         self.emit.printout(self.emit.emitEPILOG())
         return env
 
@@ -259,9 +234,28 @@ class CodeGenerator(BaseVisitor,Utils):
                         self.emit.printout(self.emit.emitWRITEVAR(ast.varName, ast.varType, index, frame))
                     else:
                         # Use default value for non-array types
-                        eInit = self.get_default_value(ast.varType)
-                        self.emit.printout(self.emit.emitPUSHCONST(eInit, ast.varType ,frame))
-                        self.emit.printout(self.emit.emitWRITEVAR(ast.varName, ast.varType, index, frame))
+                        if isinstance(ast.varType, (IntType, FloatType, StringType, BoolType)):
+                            eInit = self.get_default_value(ast.varType)
+                            self.emit.printout(self.emit.emitPUSHCONST(eInit, ast.varType ,frame))
+                            self.emit.printout(self.emit.emitWRITEVAR(ast.varName, ast.varType, index, frame))
+                        elif isinstance(ast.varType, Id):
+                            # check if Id is struct or interface from self.structs and self.interface
+                            isStruct = True
+                            struct = next(filter(lambda x: x.name == ast.varType.name, self.structs),None)
+
+                            if struct is None:
+                                isStruct = False
+                                
+                            if isStruct:
+                                self.emit.printout(self.emit.emitNEW(ast.varType.name, frame))
+                                self.emit.printout(self.emit.emitDUP(frame))
+                                self.emit.printout(self.emit.emitINVOKESPECIAL(lexeme=f"{ast.varType.name}/<init>", in_=MType([], VoidType()), frame=frame))
+                                self.emit.printout(self.emit.emitWRITEVAR(ast.varName, ast.varType, index, frame))
+                            else:
+                                # interface
+                                pass
+                            
+                        
             else:
                 # there obviously is varInit if no varType here
                 eInit, tInit = self.visit(ast.varInit, o)
@@ -422,6 +416,10 @@ class CodeGenerator(BaseVisitor,Utils):
         # Generate class
         structEmit.printout(structEmit.emitPROLOG(ast.name, "java/lang/Object"))
         
+        # generate implements
+        for implement in ast.implements:
+            structEmit.printout(".implements " + implement + "\n")
+
         # Generate fields
         for field in ast.elements:
             fieldName, fieldType = field
@@ -442,9 +440,7 @@ class CodeGenerator(BaseVisitor,Utils):
             # Create new tuple with three elements: (name, type, index)
             new_elements.append((fieldName, fieldType, index))
             structEmit.printout(structEmit.emitVAR(index, fieldName, fieldType, frame.getStartLabel(), frame.getEndLabel(), frame))
-
-        # Replace the original elements with the new ones that include indices
-        new_elements
+        
 
         structEmit.printout(structEmit.emitLABEL(frame.getStartLabel(), frame))
         structEmit.printout(structEmit.emitREADVAR("this", ClassType(ast.name), 0, frame))
@@ -465,6 +461,20 @@ class CodeGenerator(BaseVisitor,Utils):
         structEmit.printout(structEmit.emitRETURN(VoidType(), frame))
         structEmit.printout(structEmit.emitENDMETHOD(frame))
         frame.exitScope()
+
+        # default constructor with no args
+        frame = Frame("<init>", VoidType())
+        structEmit.printout(structEmit.emitMETHOD("<init>", MType([], VoidType()), False, frame))
+        frame.enterScope(True)
+        structEmit.printout(structEmit.emitVAR(frame.getNewIndex(), "this", ClassType(ast.name), frame.getStartLabel(), frame.getEndLabel(), frame))
+        structEmit.printout(structEmit.emitLABEL(frame.getStartLabel(), frame))
+        structEmit.printout(structEmit.emitREADVAR("this", ClassType(ast.name), 0, frame))
+        structEmit.printout(structEmit.emitINVOKESPECIAL(frame))
+        structEmit.printout(structEmit.emitLABEL(frame.getEndLabel(), frame))
+        structEmit.printout(structEmit.emitRETURN(VoidType(), frame))
+        structEmit.printout(structEmit.emitENDMETHOD(frame))
+        frame.exitScope()
+
         
         # Generate methods
         env = o.copy()
@@ -481,7 +491,17 @@ class CodeGenerator(BaseVisitor,Utils):
         
         return o
     
-    def visitInterfaceType(self, ast, o):
+    def visitInterfaceType(self, ast: InterfaceType, o):
+        o['env'][-1].insert(0, SymbolType(ast.name, ast, None, ast.methods))
+
+        classFile = self.path + "/" + ast.name + ".j"
+        interfaceEmit = Emitter(classFile)
+
+        # Generate class
+        interfaceEmit.printout(interfaceEmit.emitINTERFACE(ast.name, "java/lang/Object", ast.methods))
+
+        interfaceEmit.emitEPILOG()
+
         return o
 
     
@@ -686,15 +706,25 @@ class CodeGenerator(BaseVisitor,Utils):
         env = o.copy()
         sym = None # would store the method
         code = ""
-        struct = None # would store the struct
+        struct = None # would store the struct or interface
+        isStruct = True # would check if this is struct or interface
+        # check if caller is interface type or struct type, if interface type, use invokeinterface, else use invokevirtual
+
         if isinstance(ast.receiver, Id):
             caller = next(filter(lambda x: x.name == ast.receiver.name, [j for i in o['env'] for j in i]),None)
 
-            # find the struct from sym.mtype - the struct
-            struct = next(filter(lambda x: isinstance(x, SymbolType) and x.name == caller.mtype.name, [j for i in env['env'] for j in i]),None)
+            callerType = caller.mtype.name
+            isStruct = True
+            struct = next(filter(lambda x: x.name == callerType, self.structs),None)
+            if struct is None:
+                isStruct = False
+                struct = next(filter(lambda x: x.name == callerType, self.interfaces),None)
+            
+            if isStruct:
+                sym = next(filter(lambda x: x.fun.name == ast.metName, struct.methods),None)
+            else: # interface
+                sym = next(filter(lambda x: x.name == ast.metName, struct.methods),None)
 
-            # there will always be struct, find the method from struct
-            sym = next(filter(lambda x: x.fun.name == ast.metName, struct.method),None)
             if type(caller.value) is Index:
                 code += self.emit.emitREADVAR(ast.receiver.name, caller.mtype, caller.value.value , env['frame'])
             else:
@@ -705,10 +735,17 @@ class CodeGenerator(BaseVisitor,Utils):
             e, t = self.visit(ast.receiver, o)
             code += e
             # find struct
-            struct = next(filter(lambda x: isinstance(x, SymbolType) and x.name == t.name, [j for i in env['env'] for j in i]),None)
-
-            # find the method from struct
-            sym = next(filter(lambda x: x.fun.name == ast.metName, struct.method),None)
+            struct = next(filter(lambda x: x.name == t.name, self.structs),None)
+            if struct is None:
+                isStruct = False
+                struct = next(filter(lambda x: x.name == t.name, self.interfaces),None)
+            
+            if isStruct:
+                # find the method from struct
+                sym = next(filter(lambda x: x.fun.name == ast.metName, struct.methods),None)
+            else:
+                # find the method from interface
+                sym = next(filter(lambda x: x.name == ast.metName, struct.methods),None)
 
         # args
         for arg in ast.args:
@@ -716,14 +753,23 @@ class CodeGenerator(BaseVisitor,Utils):
             code += e
         
         # invoke method
-        code += self.emit.emitINVOKEVIRTUAL(f"{struct.name}/{ast.metName}", MType([x.parType for x in sym.fun.params], sym.fun.retType), env['frame'])
-
-        if type(sym.fun.retType) is VoidType:
-            print("void type")
-            self.emit.printout(code)
-            return o
+        if isStruct:
+            code += self.emit.emitINVOKEVIRTUAL(f"{struct.name}/{ast.metName}", MType([x.parType for x in sym.fun.params], sym.fun.retType), env['frame'])
+            if type(sym.fun.retType) is VoidType:
+                print("void type")
+                self.emit.printout(code)
+                return o
+            else:
+                return code, sym.fun.retType
         else:
-            return code, sym.fun.retType
+            code += self.emit.emitINVOKEINTERFACE(f"{struct.name}/{ast.metName}", MType([x for x in sym.params], sym.retType), env['frame'], len(ast.args))
+            if type(sym.retType) is VoidType:
+                print("void type")
+                self.emit.printout(code)
+                return o
+            else:
+                return code, sym.retType
+
     
     # ====================================LITERALS====================================
 
@@ -1075,7 +1121,49 @@ class CodeGenerator(BaseVisitor,Utils):
             struct: StructType = next(filter(lambda x: isinstance(x, StructType) and x.name == structName, ast.decl), None)
             for method in methods:
                 struct.methods.append(method)
+
+        # extras
+        for decl in ast.decl:
+            if isinstance(decl, StructType):
+                self.structs.append(decl)
+            elif isinstance(decl, InterfaceType):
+                self.interfaces.append(decl)
     
+    def ImplementScan(self, struct: StructType):
+        Smethods = struct.methods
+
+        implemented = []
+
+        for interface in self.interfaces:
+            print("interface: ", interface.name)
+            name = interface.name
+            Imethods = interface.methods
+            isValid = True
+            for proto in Imethods:
+                if not any(self.cmpPrototype(meth.fun, proto) for meth in Smethods):
+                    print("not implemented: ", proto.name)
+                    isValid = False
+                    break
+            if isValid:
+                implemented.append(name)
+        
+        return implemented
+
+    def cmpPrototype(self, meth: FuncDecl, proto: Prototype):
+        if meth.name != proto.name:
+            print("not same name: ", meth.name, proto.name)
+            return False
+        if len(meth.params) != len(proto.params):
+            print("not same number of params")
+            return False
+        for i in range(len(meth.params)):
+            if meth.params[i].parType != proto.params[i]:
+                print("not same type of params: ", meth.params[i].parType, proto.params[i])
+                return False
+        if  meth.retType != proto.retType:
+            print("not same return type: ", meth.retType, proto.retType)
+            return False
+        return True
 
     def inferValueConstant(self, ast): 
         if isinstance(ast, IntLiteral):

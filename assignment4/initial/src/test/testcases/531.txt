@@ -1,0 +1,34 @@
+
+
+        type Person struct {
+            name string;
+            age int;
+            height float;
+        }
+
+        type IPerson interface {
+            init(name string, age int, height float) Person;
+            bar();
+        }
+
+        func (p Person) init(name string, age int, height float) Person {
+            return Person{name: name, age: age, height: height}
+        }
+
+        func (p Person) bar() {
+            putStringLn(p.name)
+            putIntLn(p.age)
+            putFloatLn(p.height)
+        }
+
+        func main() {
+            var x Person
+            x := Person{name: "John", age: 30, height: 177.3}
+            var y IPerson
+            y := x
+            putStringLn(x.name)
+            y.bar()
+        }
+
+        
+        

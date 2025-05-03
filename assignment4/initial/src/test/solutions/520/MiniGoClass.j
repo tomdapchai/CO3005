@@ -153,7 +153,7 @@ Label27:
 Label3:
 Label1:
 	return
-.limit stack 37
+.limit stack 34
 .limit locals 2
 .end method
 
