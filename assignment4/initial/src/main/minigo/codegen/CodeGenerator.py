@@ -76,6 +76,7 @@ class CodeGenerator(BaseVisitor,Utils):
         self.structs = []
         self.interfaces = []
         self.list_function = [] # List of functions in the program
+        self.firstscan = True
 
     def init(self):
         mem = [Symbol("getInt", MType([],IntType()), CName("io",True)),
@@ -118,20 +119,33 @@ class CodeGenerator(BaseVisitor,Utils):
         self.emit.printout(self.emit.emitENDMETHOD(frame))  
         frame.exitScope()  
     
-    def emitObjectClinit(self):
+    def emitObjectClinit(self, env):
         # perform creating clinic instance here
         frame = Frame("<clinit>", VoidType())
         self.emit.printout(self.emit.emitMETHOD("<clinit>", MType([], VoidType()), True, frame))  # Start defining method <clinit>, static
-
+        
         frame.enterScope(True)
         self.emit.printout(self.emit.emitLABEL(frame.getStartLabel(), frame))
 
         # Emit delayed initializations
         for name, typ, expr in self.initCode:
-            eInit, tInit = self.visit(expr, {'frame': frame, 'env': [[]], 'isLeft': False})
-            self.emit.printout(eInit)
-            self.emit.printout(self.emit.emitPUTSTATIC(f"{self.className}/{name}", typ, frame))
-        
+            if isinstance(typ, Id) and expr is None: 
+                # create new instance 
+                isStruct = True
+                struct = next(filter(lambda x: x.name == typ.name, self.structs),None)
+                if struct is None:
+                    isStruct = False
+                if isStruct:
+                    self.emit.printout(self.emit.emitNEW(typ.name, frame))
+                    self.emit.printout(self.emit.emitDUP(frame))
+                    self.emit.printout(self.emit.emitINVOKESPECIAL(lexeme=f"{typ.name}/<init>", in_=MType([], VoidType()), frame=frame))
+                    self.emit.printout(self.emit.emitPUTSTATIC(f"{self.className}/{name}", typ, frame))
+            elif isinstance(typ, ArrayType) and expr is None:
+                pass
+            else:
+                eInit, tInit = self.visit(expr, {'frame': frame, 'env': env, 'isLeft': False})
+                self.emit.printout(eInit)
+                self.emit.printout(self.emit.emitPUTSTATIC(f"{self.className}/{name}", typ, frame))
         
         self.emit.printout(self.emit.emitLABEL(frame.getEndLabel(), frame))
         self.emit.printout(self.emit.emitRETURN(VoidType(), frame))
@@ -148,12 +162,23 @@ class CodeGenerator(BaseVisitor,Utils):
             implemented = self.ImplementScan(struct)
             struct.implements = implemented
 
+        # visit struct and interface
         env ={}
         env['env'] = [c]
+
+        for interface in self.interfaces:
+            self.visit(interface, env)
+
+        for struct in self.structs:
+            self.visit(struct, env)
+        
+        self.firstscan = False
+
+        
         self.emit.printout(self.emit.emitPROLOG(self.className, "java.lang.Object"))
         env = reduce(lambda a,x: self.visit(x,a), ast.decl, env)
         self.emitObject()
-        self.emitObjectClinit()
+        self.emitObjectClinit(env['env'])
         self.emit.printout(self.emit.emitEPILOG())
         return env
 
@@ -163,13 +188,24 @@ class CodeGenerator(BaseVisitor,Utils):
         if 'frame' not in o: # global var, need to be fixed as there is no frame to use
             if ast.varType:
                 o['env'][-1].insert(0, Symbol(ast.varName, ast.varType, CName(self.className)))
-                if isinstance(ast.varInit, (IntLiteral, FloatLiteral, StringLiteral, BooleanLiteral)):
-                    # For simple literals, emit directly as attribute value
-                    self.emit.printout(self.emit.emitATTRIBUTE(ast.varName, ast.varType, True, False, str(ast.varInit.value) if ast.varInit else None))
+                if ast.varInit:
+                    if isinstance(ast.varInit, (IntLiteral, FloatLiteral, StringLiteral, BooleanLiteral)):
+                        # For simple literals, emit directly as attribute value
+                        self.emit.printout(self.emit.emitATTRIBUTE(ast.varName, ast.varType, True, False, str(ast.varInit.value)))
+                    else:
+                        # For complex expressions, delay initialization to <init>
+                        print(ast.varType)
+                        self.emit.printout(self.emit.emitATTRIBUTE(ast.varName, ast.varType, True, False, None))
+                        self.initCode.append((ast.varName, ast.varType, ast.varInit))
                 else:
-                    # For complex expressions, delay initialization to <init>
-                    self.emit.printout(self.emit.emitATTRIBUTE(ast.varName, ast.varType, True, False, None))
-                    self.initCode.append((ast.varName, ast.varType, ast.varInit))
+                    # For variables without explicit initialization, just emit the attribute
+                    if isinstance(ast.varType, (IntType, FloatType, BoolType, StringType, Id)):
+                        
+                        self.emit.printout(self.emit.emitATTRIBUTE(ast.varName, ast.varType, True, False, None))
+                        if isinstance(ast.varType, Id):
+                            self.initCode.append((ast.varName, ast.varType, None))
+                    elif isinstance(ast.varType, ArrayType):
+                        self.emit.printout(self.emit.emitATTRIBUTE(ast.varName, ast.varType, True, False, None))
             else:
                 # For variables without explicit type, create a temporary frame to infer the type
                 temp_frame = Frame("temp", VoidType())
@@ -184,6 +220,7 @@ class CodeGenerator(BaseVisitor,Utils):
                     self.emit.printout(self.emit.emitATTRIBUTE(ast.varName, tInit, True, False, str(ast.varInit.value) if ast.varInit else None))
                 else:
                     # For complex expressions, delay initialization to <clinit>
+                    
                     self.emit.printout(self.emit.emitATTRIBUTE(ast.varName, tInit, True, False, None))
                     self.initCode.append((ast.varName, tInit, ast.varInit))
         else:
@@ -200,11 +237,14 @@ class CodeGenerator(BaseVisitor,Utils):
                     o['isLeft'] = False
                     if isinstance(ast.varType, ArrayType) and isinstance(ast.varInit, ArrayLiteral):
                         # Handle array initialization - push array onto stack
-                        eInit, _ = self.visit(ast.varInit, o)
+                        eInit, t = self.visit(ast.varInit, o)
                         self.emit.printout(eInit)
                     else:
-                        eInit, _ = self.visit(ast.varInit, o)
+                        eInit, t = self.visit(ast.varInit, o)
                         self.emit.printout(eInit)
+                        # very rare case, type is float and init is int, need to i2f
+                        if isinstance(ast.varType, FloatType) and isinstance(t, IntType):
+                            self.emit.printout(self.emit.emitI2F(frame))
                     self.emit.printout(self.emit.emitWRITEVAR(ast.varName, ast.varType, index, frame))
 
                 else:
@@ -408,6 +448,9 @@ class CodeGenerator(BaseVisitor,Utils):
         # @elements:List[Tuple[str,Type]]
         # @methods:List[MethodDecl]
         # @implements:List[InterfaceType] =  field(default_factory=list)
+        if self.firstscan is False:
+            return o
+
         o['env'][-1].insert(0, SymbolType(ast.name, ast, ast.elements, ast.methods))
 
         classFile = self.path + "/" + ast.name + ".j"
@@ -492,6 +535,9 @@ class CodeGenerator(BaseVisitor,Utils):
         return o
     
     def visitInterfaceType(self, ast: InterfaceType, o):
+        if self.firstscan is False:
+            return o
+
         o['env'][-1].insert(0, SymbolType(ast.name, ast, None, ast.methods))
 
         classFile = self.path + "/" + ast.name + ".j"
@@ -582,7 +628,6 @@ class CodeGenerator(BaseVisitor,Utils):
 
                 # there will always be struct
                 mtype = next(filter(lambda x: x[0] == ast.field, struct.field),None)[1]
-                print("mtype", mtype)
                 
                 if type(sym.value) is Index:
                     # local var
@@ -604,21 +649,33 @@ class CodeGenerator(BaseVisitor,Utils):
                 code += self.emit.emitGETFIELD(f"{t.name}/{ast.field}", mtype, o['frame'])
             
         else:
-            # always be Id
-            sym = next(filter(lambda x: x.name == ast.receiver.name, [j for i in o['env'] for j in i]),None)
+            if isinstance(ast.receiver, Id):
+                sym = next(filter(lambda x: x.name == ast.receiver.name, [j for i in o['env'] for j in i]),None)
 
-            struct = next(filter(lambda x: isinstance(x, SymbolType) and x.name == sym.mtype.name, [j for i in o['env'] for j in i]),None)
+                struct = next(filter(lambda x: isinstance(x, SymbolType) and x.name == sym.mtype.name, [j for i in o['env'] for j in i]),None)
 
-            # there will always be struct
-            mtype = next(filter(lambda x: x[0] == ast.field, struct.field),None)[1]
-            if type(sym.value) is Index:
-                # local var
-                code += self.emit.emitREADVAR(ast.receiver.name, sym.mtype, sym.value.value , o['frame'])
-            else:         
-                # global var
-                code += self.emit.emitGETSTATIC(f"{self.className}/{sym.name}",sym.mtype,o['frame'])
-            
-            code += self.emit.emitPUTFIELD(f"{sym.mtype.name}/{ast.field}", mtype, o['frame'])
+                # there will always be struct
+                mtype = next(filter(lambda x: x[0] == ast.field, struct.field),None)[1]
+                if type(sym.value) is Index:
+                    # local var
+                    code += self.emit.emitREADVAR(ast.receiver.name, sym.mtype, sym.value.value , o['frame'])
+                else:         
+                    # global var
+                    code += self.emit.emitGETSTATIC(f"{self.className}/{sym.name}",sym.mtype,o['frame'])
+                
+                code += self.emit.emitPUTFIELD(f"{sym.mtype.name}/{ast.field}", mtype, o['frame'])
+            else: # it's field access again
+                o['isLeft'] = False
+                e, t = self.visit(ast.receiver, o)
+                code += e
+                o['isLeft'] = True
+                # find struct
+                struct = next(filter(lambda x: isinstance(x, SymbolType) and x.name == t.name, [j for i in o['env'] for j in i]),None)
+
+                # find the type of the field from struct
+                mtype = next(filter(lambda x: x[0] == ast.field, struct.field),None)[1]
+
+                code += self.emit.emitPUTFIELD(f"{t.name}/{ast.field}", mtype, o['frame'])
             
 
         return code, mtype
@@ -627,7 +684,6 @@ class CodeGenerator(BaseVisitor,Utils):
         o['isLeft'] = False
         e1, t1 = self.visit(ast.left, o)
         e2, t2 = self.visit(ast.right, o)
-        print("type: ", t1, t2)
 
         if isinstance(t1, FloatType) or isinstance(t2, FloatType):
             mtype = FloatType()
@@ -701,7 +757,6 @@ class CodeGenerator(BaseVisitor,Utils):
             
     
     def visitMethCall(self, ast: MethCall, o):
-        print("AST: ", ast)
         # likely invokestatic
         env = o.copy()
         sym = None # would store the method
@@ -756,7 +811,6 @@ class CodeGenerator(BaseVisitor,Utils):
         if isStruct:
             code += self.emit.emitINVOKEVIRTUAL(f"{struct.name}/{ast.metName}", MType([x.parType for x in sym.fun.params], sym.fun.retType), env['frame'])
             if type(sym.fun.retType) is VoidType:
-                print("void type")
                 self.emit.printout(code)
                 return o
             else:
@@ -764,7 +818,6 @@ class CodeGenerator(BaseVisitor,Utils):
         else:
             code += self.emit.emitINVOKEINTERFACE(f"{struct.name}/{ast.metName}", MType([x for x in sym.params], sym.retType), env['frame'], len(ast.args))
             if type(sym.retType) is VoidType:
-                print("void type")
                 self.emit.printout(code)
                 return o
             else:
@@ -859,6 +912,7 @@ class CodeGenerator(BaseVisitor,Utils):
         return code, ArrayType(dimensions, eleType)
 
     def visitStructLiteral(self, ast: StructLiteral, o):
+        
         sym = next(filter(lambda x: isinstance(x, SymbolType) and x.name == ast.name, [j for i in o['env'] for j in i]),None)
 
         # 
@@ -911,7 +965,6 @@ class CodeGenerator(BaseVisitor,Utils):
         return o
     
     def visitAssign(self, ast: Assign, o):
-        print("assign: ", ast)
         env = o.copy()
         env['isLeft'] = False
         rhs, rTyp = self.visit(ast.rhs, env)
@@ -919,29 +972,33 @@ class CodeGenerator(BaseVisitor,Utils):
         lhs, lTyp = self.visit(ast.lhs, env)
         putStatic = ""
         if not isinstance(ast.lhs, ArrayCell):
-            print("rhs: ", rhs)
             if isinstance(ast.lhs, FieldAccess):
-                load = lhs.split("\n")[0]
+                load = '\n'.join(lhs.split("\n")[:-2])
                 load += '\n'
-                putStatic = lhs.split("\n")[1]
+                putStatic = lhs.split("\n")[-2]
                 putStatic += '\n'
                 self.emit.printout(load)
             self.emit.printout(rhs)    
+            if isinstance(lTyp, FloatType) and isinstance(rTyp, IntType):
+                self.emit.printout(self.emit.emitI2F(env['frame']))
                 
             
         # all of this ugly code for field access is because:
         # an assign to field access is as follow
         """ 
         aload_<index>
+        other stuffs goes here if it multi field access: getfield bla bla
         <lhs code here>
         putstatic <className>/<fieldName> <fieldType>
         """
         # and the lhs would return as follow
         """
         aload_<index>
+        other stuffs goes here if it multi field access: getfield bla bla
         putstatic <className>/<fieldName> <fieldType>
         """
-        # so we need to separate the two lines of lhs, and the first line is the aload_<index> code, then the rhs, then the putstatic at bottom
+        # so we need to separate the lines of lhs, and the first part is the aload_<index> code, then the rhs, then the putstatic at bottom
+        # we use [-2] because the last one is empty string, and the second last one is the putstatic code
 
         # := quick declaration, so we need to check if the lhs is declared, else declare it
 
@@ -1135,13 +1192,11 @@ class CodeGenerator(BaseVisitor,Utils):
         implemented = []
 
         for interface in self.interfaces:
-            print("interface: ", interface.name)
             name = interface.name
             Imethods = interface.methods
             isValid = True
             for proto in Imethods:
                 if not any(self.cmpPrototype(meth.fun, proto) for meth in Smethods):
-                    print("not implemented: ", proto.name)
                     isValid = False
                     break
             if isValid:
@@ -1151,17 +1206,13 @@ class CodeGenerator(BaseVisitor,Utils):
 
     def cmpPrototype(self, meth: FuncDecl, proto: Prototype):
         if meth.name != proto.name:
-            print("not same name: ", meth.name, proto.name)
             return False
         if len(meth.params) != len(proto.params):
-            print("not same number of params")
             return False
         for i in range(len(meth.params)):
             if meth.params[i].parType != proto.params[i]:
-                print("not same type of params: ", meth.params[i].parType, proto.params[i])
                 return False
         if  meth.retType != proto.retType:
-            print("not same return type: ", meth.retType, proto.retType)
             return False
         return True
 

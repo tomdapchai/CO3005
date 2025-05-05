@@ -1,0 +1,10 @@
+
+        var arr = [5]int{0,1,2,3,4}
+
+        func main() { 
+            arr2 := arr
+            arr2[3] := 300000
+            putIntLn(arr[3])
+            putIntLn(arr2[3])
+        }
+        

@@ -516,16 +516,18 @@ class CheckCodeGenSuite(unittest.TestCase):
 
     def test_24(self):
         input = """
-        type Car struct {
-            name string;
-            year int;
-        }
+        
 
         type Person struct {
             name string;
             age int;
             height float;
             car Car
+        }
+
+        type Car struct {
+            name string;
+            year int;
         }
 
         func init(name string, age int, height float, car Car) Person {
@@ -596,4 +598,277 @@ class CheckCodeGenSuite(unittest.TestCase):
         """
         expect = "John\nJohn\n30\n177.3\n"
         self.assertTrue(TestCodeGen.test(input,expect,531))
+
+    def test_26(self):
+        input = """
+        type Test2 struct {
+            z int
+        }
+        type Test1 struct {
+            y Test2
+        }
+        type Test struct {
+            x Test1
+        }
+
+        func main() {
+            var a Test = Test{x: Test1{y: Test2{z: 10}}}
+            putIntLn(a.x.y.z)
+            a.x.y.z := 20
+            putIntLn(a.x.y.z)
+        }
+        """
+        expect = "10\n20\n"
+        self.assertTrue(TestCodeGen.test(input,expect,532))
+
+    def test_27(self):
+        input = """
+        type Test struct {
+            x int
+        }
+
+        var a Test = Test{x: 10}
+
+        func main() {
+            putIntLn(a.x)
+            
+        }
+        """
+        expect = "10\n"
+        self.assertTrue(TestCodeGen.test(input,expect,533))
     
+    def test_28(self):
+        input = """
+        type Test struct {
+            x int
+        }
+
+        var a Test;
+
+        func main() {
+            a.x := 20
+            putIntLn(a.x)
+            a.x := 30
+            putIntLn(a.x)
+            var n int
+            n := 20
+            putIntLn(n)
+            
+        }
+        """
+        expect = "20\n30\n20\n"
+        self.assertTrue(TestCodeGen.test(input,expect,534))
+
+    def test_29(self):
+        input = """
+        type Person struct {
+            name string;
+            age int;
+            height float;
+        }
+
+        type IPerson interface {
+            init(name string, age int, height float) Person;
+            bar();
+        }
+
+        func (p Person) init(name string, age int, height float) Person {
+            return Person{name: name, age: age, height: height}
+        }
+
+        func (p Person) bar() {
+            putStringLn(p.name)
+            putIntLn(p.age)
+            putFloatLn(p.height)
+        }
+
+        var a IPerson = Person{name: "John", age: 30, height: 177.3}
+
+        func main() {
+            a.bar()
+            
+        }
+        """
+        expect = "John\n30\n177.3\n"
+        self.assertTrue(TestCodeGen.test(input,expect,535))
+
+    def test_30(self):
+        input = """
+        type Person struct {
+            name string;
+            age int;
+            height float;
+        }
+
+        type IPerson interface {
+            init(name string, age int, height float) Person;
+            bar();
+        }
+
+        func (p Person) init(name string, age int, height float) Person {
+            return Person{name: name, age: age, height: height}
+        }
+
+        func (p Person) bar() {
+            putStringLn(p.name)
+            putIntLn(p.age)
+            putFloatLn(p.height)
+        }
+
+        var a IPerson 
+
+        func main() {
+            a := Person{name: "John", age: 30, height: 177.3}
+            a.bar()
+            
+        }
+        """
+        expect = "John\n30\n177.3\n"
+        self.assertTrue(TestCodeGen.test(input,expect,536))
+    
+    def test_31(self):
+        input = """
+
+        var a = [3]int{1, 2, 3}
+
+        func main() {
+            putIntLn(a[0])
+            a[1] += 10
+            putIntLn(a[1])
+        }
+        """
+        expect = "1\n12\n"
+        self.assertTrue(TestCodeGen.test(input,expect,537))
+    
+    def test_32(self):
+        input = """
+        var a = [3][4]int{{1, 2}, {4, 5, 6, 7}, {10, 8, 9}}
+
+        func main() {
+            putIntLn(a[0][0])
+            a[0][1] += 10
+            putIntLn(a[0][1])
+            a[2][1] -= 20
+            putIntLn(a[2][1])
+        }
+        """
+        expect = "1\n12\n-12\n"
+        self.assertTrue(TestCodeGen.test(input,expect,538))
+    
+    def test_33(self):
+        input = """
+
+        func main() {
+            var a [3][4]int
+            a := [3][4]int{{1, 2}, {4, 5, 6, 7}, {10, 8, 9}}
+            putIntLn(a[0][0])
+        }
+        """
+        expect = "1\n"
+        self.assertTrue(TestCodeGen.test(input,expect,539))
+
+    def test_34(self):
+        input = """
+        var a [3][4]int
+
+        func main() {
+            a := [3][4]int{{1, 2}, {4, 5, 6, 7}, {10, 8, 9}}
+            putIntLn(a[0][0])
+            a[0][1] += 10
+            putIntLn(a[0][1])
+            a[2][1] -= 20
+            putIntLn(a[2][1])
+        }
+        """
+        expect = "1\n12\n-12\n"
+        self.assertTrue(TestCodeGen.test(input,expect,540))
+
+    def test_35(self):
+        input = """
+        var a = [3][4]int{{1, 2}, {4, 5, 6, 7}, {10, 8, 9}}
+
+        func main() { 
+            putIntLn(a[0][0])
+            a[0][1] += 10
+            putIntLn(a[0][1])
+            a[2][1] -= 20
+            putIntLn(a[2][1])
+        }
+        """
+        expect = "1\n12\n-12\n"
+        self.assertTrue(TestCodeGen.test(input,expect,541))
+    
+    def test_36(self):
+        input = """
+
+        func main() { 
+            var a float = 1 + 2
+            putFloatLn(a)
+        }
+        """
+        expect = "3.0\n"
+        self.assertTrue(TestCodeGen.test(input,expect,542))
+
+    def test_37(self):
+        input = """
+        var arr = [5]int{0,1,2,3,4}
+
+        func main() { 
+            arr2 := arr
+            arr2[3] := 300000
+            putIntLn(arr[3])
+            putIntLn(arr2[3])
+        }
+        """
+        expect = "300000\n300000\n"
+        self.assertTrue(TestCodeGen.test(input,expect,543))
+
+    def test_38(self):
+        input = """
+        type Person struct {
+            name string;
+            age int;
+            height float;
+        }
+
+        type IPerson interface {
+            init(name string, age int, height float) Person;
+            bar();
+        }
+
+        func (p Person) init(name string, age int, height float) Person {
+            return Person{name: name, age: age, height: height}
+        }
+
+        func (p Person) bar() {
+            putStringLn(p.name)
+            putIntLn(p.age)
+            putFloatLn(p.height)
+        }
+
+        func foo(p Person, a int) {
+            p.name := "Hello"
+        }
+
+        func main() { 
+            var p Person = Person{name: "John", age: 30, height: 177.3}
+            
+            foo(p, 10)
+            putStringLn(p.name)
+        }
+        """
+        expect = "Hello\n"
+        self.assertTrue(TestCodeGen.test(input,expect,544))
+    
+    def test_39(self):
+        input = """
+        var x float
+
+        func main() { 
+            
+            x := 10 + 3
+            putFloatLn(x)
+        }
+        """
+        expect = "13.0\n"
+        self.assertTrue(TestCodeGen.test(input,expect,545))

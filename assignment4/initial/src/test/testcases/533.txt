@@ -1,0 +1,12 @@
+
+        type Test struct {
+            x int
+        }
+
+        var a Test = Test{x: 10}
+
+        func main() {
+            putIntLn(a.x)
+            
+        }
+        

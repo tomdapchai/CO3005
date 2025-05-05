@@ -1,14 +1,16 @@
 
-        type Car struct {
-            name string;
-            year int;
-        }
+        
 
         type Person struct {
             name string;
             age int;
             height float;
             car Car
+        }
+
+        type Car struct {
+            name string;
+            year int;
         }
 
         func init(name string, age int, height float, car Car) Person {

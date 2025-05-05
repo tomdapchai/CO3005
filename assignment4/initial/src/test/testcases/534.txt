@@ -1,0 +1,18 @@
+
+        type Test struct {
+            x int
+        }
+
+        var a Test;
+
+        func main() {
+            a.x := 20
+            putIntLn(a.x)
+            a.x := 30
+            putIntLn(a.x)
+            var n int
+            n := 20
+            putIntLn(n)
+            
+        }
+        
