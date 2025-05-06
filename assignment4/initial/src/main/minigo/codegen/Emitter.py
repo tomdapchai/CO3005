@@ -36,12 +36,18 @@ class Emitter():
         typeIn = type(inType)
         if typeIn is IntType:
             return "int"
+        elif typeIn is FloatType:
+            return "float"
         elif typeIn is cgen.StringType:
             return "java/lang/String"
         elif typeIn is VoidType:
             return "void"
         elif typeIn is BoolType:
             return "boolean"
+        elif typeIn is ArrayType:
+            return "[" * len(inType.dimens) + self.getFullType(inType.eleType)
+        elif typeIn is cgen.Id:
+            return inType.name
 
     def emitPUSHICONST(self, in_, frame):
         #in: Int or Sring
@@ -95,8 +101,19 @@ class Emitter():
         elif type(typ) is StringType:
             frame.push()
             return self.jvm.emitLDC(in_)
+        elif type(typ) is BoolType:
+            if in_ == "true":
+                return self.emitPUSHICONST(1, frame)
+            elif in_ == "false":
+                return self.emitPUSHICONST(0, frame)
         else:
             raise IllegalOperandException(in_)
+        
+    def emitPUSHNULL(self, frame):
+        #frame: Frame
+        
+        frame.push()
+        return self.jvm.emitPUSHNULL()
 
     ##############################################################
 
@@ -112,7 +129,7 @@ class Emitter():
             return self.jvm.emitFALOAD()
         elif type(in_) is BoolType:
             return self.jvm.emitBALOAD()
-        elif type(in_) is cgen.ArrayType or type(in_) is cgen.ClassType or type(in_) is StringType:
+        elif type(in_) is cgen.ArrayType or type(in_) is cgen.Id or type(in_) is StringType:
             return self.jvm.emitAALOAD()
         else:
             raise IllegalOperandException(str(in_))
@@ -127,7 +144,7 @@ class Emitter():
         frame.pop()
         if type(in_) is IntType:
             return self.jvm.emitIASTORE()
-        elif type(in_) is cgen.ArrayType or type(in_) is cgen.ClassType or type(in_) is StringType:
+        elif type(in_) is cgen.ArrayType or type(in_) is cgen.Id or type(in_) is StringType:
             return self.jvm.emitAASTORE()
         elif type(in_) is FloatType:
             return self.jvm.emitFASTORE()
@@ -154,10 +171,12 @@ class Emitter():
                 return self.jvm.emitNEWARRAY(eleTypeStr)
             else:
                 # For reference types like String, arrays, or user-defined types
-                return self.jvm.emitANEWARRAY(self.getJVMType(in_.eleType))
+                print("Creating a new array of reference type: ", self.getFullType(in_.eleType))
+                return self.jvm.emitANEWARRAY(self.getFullType(in_.eleType))
         else:
             # Multi-dimensional array - use multianewarray
-            return self.jvm.emitMULTIANEWARRAY(self.getJVMType(in_), str(len(in_.dimens)))
+            print("Creating a new array of reference type: ", self.getFullType(in_.eleType))
+            return self.jvm.emitMULTIANEWARRAY(self.getFullType(in_), str(len(in_.dimens)))
 
 
     def emitNEW(self, in_, frame):

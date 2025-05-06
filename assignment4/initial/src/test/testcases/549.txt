@@ -1,0 +1,26 @@
+
+        type Person struct {
+            name string
+            age int
+            car Car
+        }
+
+        type Car struct {
+            year int
+            brand string
+        }
+
+        func (c Car) print() {
+            putStringLn(c.brand)
+            putIntLn(c.year)
+        }
+
+        func main() { 
+            var a Person = Person{name: "John", car: Car{year: 2020, brand: "Toyota"}}
+            a.age := 30
+            putStringLn(a.name)
+            putIntLn(a.age)
+            a.car.print()
+
+        }
+        

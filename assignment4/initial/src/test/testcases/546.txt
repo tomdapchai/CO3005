@@ -1,0 +1,11 @@
+
+        var x float
+
+        func main() { 
+        var a int = 3
+        var b int = 5
+            var n = [3]float{1, 2, 3}
+            x := 10 + 3
+            putFloatLn(n[0] + n[1] + n[2])
+        }
+        

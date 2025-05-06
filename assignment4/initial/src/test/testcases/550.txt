@@ -1,0 +1,27 @@
+
+        
+
+        type Person struct {
+            name string
+            age int
+            car Car
+        }
+
+        type Car struct {
+            year int
+            brand string
+        }
+
+        func (c Car) print() {
+            putStringLn(c.brand)
+            putIntLn(c.year)
+        }
+        var arr [3]Person 
+
+        func main() { 
+        
+        arr := [3]Person{Person{name: "Doe", car: Car{year: 2021, brand: "Honda"}, age: 25}, Person{name: "Jane", car: Car{year: 2022, brand: "Ford"}, age: 28}, Person{name: "Smith", car: Car{year: 2023, brand: "BMW"}, age: 35}}
+            arr[0].car.print()
+
+        }
+        

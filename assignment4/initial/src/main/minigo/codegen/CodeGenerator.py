@@ -259,7 +259,7 @@ class CodeGenerator(BaseVisitor,Utils):
                                 eleTypeStr = self.emit.getFullType(ast.varType.eleType)
                                 self.emit.printout(self.emit.jvm.emitNEWARRAY(eleTypeStr))
                             else:
-                                self.emit.printout(self.emit.jvm.emitANEWARRAY(self.emit.getJVMType(ast.varType.eleType)))
+                                self.emit.printout(self.emit.jvm.emitANEWARRAY(self.emit.getFullType(ast.varType.eleType)))
                         else:
                             # Multi-dimensional array - use multianewarray
                             for dim in ast.varType.dimens:
@@ -591,23 +591,25 @@ class CodeGenerator(BaseVisitor,Utils):
         else:
             e, t = self.visit(ast.arr, o)
             code += e
+            mtype = t.eleType if isinstance(t, ArrayType) else t
         
         # for 1D array first
         if len(ast.idx) == 1:
             e, t = self.visit(ast.idx[0], o)
             code += e
-            mtype = t
         else:
             # load each array
             for i in range(len(ast.idx)):
                 e, t = self.visit(ast.idx[i], o)
+                print("Type of t: ", t)
+                print("Type of mtype: ", mtype)
                 code += e
                 if i < len(ast.idx) - 1:
-                    code += self.emit.emitALOAD(ArrayType([None], t), o['frame'])
+                    code += self.emit.emitALOAD(ArrayType([None], mtype), o['frame'])
 
         if o['isLeft'] is False:
             # normal case first
-            code += self.emit.emitALOAD(IntType(), o['frame'])
+            code += self.emit.emitALOAD(mtype, o['frame'])
         else:
             # store would appear after RHS, so nothing here
             pass
@@ -863,7 +865,7 @@ class CodeGenerator(BaseVisitor,Utils):
                 code += self.emit.jvm.emitNEWARRAY(eleTypeStr)
             else:
                 # For reference types like String, arrays, or user-defined types
-                code += self.emit.jvm.emitANEWARRAY(self.emit.getJVMType(eleType))
+                code += self.emit.jvm.emitANEWARRAY(self.emit.getFullType(eleType))
             
             # Initialize array elements
             for i, val in enumerate(values):
@@ -871,8 +873,10 @@ class CodeGenerator(BaseVisitor,Utils):
                 code += self.emit.emitPUSHICONST(i, o['frame'])  # Array index
                 
                 # Push value
-                valCode, _ = self.visit(val, o)
+                valCode, tVal = self.visit(val, o)
                 code += valCode
+                if isinstance(eleType, FloatType) and isinstance(tVal, IntType):
+                    code += self.emit.emitI2F(o['frame'])
                 
                 # Store in array
                 code += self.emit.emitASTORE(eleType, o['frame'])
@@ -900,8 +904,10 @@ class CodeGenerator(BaseVisitor,Utils):
                         code += self.emit.emitPUSHICONST(j, o['frame'])  # Column index
                         
                         # Push value
-                        valCode, _ = self.visit(val, o)
+                        valCode, tVal = self.visit(val, o)
                         code += valCode
+                        if isinstance(eleType, FloatType) and isinstance(tVal, IntType):
+                            code += self.emit.emitI2F(o['frame'])
                         
                         # Store value
                         code += self.emit.emitASTORE(eleType, o['frame'])
@@ -923,9 +929,18 @@ class CodeGenerator(BaseVisitor,Utils):
 
         fields = sym.field
         for field in fields:
+            # need to make ast.elements that doesn't exist to be default value
             # find in ast.elements
-            _, expr = next(filter(lambda x: x[0] == field[0], ast.elements), None)
-            code += self.visit(expr, o)[0]
+            try:
+                _, expr = next(filter(lambda x: x[0] == field[0], ast.elements), None)
+                code += self.visit(expr, o)[0]
+            except Exception:
+                # if not found, set to default value
+                val = self.get_default_value(field[1])
+                if val is None:
+                    code += self.emit.emitPUSHNULL(o['frame'])
+                else:
+                    code += self.emit.emitPUSHCONST(val, field[1], o['frame'])
 
         code += self.emit.emitINVOKESPECIAL(lexeme=f"{ast.name}/<init>", in_=MType([x[1] for x in fields], VoidType()), frame=o['frame'])
 
@@ -1155,8 +1170,6 @@ class CodeGenerator(BaseVisitor,Utils):
             return False
         elif isinstance(t, StringType):
             return ""
-        elif isinstance(t, ArrayType):
-            return None
         else:
             return None
     
@@ -1308,7 +1321,7 @@ class CodeGenerator(BaseVisitor,Utils):
         if len(indices) == len(dimensions) - 1:
             # At innermost level (1D array) - we need to get the row array first
             for i, val in enumerate(values):
-                if i >= dimensions[-1].value if hasattr(dimensions[-1], 'value') else len(values):
+                if i >= int(dimensions[-1].value) if hasattr(dimensions[-1], 'value') else len(values):
                     break
                     
                 code += self.emit.emitDUP(o['frame'])  # Duplicate main array reference
@@ -1330,22 +1343,16 @@ class CodeGenerator(BaseVisitor,Utils):
                     code += self.emit.emitPUSHICONST(i, o['frame'])
                 
                 # Push value
-                valCode, _ = self.visit(val, o)
+                valCode, tVal = self.visit(val, o)
                 code += valCode
+                if isinstance(eleType, FloatType) and isinstance(tVal, IntType):
+                    code += self.emit.emitI2F(o['frame'])
                 
-                # Store using appropriate type
-                if isinstance(eleType, IntType):
-                    code += self.emit.jvm.emitIASTORE()
-                elif isinstance(eleType, FloatType):
-                    code += self.emit.jvm.emitFASTORE()
-                elif isinstance(eleType, BoolType):
-                    code += self.emit.jvm.emitBASTORE()
-                else:
-                    code += self.emit.jvm.emitAASTORE()
+                code += self.emit.emitASTORE(eleType, o['frame'])
         else:
             # For higher dimensions, we need to handle nested arrays differently
             for i, subarray in enumerate(values):
-                if i >= dimensions[len(indices)].value if hasattr(dimensions[len(indices)], 'value') else len(values):
+                if i >= int(dimensions[len(indices)].value) if hasattr(dimensions[len(indices)], 'value') else len(values):
                     break
                 
                 # For each sub-array at current dimension, we need to:
