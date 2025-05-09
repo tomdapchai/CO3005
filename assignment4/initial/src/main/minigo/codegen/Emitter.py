@@ -171,11 +171,11 @@ class Emitter():
                 return self.jvm.emitNEWARRAY(eleTypeStr)
             else:
                 # For reference types like String, arrays, or user-defined types
-                print("Creating a new array of reference type: ", self.getFullType(in_.eleType))
+                
                 return self.jvm.emitANEWARRAY(self.getFullType(in_.eleType))
         else:
             # Multi-dimensional array - use multianewarray
-            print("Creating a new array of reference type: ", self.getFullType(in_.eleType))
+            
             return self.jvm.emitMULTIANEWARRAY(self.getFullType(in_), str(len(in_.dimens)))
 
 
@@ -201,7 +201,6 @@ class Emitter():
         #index: Int
         #frame: Frame
         #... -> ..., value
-        
         frame.push()
         if type(inType) is IntType:
             return self.jvm.emitILOAD(index)

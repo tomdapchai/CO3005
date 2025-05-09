@@ -1,0 +1,22 @@
+
+        type Adder interface {
+            add(a int, b int) int;
+        }
+        
+        type Calculator struct {
+            name string;
+            age int
+        }
+        
+        func (c Calculator) add(a, b int) int {
+            return a + b;
+        }
+        
+        func main() {
+            var c Calculator = Calculator{name: "MyCalc"};
+            var a Adder = c;
+            
+            putIntLn(a.add(10, 20));
+            putStringLn(c.name);
+        }
+        

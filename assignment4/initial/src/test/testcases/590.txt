@@ -1,0 +1,10 @@
+
+        func main() {
+            var arr [3]int = [3]int{10, 20, 30};
+            
+            // Use array literal in an expression
+            var sum int = arr[0] + arr[1] + arr[2] + [3]int{1, 2, 3}[0] + [3]int{4, 5, 6}[1];
+            
+            putIntLn(sum);
+        }
+        

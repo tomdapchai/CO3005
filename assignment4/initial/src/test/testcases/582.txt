@@ -1,0 +1,24 @@
+
+        type Calculator struct {
+            value int;
+        }
+        
+        func (c Calculator) add(x int) Calculator {
+            c.value += x;
+            return c;
+        }
+        
+        func (c Calculator) multiply(x int) Calculator {
+            c.value *= x;
+            return c;
+        }
+        
+        func (c Calculator) getValue() int {
+            return c.value;
+        }
+        
+        func main() {
+            var calc Calculator = Calculator{value: 5};
+            putIntLn(calc.add(10).multiply(2).getValue());
+        }
+        

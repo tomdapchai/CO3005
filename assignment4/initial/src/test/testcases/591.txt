@@ -1,0 +1,12 @@
+
+        func main() {
+            var a int = 5;
+            var b float = 2.5;
+            var c float = a * b + a / 2;
+            
+            putFloatLn(c);
+            
+            var d float = a * b - 3;
+            putFloatLn(d);
+        }
+        

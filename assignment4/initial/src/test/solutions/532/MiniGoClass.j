@@ -18,6 +18,12 @@ Label2:
 	invokespecial Test1/<init>(LTest2;)V
 	invokespecial Test/<init>(LTest1;)V
 	astore_1
+.var 2 is m I from Label2 to Label3
+	iconst_2
+	istore_2
+.var 3 is n I from Label2 to Label3
+	bipush 10
+	istore_3
 	aload_1
 	getfield Test/x LTest1;
 	getfield Test1/y LTest2;
@@ -26,7 +32,9 @@ Label2:
 	aload_1
 	getfield Test/x LTest1;
 	getfield Test1/y LTest2;
-	bipush 20
+	iload_3
+	iload_2
+	imul
 	putfield Test2/z I
 	aload_1
 	getfield Test/x LTest1;
@@ -37,7 +45,7 @@ Label3:
 Label1:
 	return
 .limit stack 8
-.limit locals 2
+.limit locals 4
 .end method
 
 .method public <init>()V

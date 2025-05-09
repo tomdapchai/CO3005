@@ -1,0 +1,4 @@
+Is 'radar' a palindrome?
+true
+Is 'hello' a palindrome?
+false

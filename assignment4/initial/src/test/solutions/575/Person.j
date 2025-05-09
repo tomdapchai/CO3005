@@ -38,3 +38,54 @@ Label1:
 .limit stack 1
 .limit locals 1
 .end method
+
+.method public getChild()V
+.var 0 is this LPerson; from Label0 to Label1
+Label0:
+Label2:
+	aload_0
+	getfield Person/name Ljava/lang/String;
+	invokestatic io/putStringLn(Ljava/lang/String;)V
+	aload_0
+	getfield Person/age I
+	invokestatic io/putIntLn(I)V
+	iconst_0
+.var 1 is i I from Label2 to Label3
+	istore_1
+Label6:
+	iload_1
+	getstatic MiniGoClass/childSize I
+	if_icmpge Label7
+	iconst_1
+	goto Label8
+Label7:
+	iconst_0
+Label8:
+	ifle Label5
+Label9:
+	aload_0
+	getfield Person/child [LChildren;
+	iload_1
+	aaload
+	getfield Children/name Ljava/lang/String;
+	invokestatic io/putStringLn(Ljava/lang/String;)V
+	aload_0
+	getfield Person/child [LChildren;
+	iload_1
+	aaload
+	getfield Children/age I
+	invokestatic io/putIntLn(I)V
+Label10:
+Label4:
+	iload_1
+	iconst_1
+	iadd
+	istore_1
+	goto Label6
+Label5:
+Label3:
+Label1:
+	return
+.limit stack 6
+.limit locals 2
+.end method

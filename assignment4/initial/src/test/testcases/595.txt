@@ -1,0 +1,13 @@
+
+        func main() {
+            
+                var x int = 10;
+                putIntLn(x)
+                    x := 20;
+                        x := 30;
+                        putIntLn(x);
+                    putIntLn(x)
+                putIntLn(x);
+            
+        }
+        

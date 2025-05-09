@@ -1,0 +1,13 @@
+
+        func main(){
+            foo(10)
+        }
+        func foo(n int){
+            for var i = 1; i < n; i += 1 {
+                putInt(i)
+            }
+            for i := 1; i < n; i += 1 {
+                putInt(i)
+            }
+        }
+        

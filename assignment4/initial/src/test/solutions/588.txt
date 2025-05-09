@@ -1,0 +1,4 @@
+Main diagonal sum:
+15
+Anti-diagonal sum:
+15

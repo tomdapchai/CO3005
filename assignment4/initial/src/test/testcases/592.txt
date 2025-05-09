@@ -1,0 +1,7 @@
+
+        
+        func main() {
+            putStringLn("Name: " + "Alice")
+            putStringLn("Encoded age: " + "300")
+        }
+        

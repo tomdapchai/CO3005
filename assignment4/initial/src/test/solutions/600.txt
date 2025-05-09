@@ -1,0 +1,9 @@
+Queue items:
+10
+20
+30
+Dequeued item:
+10
+Queue after dequeue:
+20
+30

@@ -1,0 +1,17 @@
+
+        type Car struct {
+            brand string;
+            model string;
+            year int;
+            features [2]string;
+        }
+        
+        func main() {
+            var myCar Car = Car{brand: "Toyota", model: "Camry", year: 2023, features: [2]string{"GPS", "Bluetooth"}};
+            
+            putStringLn(myCar.brand);
+            putStringLn(myCar.model);
+            putIntLn(myCar.year);
+            putStringLn(myCar.features[0] + ", " + myCar.features[1]);
+        }
+        

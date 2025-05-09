@@ -11,8 +11,10 @@
 
         func main() {
             var a Test = Test{x: Test1{y: Test2{z: 10}}}
+            var m = 2
+            var n = 10
             putIntLn(a.x.y.z)
-            a.x.y.z := 20
+            a.x.y.z := n * m
             putIntLn(a.x.y.z)
         }
         

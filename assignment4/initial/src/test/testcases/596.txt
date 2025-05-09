@@ -1,0 +1,15 @@
+
+        func main() {
+            var a int = 5;
+            var b int = 10;
+            var c int = 15;
+            
+            c /= 3
+            b *= c
+            a += b
+            
+            putIntLn(a);
+            putIntLn(b);
+            putIntLn(c);
+        }
+        

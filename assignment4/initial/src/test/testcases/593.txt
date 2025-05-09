@@ -1,0 +1,19 @@
+
+        type Outr struct {
+            name string
+            innr Innr
+        }
+
+        type Innr struct{
+            name string
+            age int
+        }
+
+        func main() {
+            var obj Outr = Outr{name: "Hello", innr: Innr{name: "Bro", age: 21}}
+            putStringLn(obj.name)
+            
+            putStringLn(obj.innr.name)
+        }
+
+        

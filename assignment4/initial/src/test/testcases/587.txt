@@ -1,0 +1,11 @@
+
+        func main() {
+            var str1 string = "Hello";
+            var str2 string = "World";
+            var str3 string = str1 + " " + str2;
+            
+            putStringLn(str3);
+            putBoolLn(str1 > str2);
+            putBoolLn("abc" == "abc");
+        }
+        

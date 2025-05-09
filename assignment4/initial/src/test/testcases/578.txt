@@ -1,0 +1,15 @@
+
+        var arr[5]int = [5]int{1,2,3,4,5}
+        func main(){
+            for i := 0; i < 5; i += 1 {
+                if (arr[i] % 2 == 0) {
+                    putInt(arr[i])
+                }
+            }
+            for var i = 0; i < 5; i += 1 {
+                if (arr[i] % 2 != 0) {
+                    putInt(arr[i])
+                }
+            }
+        }
+        

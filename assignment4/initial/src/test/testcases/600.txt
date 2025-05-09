@@ -1,0 +1,55 @@
+
+        type Queue struct {
+            items [5]int;
+            front int;
+            rear int;
+        }
+        
+        func (q Queue) initialize() Queue {
+            q.front := 0;
+            q.rear := -1;
+            q.items := [5]int{0, 0, 0, 0, 0}
+            return q;
+        }
+        
+        func (q Queue) enqueue(item int) Queue {
+            if (q.rear < 4) {
+                q.rear += 1;
+                q.items[q.rear] := item;
+            }
+            return q;
+        }
+        
+        func (q Queue) dequeue() int {
+            if (q.front <= q.rear) {
+                item := q.items[q.front];
+                q.front += 1;
+                return item;
+            }
+            return -1;
+        }
+        
+        func (q Queue) display() {
+            for i := q.front; i <= q.rear; i += 1 {
+                putIntLn(q.items[i]);
+            }
+        }
+        
+        func main() {
+            var queue Queue;
+            queue := queue.initialize();
+            
+            queue := queue.enqueue(10);
+            queue := queue.enqueue(20);
+            queue := queue.enqueue(30);
+            
+            putStringLn("Queue items:");
+            queue.display();
+            
+            putStringLn("Dequeued item:");
+            putIntLn(queue.dequeue());
+            
+            putStringLn("Queue after dequeue:");
+            queue.display();
+        }
+        

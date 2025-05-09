@@ -1,0 +1,29 @@
+
+        func selectionSort(arr [10]int) [10]int {
+            for i := 0; i < 10 - 1; i += 1 {
+                minIdx := i;
+                for j := i + 1; j < 10; j += 1 {
+                    if (arr[j] < arr[minIdx]) {
+                        minIdx := j;
+                    }
+                }
+                
+                if (minIdx != i) {
+                    temp := arr[i];
+                    arr[i] := arr[minIdx];
+                    arr[minIdx] := temp;
+                }
+            }
+            return arr;
+        }
+        
+        func main() {
+            var numbers [10]int = [10]int{9, 3, 5, 1, 8, 2, 4, 7, 6, 0};
+            var sorted [10]int = selectionSort(numbers);
+            
+            for i := 0; i < 10; i += 1 {
+                putInt(sorted[i]);
+                putString(" ");
+            }
+        }
+        

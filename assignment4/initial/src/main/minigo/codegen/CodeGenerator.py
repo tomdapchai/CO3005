@@ -197,7 +197,6 @@ class CodeGenerator(BaseVisitor,Utils):
                             self.emit.printout(self.emit.emitATTRIBUTE(ast.varName, ast.varType, True, False, str(ast.varInit.value)))
                         else:
                             # For complex expressions, delay initialization to <init>
-                            print(ast.varType)
                             self.emit.printout(self.emit.emitATTRIBUTE(ast.varName, ast.varType, True, False, None))
                             self.initCode.append((ast.varName, ast.varType, ast.varInit))
                     else:
@@ -384,8 +383,6 @@ class CodeGenerator(BaseVisitor,Utils):
         self.emit.printout(self.emit.emitENDMETHOD(frame))
         frame.exitScope()
 
-        
-
         return o
     
 
@@ -409,7 +406,7 @@ class CodeGenerator(BaseVisitor,Utils):
         self.emit.printout(self.emit.emitLABEL(env['frame'].getStartLabel(), env['frame']))
         env['env'] = [[]] + env['env']
 
-        # add receiver to env - workaround for now, would fix, this would actually take the object call it but no idea now
+        # add receiver to env - workaround for now
         env['env'][0].insert(0, Symbol(ast.receiver, ast.recType, Index(0))) # "this" - receiver
         
         # add params to env
@@ -618,8 +615,6 @@ class CodeGenerator(BaseVisitor,Utils):
                 o['isLeft'] = False
                 e, t = self.visit(ast.idx[i], o)
                 o['isLeft'] = initLeft
-                print("Type of t: ", t)
-                print("Type of mtype: ", mtype)
                 code += e
                 if i < len(ast.idx) - 1:
                     code += self.emit.emitALOAD(ArrayType([None], mtype), o['frame'])
@@ -644,10 +639,11 @@ class CodeGenerator(BaseVisitor,Utils):
 
                 # find the type of the field from sym.mtype - the struct
 
-                struct = next(filter(lambda x: isinstance(x, SymbolType) and x.name == sym.mtype.name, [j for i in o['env'] for j in i]),None)
+                # struct = next(filter(lambda x: isinstance(x, SymbolType) and x.name == sym.mtype.name, [j for i in o['env'] for j in i]),None)
+                struct : StructType = next(filter(lambda x: x.name == sym.mtype.name, self.structs), None)
 
                 # there will always be struct
-                mtype = next(filter(lambda x: x[0] == ast.field, struct.field),None)[1]
+                mtype = next(filter(lambda x: x[0] == ast.field, struct.elements),None)[1]
                 
                 if type(sym.value) is Index:
                     # local var
@@ -663,10 +659,10 @@ class CodeGenerator(BaseVisitor,Utils):
                 code += e
 
                 # find struct
-                struct = next(filter(lambda x: isinstance(x, SymbolType) and x.name == t.name, [j for i in o['env'] for j in i]),None)
+                struct : StructType = next(filter(lambda x: x.name == t.name, self.structs), None)
 
                 # find the type of the field from struct
-                mtype = next(filter(lambda x: x[0] == ast.field, struct.field),None)[1]
+                mtype = next(filter(lambda x: x[0] == ast.field, struct.elements), None)[1]
 
                 code += self.emit.emitGETFIELD(f"{t.name}/{ast.field}", mtype, o['frame'])
             
@@ -674,10 +670,11 @@ class CodeGenerator(BaseVisitor,Utils):
             if isinstance(ast.receiver, Id):
                 sym = next(filter(lambda x: x.name == ast.receiver.name, [j for i in o['env'] for j in i]),None)
 
-                struct = next(filter(lambda x: isinstance(x, SymbolType) and x.name == sym.mtype.name, [j for i in o['env'] for j in i]),None)
+                struct = next(filter(lambda x: x.name == sym.mtype.name, self.structs),None)
+                # struct = next(filter(lambda x: isinstance(x, SymbolType) and x.name == sym.mtype.name, [j for i in o['env'] for j in i]),None)
 
                 # there will always be struct
-                mtype = next(filter(lambda x: x[0] == ast.field, struct.field),None)[1]
+                mtype = next(filter(lambda x: x[0] == ast.field, struct.elements),None)[1]
                 if type(sym.value) is Index:
                     # local var
                     code += self.emit.emitREADVAR(ast.receiver.name, sym.mtype, sym.value.value , o['frame'])
@@ -692,10 +689,10 @@ class CodeGenerator(BaseVisitor,Utils):
                 code += e
                 o['isLeft'] = initLeft
                 # find struct
-                struct = next(filter(lambda x: isinstance(x, SymbolType) and x.name == t.name, [j for i in o['env'] for j in i]),None)
+                struct = next(filter(lambda x: x.name == t.name, self.structs), None)
 
                 # find the type of the field from struct
-                mtype = next(filter(lambda x: x[0] == ast.field, struct.field),None)[1]
+                mtype = next(filter(lambda x: x[0] == ast.field, struct.elements),None)[1]
 
                 code += self.emit.emitPUTFIELD(f"{t.name}/{ast.field}", mtype, o['frame'])
             
@@ -706,8 +703,6 @@ class CodeGenerator(BaseVisitor,Utils):
         o['isLeft'] = False
         e1, t1 = self.visit(ast.left, o)
         e2, t2 = self.visit(ast.right, o)
-        print("Type of t1: ", t1)
-        print("Type of t2: ", t2)
 
         if isinstance(t1, FloatType) or isinstance(t2, FloatType):
             mtype = FloatType()
@@ -735,7 +730,6 @@ class CodeGenerator(BaseVisitor,Utils):
             code += self.emit.emitMOD(o['frame'])
             return code, IntType()
         elif ast.op in ['==','!=','<','<=','>','>=']:
-            print("Type of mtype: ", mtype)
             code += self.emit.emitREOP(ast.op, mtype, o['frame'])
             return code, BoolType()
         elif ast.op in ['&&','||']:
@@ -974,15 +968,15 @@ class CodeGenerator(BaseVisitor,Utils):
 
     def visitStructLiteral(self, ast: StructLiteral, o):
         
-        sym = next(filter(lambda x: isinstance(x, SymbolType) and x.name == ast.name, [j for i in o['env'] for j in i]),None)
-
+        # sym = next(filter(lambda x: isinstance(x, SymbolType) and x.name == ast.name, [j for i in o['env'] for j in i]),None)
+        sym = next(filter(lambda x: x.name == ast.name, self.structs),None)
         # 
         code = ""
 
         code += self.emit.emitNEW(ast.name, o['frame'])
         code += self.emit.emitDUP(o['frame'])
 
-        fields = sym.field
+        fields = sym.elements
         for field in fields:
             # need to make ast.elements that doesn't exist to be default value
             # find in ast.elements
@@ -1038,6 +1032,19 @@ class CodeGenerator(BaseVisitor,Utils):
         env = o.copy()
         env['isLeft'] = False
         rhs, rTyp = self.visit(ast.rhs, env)
+        if isinstance(ast.rhs, BinaryOp) and isinstance(ast.lhs, FieldAccess):
+            env['frame'].push()
+
+        # this push to frame before reading the lhs is fieldaccess because of:
+        # binary op would first push 2 times, and then, pop after the operation
+        # as we just visit and not yet printout, this makes if the lhs is field access, it would have a aload_<index> or so, which would be the beginning of the assignment - before the rhs, which makes it less than 1 stack than it should be
+        # Like a.x = n + m
+        # aload_0 (this is visit later than the rhs), thus its stack size is now 2 (not 3)
+        # iload_1 <stack size 1>
+        # iload_2 <stack size 2>
+        # (all of above need 3 stack size)
+        # iadd <stack size 1>
+        
         env['isLeft'] = True
         lhs, lTyp = self.visit(ast.lhs, env)
         putStatic = ""
@@ -1117,7 +1124,6 @@ class CodeGenerator(BaseVisitor,Utils):
         return o
     
     def visitForBasic(self, ast: ForBasic, o):
-        print("for basic here")
         env = o.copy()
         env['frame'].enterLoop() # trigger enterLoop to get break and continue label
         Break = env['frame'].getBreakLabel()
