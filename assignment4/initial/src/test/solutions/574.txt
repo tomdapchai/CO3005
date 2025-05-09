@@ -1,0 +1,5 @@
+Testing boolean conditions:
+a && b: false
+a || b: true
+!a: false
+!b: true

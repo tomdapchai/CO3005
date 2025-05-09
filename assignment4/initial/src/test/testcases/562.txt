@@ -1,0 +1,21 @@
+
+        // full call stmt
+        func power(base float, exponent int) float {
+                if (exponent == 0) { return 1.0; }
+                if (exponent < 0) {
+                    base := 1.0 / base;
+                    exponent := -exponent;
+                }
+                result := 1.0;
+                for i := 0; i < exponent; i += 1 {
+                    result *= base;
+                }
+                return result;
+            }
+            func main() {
+                var base float = 2.5;
+                var exponent int = 3;
+                var result float = power(base, exponent);
+                putFloatLn(result);
+            }
+        

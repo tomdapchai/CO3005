@@ -1,0 +1,21 @@
+
+        const MAX = 10
+        func arrsort (arr [MAX]int){
+            for i := 0; i<MAX; i+=1{
+                for j:=0; j < i; j+=1{
+                    if (arr[i] < arr[j]){
+                        var temp = arr[i]
+                        arr[i] := arr[j]
+                        arr[j] := temp
+                    }
+                }
+            }
+        }
+        func main(){
+            var arr[MAX]int = [MAX]int{4,2,3,7,8,9,12,14,15,11}
+            arrsort(arr)
+            for i := 0; i<MAX; i+=1{
+                putInt(arr[i])
+            }
+        }
+        

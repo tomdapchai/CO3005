@@ -1,0 +1,29 @@
+
+            var childSize = 2
+            type Person struct {
+                age int
+                name string
+                child Children
+            }
+
+            type Children struct {
+                age int
+                name string
+            }
+
+            func (p Person) getChild() {
+                putStringLn(p.name)
+                putIntLn(p.age)
+                for i := 0; i < childSize; i += 1 {
+                    putStringLn(p.child.name)
+                    putIntLn(p.child.age)
+                }
+            }
+
+            func main() {
+                var c [2]Children = [2]Children{Children{name: "Hugo", age: 5}, Children{name: "Jerry", age: 3}}
+                var a Person = Person{name: "Tom", age: 21, child: c}
+                a.getChild()
+            }
+
+        

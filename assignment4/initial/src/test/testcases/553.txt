@@ -1,0 +1,14 @@
+
+        const size = 3
+
+        func main() { 
+        
+        var a = "b"
+        putBoolLn(foo(a))
+
+        }
+
+        func foo(a string) boolean {
+            return a > "a"
+        } 
+        

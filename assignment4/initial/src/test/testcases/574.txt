@@ -1,0 +1,20 @@
+
+        func main() {
+            putStringLn("Testing boolean conditions:");
+            
+            var a boolean = true;
+            var b boolean = false;
+            
+            putString("a && b: ");
+            putBoolLn(a && b);
+            
+            putString("a || b: ");
+            putBoolLn(a || b);
+            
+            putString("!a: ");
+            putBoolLn(!a);
+            
+            putString("!b: ");
+            putBoolLn(!b);
+        }
+        

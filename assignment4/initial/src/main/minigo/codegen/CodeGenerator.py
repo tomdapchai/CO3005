@@ -155,16 +155,21 @@ class CodeGenerator(BaseVisitor,Utils):
     def visitProgram(self, ast: Program, c):
         # first scan for function
         self.list_function = c + [Symbol(item.name, MType(list(map(lambda x: x.parType, item.params)), item.retType), CName(self.className)) for item in ast.decl if isinstance(item, FuncDecl)]
+        decls = [item for item in ast.decl if isinstance(item, (VarDecl, ConstDecl))]
 
         # scan for methods
         self.MethScan(ast)
         for struct in self.structs:
             implemented = self.ImplementScan(struct)
             struct.implements = implemented
-
+        
+        self.emit.printout(self.emit.emitPROLOG(self.className, "java.lang.Object"))
         # visit struct and interface
         env ={}
         env['env'] = [c]
+
+        for decl in decls:
+            self.visit(decl, env)
 
         for interface in self.interfaces:
             self.visit(interface, env)
@@ -173,9 +178,6 @@ class CodeGenerator(BaseVisitor,Utils):
             self.visit(struct, env)
         
         self.firstscan = False
-
-        
-        self.emit.printout(self.emit.emitPROLOG(self.className, "java.lang.Object"))
         env = reduce(lambda a,x: self.visit(x,a), ast.decl, env)
         self.emitObject()
         self.emitObjectClinit(env['env'])
@@ -186,43 +188,46 @@ class CodeGenerator(BaseVisitor,Utils):
     # Workaround for basic literals for now
     def visitVarDecl(self, ast: VarDecl, o):
         if 'frame' not in o: # global var, need to be fixed as there is no frame to use
-            if ast.varType:
-                o['env'][-1].insert(0, Symbol(ast.varName, ast.varType, CName(self.className)))
-                if ast.varInit:
-                    if isinstance(ast.varInit, (IntLiteral, FloatLiteral, StringLiteral, BooleanLiteral)):
-                        # For simple literals, emit directly as attribute value
-                        self.emit.printout(self.emit.emitATTRIBUTE(ast.varName, ast.varType, True, False, str(ast.varInit.value)))
+            if self.firstscan is True:
+                if ast.varType:
+                    o['env'][-1].insert(0, Symbol(ast.varName, ast.varType, CName(self.className)))
+                    if ast.varInit:
+                        if isinstance(ast.varInit, (IntLiteral, FloatLiteral, StringLiteral, BooleanLiteral)):
+                            # For simple literals, emit directly as attribute value
+                            self.emit.printout(self.emit.emitATTRIBUTE(ast.varName, ast.varType, True, False, str(ast.varInit.value)))
+                        else:
+                            # For complex expressions, delay initialization to <init>
+                            print(ast.varType)
+                            self.emit.printout(self.emit.emitATTRIBUTE(ast.varName, ast.varType, True, False, None))
+                            self.initCode.append((ast.varName, ast.varType, ast.varInit))
                     else:
-                        # For complex expressions, delay initialization to <init>
-                        print(ast.varType)
-                        self.emit.printout(self.emit.emitATTRIBUTE(ast.varName, ast.varType, True, False, None))
-                        self.initCode.append((ast.varName, ast.varType, ast.varInit))
+                        # For variables without explicit initialization, just emit the attribute
+                        if isinstance(ast.varType, (IntType, FloatType, BoolType, StringType, Id)):
+                            
+                            self.emit.printout(self.emit.emitATTRIBUTE(ast.varName, ast.varType, True, False, None))
+                            if isinstance(ast.varType, Id):
+                                self.initCode.append((ast.varName, ast.varType, None))
+                        elif isinstance(ast.varType, ArrayType):
+                            self.emit.printout(self.emit.emitATTRIBUTE(ast.varName, ast.varType, True, False, None))
                 else:
-                    # For variables without explicit initialization, just emit the attribute
-                    if isinstance(ast.varType, (IntType, FloatType, BoolType, StringType, Id)):
-                        
-                        self.emit.printout(self.emit.emitATTRIBUTE(ast.varName, ast.varType, True, False, None))
-                        if isinstance(ast.varType, Id):
-                            self.initCode.append((ast.varName, ast.varType, None))
-                    elif isinstance(ast.varType, ArrayType):
-                        self.emit.printout(self.emit.emitATTRIBUTE(ast.varName, ast.varType, True, False, None))
-            else:
-                # For variables without explicit type, create a temporary frame to infer the type
-                temp_frame = Frame("temp", VoidType())
-                temp_env = o.copy()
-                temp_env['frame'] = temp_frame
-                _, tInit = self.visit(ast.varInit, temp_env)
-                
-                o['env'][-1].insert(0, Symbol(ast.varName, tInit, CName(self.className)))
-                
-                if isinstance(ast.varInit, (IntLiteral, FloatLiteral, StringLiteral, BooleanLiteral)):
-                    # For simple literals, emit directly
-                    self.emit.printout(self.emit.emitATTRIBUTE(ast.varName, tInit, True, False, str(ast.varInit.value) if ast.varInit else None))
-                else:
-                    # For complex expressions, delay initialization to <clinit>
+                    # For variables without explicit type, create a temporary frame to infer the type
+                    temp_frame = Frame("temp", VoidType())
+                    temp_env = o.copy()
+                    temp_env['frame'] = temp_frame
+                    _, tInit = self.visit(ast.varInit, temp_env)
                     
-                    self.emit.printout(self.emit.emitATTRIBUTE(ast.varName, tInit, True, False, None))
-                    self.initCode.append((ast.varName, tInit, ast.varInit))
+                    o['env'][-1].insert(0, Symbol(ast.varName, tInit, CName(self.className)))
+                    
+                    if isinstance(ast.varInit, (IntLiteral, FloatLiteral, StringLiteral, BooleanLiteral)):
+                        # For simple literals, emit directly
+                        self.emit.printout(self.emit.emitATTRIBUTE(ast.varName, tInit, True, False, str(ast.varInit.value) if ast.varInit else None))
+                    else:
+                        # For complex expressions, delay initialization to <clinit>
+                        
+                        self.emit.printout(self.emit.emitATTRIBUTE(ast.varName, tInit, True, False, None))
+                        self.initCode.append((ast.varName, tInit, ast.varInit))
+            else:
+                pass
         else:
             frame = o['frame']
             index = frame.getNewIndex()
@@ -252,6 +257,7 @@ class CodeGenerator(BaseVisitor,Utils):
                         # Create empty array
                         if len(ast.varType.dimens) == 1:
                             # 1D array - use newarray/anewarray
+                            o['isLeft'] = False
                             dimCode, _ = self.visit(ast.varType.dimens[0], o)
                             self.emit.printout(dimCode)
                             
@@ -311,20 +317,23 @@ class CodeGenerator(BaseVisitor,Utils):
         # would perform the exact global var in vardecl with isFinal = True
         if 'frame' not in o: # global const
             # For variables without explicit type, create a temporary frame to infer the type
-            temp_frame = Frame("temp", VoidType())
-            temp_env = o.copy()
-            temp_env['frame'] = temp_frame
-            
-            _, tInit = self.visit(ast.iniExpr, temp_env)
-            
-            o['env'][-1].insert(0, Symbol(ast.conName, tInit, CName(self.className)))
-            
-            if isinstance(ast.iniExpr, (IntLiteral, FloatLiteral, StringLiteral, BooleanLiteral)):
-                # For simple literals, emit directly
-                self.emit.printout(self.emit.emitATTRIBUTE(ast.conName, tInit, True, True, str(ast.iniExpr.value) ))
+            if self.firstscan is True:
+                temp_frame = Frame("temp", VoidType())
+                temp_env = o.copy()
+                temp_env['frame'] = temp_frame
+                
+                _, tInit = self.visit(ast.iniExpr, temp_env)
+                
+                o['env'][-1].insert(0, Symbol(ast.conName, tInit, CName(self.className)))
+                
+                if isinstance(ast.iniExpr, (IntLiteral, FloatLiteral, StringLiteral, BooleanLiteral)):
+                    # For simple literals, emit directly
+                    self.emit.printout(self.emit.emitATTRIBUTE(ast.conName, tInit, True, True, str(ast.iniExpr.value) ))
+                else:
+                    initValue = self.inferValueConstant(ast.iniExpr)
+                    self.emit.printout(self.emit.emitATTRIBUTE(ast.conName, tInit, True, True, str(initValue)))
             else:
-                initValue = self.inferValueConstant(ast.iniExpr)
-                self.emit.printout(self.emit.emitATTRIBUTE(ast.conName, tInit, True, True, str(initValue)))
+                pass
         else:
             # when const declaration in local, treat is exactly the same as var
             frame = o['frame']
@@ -375,6 +384,7 @@ class CodeGenerator(BaseVisitor,Utils):
         self.emit.printout(self.emit.emitENDMETHOD(frame))
         frame.exitScope()
 
+        
 
         return o
     
@@ -574,6 +584,7 @@ class CodeGenerator(BaseVisitor,Utils):
     def visitArrayCell(self, ast: ArrayCell, o):
         code = ""
         mtype = None
+        initLeft = o['isLeft']
         # find the symbol of array to get index
         if isinstance(ast.arr, Id):
             sym = next(filter(lambda x: x.name == ast.arr.name, [j for i in o['env'] for j in i]),None)
@@ -589,18 +600,24 @@ class CodeGenerator(BaseVisitor,Utils):
 
             mtype = sym.mtype.eleType if isinstance(sym.mtype, ArrayType) else sym.mtype
         else:
+            o['isLeft'] = False
             e, t = self.visit(ast.arr, o)
+            o['isLeft'] = initLeft
             code += e
             mtype = t.eleType if isinstance(t, ArrayType) else t
         
         # for 1D array first
         if len(ast.idx) == 1:
+            o['isLeft'] = False
             e, t = self.visit(ast.idx[0], o)
+            o['isLeft'] = initLeft
             code += e
         else:
             # load each array
             for i in range(len(ast.idx)):
+                o['isLeft'] = False
                 e, t = self.visit(ast.idx[i], o)
+                o['isLeft'] = initLeft
                 print("Type of t: ", t)
                 print("Type of mtype: ", mtype)
                 code += e
@@ -619,6 +636,7 @@ class CodeGenerator(BaseVisitor,Utils):
         # find the symbol of caller to get index
         code = ""
         mtype = None
+        initLeft = o['isLeft']
         
         if o['isLeft'] == False:
             if isinstance(ast.receiver, Id):
@@ -639,7 +657,9 @@ class CodeGenerator(BaseVisitor,Utils):
                     code += self.emit.emitGETSTATIC(f"{self.className}/{sym.name}",sym.mtype,o['frame'])
                 code += self.emit.emitGETFIELD(f"{sym.mtype.name}/{ast.field}", mtype, o['frame'])
             else:
+                o['isLeft'] = False
                 e, t = self.visit(ast.receiver, o)
+                o['isLeft'] = initLeft
                 code += e
 
                 # find struct
@@ -670,7 +690,7 @@ class CodeGenerator(BaseVisitor,Utils):
                 o['isLeft'] = False
                 e, t = self.visit(ast.receiver, o)
                 code += e
-                o['isLeft'] = True
+                o['isLeft'] = initLeft
                 # find struct
                 struct = next(filter(lambda x: isinstance(x, SymbolType) and x.name == t.name, [j for i in o['env'] for j in i]),None)
 
@@ -686,6 +706,8 @@ class CodeGenerator(BaseVisitor,Utils):
         o['isLeft'] = False
         e1, t1 = self.visit(ast.left, o)
         e2, t2 = self.visit(ast.right, o)
+        print("Type of t1: ", t1)
+        print("Type of t2: ", t2)
 
         if isinstance(t1, FloatType) or isinstance(t2, FloatType):
             mtype = FloatType()
@@ -713,11 +735,40 @@ class CodeGenerator(BaseVisitor,Utils):
             code += self.emit.emitMOD(o['frame'])
             return code, IntType()
         elif ast.op in ['==','!=','<','<=','>','>=']:
+            print("Type of mtype: ", mtype)
             code += self.emit.emitREOP(ast.op, mtype, o['frame'])
             return code, BoolType()
         elif ast.op in ['&&','||']:
-            code += self.emit.emitANDOP( o['frame']) if ast.op == '&&' else self.emit.emitOROP(o['frame'])
-            return code, BoolType()
+            # Implement short-circuit evaluation
+            result = ""
+            labelEnd = o['frame'].getNewLabel()
+            
+            if ast.op == '&&':
+                # For AND: if left is false, skip right operand
+                labelFalse = o['frame'].getNewLabel()
+                result += e1    # Evaluate left operand
+                result += self.emit.emitIFFALSE(labelFalse, o['frame'])  # If left is false, jump to labelFalse
+                result += e2    # Evaluate right operand
+                result += self.emit.emitIFFALSE(labelFalse, o['frame'])  # If right is false, jump to labelFalse
+                result += self.emit.emitPUSHCONST("true", BoolType(), o['frame'])  # Push true
+                result += self.emit.emitGOTO(labelEnd, o['frame'])  # Jump to end
+                result += self.emit.emitLABEL(labelFalse, o['frame'])  # Label for false case
+                result += self.emit.emitPUSHCONST("false", BoolType(), o['frame'])  # Push false
+                result += self.emit.emitLABEL(labelEnd, o['frame'])  # End label
+            else:  # for OR
+                # For OR: if left is true, skip right operand
+                labelTrue = o['frame'].getNewLabel()
+                result += e1    # Evaluate left operand
+                result += self.emit.emitIFTRUE(labelTrue, o['frame'])  # If left is true, jump to labelTrue
+                result += e2    # Evaluate right operand
+                result += self.emit.emitIFTRUE(labelTrue, o['frame'])  # If right is true, jump to labelTrue
+                result += self.emit.emitPUSHCONST("false", BoolType(), o['frame'])  # Push false
+                result += self.emit.emitGOTO(labelEnd, o['frame'])  # Jump to end
+                result += self.emit.emitLABEL(labelTrue, o['frame'])  # Label for true case
+                result += self.emit.emitPUSHCONST("true", BoolType(), o['frame'])  # Push true
+                result += self.emit.emitLABEL(labelEnd, o['frame'])  # End label
+            
+            return result, BoolType()
     
     def visitUnaryOp(self, ast: UnaryOp, o):
         o['isLeft'] = False
@@ -738,6 +789,10 @@ class CodeGenerator(BaseVisitor,Utils):
     def visitFuncCall(self, ast: FuncCall, o):
         # would be two case: being statement (voidtype) and expression, stmt would return o and exp return code + type
         sym = next(filter(lambda x: x.name == ast.funName, self.list_function),None)
+
+        # skip all get-related builtin functions
+        if ast.funName in ["getInt", "getFloat", "getBoolean", "getString"]:
+            return "", sym.mtype.rettype
 
         env = o.copy()
         env['isLeft'] = False
@@ -844,8 +899,8 @@ class CodeGenerator(BaseVisitor,Utils):
         # else:
         return self.emit.emitPUSHCONST(ast.value, StringType(), o['frame']), StringType()    
 
-    def visitBooleanLiteral(self, ast, o):
-        return self.emit.emitPUSHICONST(1 if ast.value else 0, o['frame']), BoolType()
+    def visitBooleanLiteral(self, ast: BooleanLiteral, o):
+        return self.emit.emitPUSHICONST(1 if ast.value == 'true' else 0, o['frame']), BoolType()
     
     def visitArrayLiteral(self, ast: ArrayLiteral, o):
         code = ""
@@ -947,7 +1002,7 @@ class CodeGenerator(BaseVisitor,Utils):
         return code, ClassType(ast.name)
     
     def visitNilLiteral(self, ast, o):
-        return self.emit.emitPUSHICONST(0, o['frame']), None
+        return self.emit.emitPUSHNULL(o['frame']), None
     
     # ====================================TYPES====================================
 
@@ -1062,6 +1117,7 @@ class CodeGenerator(BaseVisitor,Utils):
         return o
     
     def visitForBasic(self, ast: ForBasic, o):
+        print("for basic here")
         env = o.copy()
         env['frame'].enterLoop() # trigger enterLoop to get break and continue label
         Break = env['frame'].getBreakLabel()
@@ -1289,8 +1345,8 @@ class CodeGenerator(BaseVisitor,Utils):
                 if isinstance(symbol, SymbolType):
                     symbol_info = {
                         "name": symbol.name,
-                        "fields": [field[0] if isinstance(field, tuple) else (field.name, field.mtype) for field in symbol.field] if symbol.field else None,
-                        "methods": [method.name for method in symbol.method] if symbol.method else None
+                        "fields": symbol.field if symbol.field else None,
+                        "methods": [method.fun.name for method in symbol.method] if symbol.method else None
                     }
                     scope_info.append(symbol_info)
                 else:

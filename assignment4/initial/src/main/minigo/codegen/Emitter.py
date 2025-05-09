@@ -483,8 +483,9 @@ class Emitter():
         labelF = frame.getNewLabel()
         labelO = frame.getNewLabel()
 
-        frame.pop()
-        frame.pop()
+        if not type(in_) is StringType:
+            frame.pop()
+            frame.pop()
         
         # Handle different types of comparisons
         if type(in_) is IntType:  # Integer comparison
@@ -502,6 +503,21 @@ class Emitter():
                 result.append(self.jvm.emitIFICMPNE(labelF))
         elif type(in_) is FloatType:  # Floating-point comparison
             result.append(self.jvm.emitFCMPL())  # Use FCMPL for all comparisons
+            if op == ">":
+                result.append(self.jvm.emitIFLE(labelF))  # Jump if not greater
+            elif op == ">=":
+                result.append(self.jvm.emitIFLT(labelF))  # Jump if less
+            elif op == "<":
+                result.append(self.jvm.emitIFGE(labelF))  # Jump if not less
+            elif op == "<=":
+                result.append(self.jvm.emitIFGT(labelF))  # Jump if greater
+            elif op == "!=":
+                result.append(self.jvm.emitIFEQ(labelF))  # Jump if equal
+            elif op == "==":
+                result.append(self.jvm.emitIFNE(labelF))  # Jump if not equal
+        elif type(in_) is StringType:  # String comparison
+            result.append(self.emitINVOKEVIRTUAL("java/lang/String/compareTo", 
+                           MType([StringType()], IntType()), frame))
             if op == ">":
                 result.append(self.jvm.emitIFLE(labelF))  # Jump if not greater
             elif op == ">=":
@@ -678,6 +694,9 @@ class Emitter():
             return self.jvm.emitARETURN()
         elif type(in_) is VoidType:
             return self.jvm.emitRETURN()
+        elif type(in_) is BoolType:
+            frame.pop()
+            return self.jvm.emitIRETURN()
 
     ''' generate code that represents a label	
     *   @param label the label

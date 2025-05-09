@@ -1,0 +1,7 @@
+
+        func main() {
+            putString("Hello" + " " + "World");
+            putLn();
+            putBool(10 > 5 && 7 < 9);
+        }
+        

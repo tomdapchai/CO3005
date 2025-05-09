@@ -111,6 +111,7 @@ Label37:
 Label41:
 	iconst_0
 Label42:
+	ifle Label46
 	iload_1
 	iconst_3
 	if_icmpge Label43
@@ -119,11 +120,16 @@ Label42:
 Label43:
 	iconst_0
 Label44:
-	iand
-	ifle Label39
-Label45:
-	goto Label26
+	ifle Label46
+	iconst_1
+	goto Label45
 Label46:
+	iconst_0
+Label45:
+	ifle Label39
+Label47:
+	goto Label26
+Label48:
 Label39:
 Label38:
 Label33:
@@ -131,17 +137,17 @@ Label33:
 	invokestatic io/putInt(I)V
 	iload_1
 	bipush 8
-	if_icmpne Label49
+	if_icmpne Label51
 	iconst_1
-	goto Label50
-Label49:
-	iconst_0
-Label50:
-	ifle Label47
+	goto Label52
 Label51:
-	goto Label27
+	iconst_0
 Label52:
-Label47:
+	ifle Label49
+Label53:
+	goto Label27
+Label54:
+Label49:
 Label32:
 Label26:
 	iload_1
@@ -153,7 +159,7 @@ Label27:
 Label3:
 Label1:
 	return
-.limit stack 34
+.limit stack 35
 .limit locals 2
 .end method
 

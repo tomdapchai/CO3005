@@ -1,0 +1,19 @@
+
+        func work() boolean {
+            putStringLn("Short-circuit evaluation works!")
+            return true
+        }
+
+        func notwork() boolean {
+            putStringLn("Short-circuit evaluation doesn't work!")
+            return false
+        }
+
+        func main() {
+            var a int = 5
+            var b int = 10
+            if (work() || notwork()) {
+                a := 2
+            }
+        }
+        

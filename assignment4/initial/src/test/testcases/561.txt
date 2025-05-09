@@ -1,0 +1,25 @@
+
+            func bubbleSort(arr [7]int, n int) {
+                swapped := true;
+                for swapped {
+                    swapped := false;
+                    for i := 1; i < n; i += 1 {
+                        if (arr[i-1] > arr[i]) {
+                            temp := arr[i-1];
+                            arr[i-1] := arr[i];
+                            arr[i] := temp;
+                            swapped := true;
+                        }
+                    }
+                }
+            }
+            
+            func main() {
+                var arr [7]int = [7]int{64, 34, 25, 12, 22, 11, 90};
+                var n int = 7;
+                bubbleSort(arr, n);
+                for i := 0; i < n; i += 1 {
+                    putIntLn(arr[i]);
+                }
+            }
+        

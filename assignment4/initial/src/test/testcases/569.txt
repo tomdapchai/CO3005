@@ -1,0 +1,12 @@
+
+        func calculate() int {
+            putStringLn("Calculating...");
+            return 42;
+        }
+        
+        func main() {
+            putIntLn(calculate());
+            putString("Result: ");
+            putInt(calculate() * 2);
+        }
+        

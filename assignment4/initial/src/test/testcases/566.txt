@@ -1,0 +1,9 @@
+
+        func main() {
+            putIntLn(123);
+            putFloatLn(45.67);
+            putStringLn("Hello");
+            putBoolLn(true);
+            putLn();
+        }
+        

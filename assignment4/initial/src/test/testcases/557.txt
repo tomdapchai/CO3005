@@ -1,0 +1,22 @@
+
+        type HashTable struct {
+            size int;
+            table [10]int;
+        }
+
+        func (h HashTable) hash(key int) int {
+            return key % h.size;
+        }
+
+        func main() {
+            var h HashTable = HashTable{size: 10, table: [10]int{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
+            var key int = 5;
+            var index int = h.hash(key);
+            h.table[index] := key;
+            
+            for i := 0; i < h.size; i += 1 {
+                putIntLn(h.table[i]);
+            }
+        }
+
+        

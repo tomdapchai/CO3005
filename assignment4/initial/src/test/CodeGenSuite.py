@@ -944,33 +944,596 @@ class CheckCodeGenSuite(unittest.TestCase):
     #     expect = "John\n30\nToyota\n2020\n"
     #     self.assertTrue(TestCodeGen.test(input,expect,549))
 
-    def test_44(self):
+    # def test_44(self):
+    #     input = """
+        
+
+    #     type Person struct {
+    #         name string
+    #         age int
+    #         car Car
+    #     }
+
+    #     type Car struct {
+    #         year int
+    #         brand string
+    #     }
+
+    #     func (c Car) print() {
+    #         putStringLn(c.brand)
+    #         putIntLn(c.year)
+    #     }
+    #     var arr [3]Person 
+
+    #     func main() { 
+        
+    #     arr := [3]Person{Person{name: "Doe", car: Car{year: 2021, brand: "Honda"}, age: 25}, Person{name: "Jane", car: Car{year: 2022, brand: "Ford"}, age: 28}, Person{name: "Smith", car: Car{year: 2023, brand: "BMW"}, age: 35}}
+    #         arr[0].car.print()
+
+    #     }
+    #     """
+    #     expect = "Honda\n2021\n"
+    #     self.assertTrue(TestCodeGen.test(input,expect,550))
+
+    # def test_45(self):
+    #     input = """
+        
+
+    #     func main() { 
+        
+    #     var a = 3
+    #     var arr [a]int = [a]int{1, 2, 3}
+    #     var x = 2
+    #     arr[x + a - 3] := 6
+    #     putIntLn(arr[2])
+
+    #     }
+    #     """
+    #     expect = "6\n"
+    #     self.assertTrue(TestCodeGen.test(input,expect,551))
+
+    # def test_46(self):
+    #     input = """
+    #     const size = 3
+
+    #     func main() { 
+        
+    #     var a = 3
+    #     var arr [a]int = foo(1)
+    #     var x = 2
+    #     arr[x + a - 3] := 6
+    #     putIntLn(arr[2])
+    #     putIntLn(arr[0])
+
+    #     }
+
+    #     func foo(a int) [size]int {
+    #         return [size]int{a, a, a}
+    #     }
+    #     """
+    #     expect = "6\n1\n"
+    #     self.assertTrue(TestCodeGen.test(input,expect,552))
+
+    # def test_47(self):
+    #     input = """
+    #     const size = 3
+
+    #     func main() { 
+        
+    #     var a = "b"
+    #     putBoolLn(foo(a))
+
+    #     }
+
+    #     func foo(a string) boolean {
+    #         return a > "a"
+    #     } 
+    #     """
+    #     expect = "true\n"
+    #     self.assertTrue(TestCodeGen.test(input,expect,553))
+
+    # def test_48(self):
+    #     input = """
+    #     const MAX = 10
+    #     func arrsort (arr [MAX]int){
+    #         for i := 0; i<MAX; i+=1{
+    #             for j:=0; j < i; j+=1{
+    #                 if (arr[i] < arr[j]){
+    #                     var temp = arr[i]
+    #                     arr[i] := arr[j]
+    #                     arr[j] := temp
+    #                 }
+    #             }
+    #         }
+    #     }
+    #     func main(){
+    #         var arr[MAX]int = [MAX]int{4,2,3,7,8,9,12,14,15,11}
+    #         arrsort(arr)
+    #         for i := 0; i<MAX; i+=1{
+    #             putInt(arr[i])
+    #         }
+    #     }
+    #     """
+    #     expect = "23478911121415"
+    #     self.assertTrue(TestCodeGen.test(input, expect, 554))
+    
+    # def test_49(self):
+    #     input = """
+    #     func binSearch(arr [10]int, x int, n int) int {
+    #         l := 0;
+    #         h := n - 1
+    #         for l <= h {
+    #             m := l + (h - l) / 2;
+    #             if (arr[m] == x) {
+    #                 return m;
+    #             }
+    #             if (arr[m] < x) {
+    #                 l := m + 1;
+    #             } else {
+    #                 h := m - 1;
+    #             }
+    #         }
+    #         return -1;
+    #     }
+
+    #     func main() {
+    #         var arr [10]int = [10]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    #         var x int = 5;
+    #         var result int = binSearch(arr, x, 10);
+    #         putIntLn(result);
+    #     }
+    #     """
+    #     expect = "4\n"
+    #     self.assertTrue(TestCodeGen.test(input, expect, 555))
+
+    # def test_50(self):
+    #     input = """
+    #     func quickSort(arr [10]int, low int, high int) {
+    #         if (low < high) {
+    #             // Partition the array and get the pivot index
+    #             pivotIndex := partition(arr, low, high)
+                
+    #             // Recursively sort elements before and after the pivot
+    #             quickSort(arr, low, pivotIndex - 1)
+    #             quickSort(arr, pivotIndex + 1, high)
+    #         }
+    #     }
+
+    #     func partition(arr [10]int, low int, high int) int {
+    #         pivot := arr[high]
+    #         i := low - 1  // Index of smaller element
+            
+    #         for j := low; j < high; j += 1 {
+    #             // If current element is smaller than or equal to pivot
+    #             if (arr[j] <= pivot) {
+    #                 i += 1
+    #                 // Swap arr[i] and arr[j]
+    #                 temp := arr[i]
+    #                 arr[i] := arr[j]
+    #                 arr[j] := temp
+    #             }
+    #         }
+            
+    #         // Swap arr[i+1] and arr[high] (put pivot in correct position)
+    #         temp := arr[i+1]
+    #         arr[i+1] := arr[high]
+    #         arr[high] := temp
+            
+    #         return i + 1
+    #     }
+
+    #     func main() {
+    #         var arr [10]int = [10]int{4, 2, 3, 7, 8, 9, 12, 14, 15, 11};
+    #         quickSort(arr, 0, 9);
+    #         for i := 0; i < 10; i += 1 {
+    #             putIntLn(arr[i]);
+    #         }
+    #     }
+    #     """
+    #     expect = "2\n3\n4\n7\n8\n9\n11\n12\n14\n15\n"
+    #     self.assertTrue(TestCodeGen.test(input, expect, 556))
+
+    # def test_51(self):
+    #     input = """
+    #     type HashTable struct {
+    #         size int;
+    #         table [10]int;
+    #     }
+
+    #     func (h HashTable) hash(key int) int {
+    #         return key % h.size;
+    #     }
+
+    #     func main() {
+    #         var h HashTable = HashTable{size: 10, table: [10]int{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
+    #         var key int = 5;
+    #         var index int = h.hash(key);
+    #         h.table[index] := key;
+            
+    #         for i := 0; i < h.size; i += 1 {
+    #             putIntLn(h.table[i]);
+    #         }
+    #     }
+
+    #     """
+    #     expect = "0\n0\n0\n0\n0\n5\n0\n0\n0\n0\n"
+    #     self.assertTrue(TestCodeGen.test(input, expect, 557))
+    
+    # def test_52(self):
+    #     input = """
+        
+    #     func gcd(a int, b int) int {
+    #         for b != 0 {
+    #             temp := b;
+    #             b := a % b;
+    #             a := temp;
+    #         }
+    #         return a;
+    #     }
+
+    #     func main() {
+    #         var a int = 56;
+    #         var b int = 98;
+    #         var result int = gcd(a, b);
+    #         putIntLn(result);
+    #     }
+    #     """
+    #     expect = "14\n"
+    #     self.assertTrue(TestCodeGen.test(input, expect, 558))
+
+    # def test_53(self):
+    #     input = """
+    #     func isPrime(n int) boolean {
+    #             if (n <= 1) {
+    #                 return false;
+    #             }
+    #             for var i = 2; i * i <= n; i += 1 {
+    #                 if (n % i == 0) {
+    #                     return false;
+    #                 }
+    #             }
+    #             return true;
+    #         }
+
+    #     func main() {
+    #         var n int = 29;
+    #         if (isPrime(n)) {
+    #             putStringLn("Prime number")
+    #         } else {
+    #             putStringLn("Not a prime number")
+    #         }
+    #     }
+    #     """
+    #     expect = "Prime number\n"
+    #     self.assertTrue(TestCodeGen.test(input, expect, 559))
+
+    # def test_54(self):
+    #     input = """
+    #         func calculateFactorial(n int) int {
+    #             if (n <= 1) { return 1; }
+    #             result := 1;
+    #             for i := 2; i <= n; i += 1 {
+    #                 result *= i;
+    #             }
+    #             return result;
+    #         }
+
+    #     func main() {
+    #         var n int = 5;
+    #         var factorial int = calculateFactorial(n);
+    #         putIntLn(factorial);
+    #     }
+    #     """
+    #     expect = "120\n"
+    #     self.assertTrue(TestCodeGen.test(input, expect, 560))
+
+    # def test_55(self):
+    #     input = """
+    #         func bubbleSort(arr [7]int, n int) {
+    #             swapped := true;
+    #             for swapped {
+    #                 swapped := false;
+    #                 for i := 1; i < n; i += 1 {
+    #                     if (arr[i-1] > arr[i]) {
+    #                         temp := arr[i-1];
+    #                         arr[i-1] := arr[i];
+    #                         arr[i] := temp;
+    #                         swapped := true;
+    #                     }
+    #                 }
+    #             }
+    #         }
+            
+    #         func main() {
+    #             var arr [7]int = [7]int{64, 34, 25, 12, 22, 11, 90};
+    #             var n int = 7;
+    #             bubbleSort(arr, n);
+    #             for i := 0; i < n; i += 1 {
+    #                 putIntLn(arr[i]);
+    #             }
+    #         }
+    #     """
+    #     expect = "11\n12\n22\n25\n34\n64\n90\n"
+    #     self.assertTrue(TestCodeGen.test(input, expect, 561))
+
+    # def test_56(self):
+    #     input = """
+    #     // full call stmt
+    #     func power(base float, exponent int) float {
+    #             if (exponent == 0) { return 1.0; }
+    #             if (exponent < 0) {
+    #                 base := 1.0 / base;
+    #                 exponent := -exponent;
+    #             }
+    #             result := 1.0;
+    #             for i := 0; i < exponent; i += 1 {
+    #                 result *= base;
+    #             }
+    #             return result;
+    #         }
+    #         func main() {
+    #             var base float = 2.5;
+    #             var exponent int = 3;
+    #             var result float = power(base, exponent);
+    #             putFloatLn(result);
+    #         }
+    #     """
+    #     expect = "15.625\n"
+    #     self.assertTrue(TestCodeGen.test(input, expect, 562))
+
+    # # Short-circuit test
+    # def test_57(self):
+    #     input = """
+    #     func work() boolean {
+    #         putStringLn("Short-circuit evaluation works!")
+    #         return true
+    #     }
+
+    #     func notwork() boolean {
+    #         putStringLn("Short-circuit evaluation doesn't work!")
+    #         return false
+    #     }
+
+    #     func main() {
+    #         var a int = 5
+    #         var b int = 10
+    #         if (work() || notwork()) {
+    #             a := 2
+    #         }
+    #     }
+    #     """
+    #     expect = "Short-circuit evaluation works!\n"
+    #     self.assertTrue(TestCodeGen.test(input, expect, 563))
+
+    
+    # def test_58(self):
+    #     input = """
+    #     func work() boolean {
+    #         putStringLn("Short-circuit evaluation works!")
+    #         return true
+    #     }
+
+    #     func notwork() boolean {
+    #         putStringLn("Short-circuit evaluation doesn't work!")
+    #         return false
+    #     }
+
+    #     func main() {
+    #         var a int = 5
+    #         var b int = 10
+    #         if (notwork() && work()) {
+    #             a := 2
+    #         }
+    #     }
+    #     """
+    #     expect = "Short-circuit evaluation doesn't work!\n"
+    #     self.assertTrue(TestCodeGen.test(input, expect, 564))
+
+    # # Built-in function tests
+    # def test_59(self):
+    #     input = """
+    #     func main() {
+    #         putInt(123);
+    #         putFloat(45.67);
+    #         putString("Hello");
+    #         putBool(true);
+    #     }
+    #     """
+    #     expect = "12345.67Hellotrue"
+    #     self.assertTrue(TestCodeGen.test(input, expect, 565))
+    
+    # def test_60(self):
+    #     input = """
+    #     func main() {
+    #         putIntLn(123);
+    #         putFloatLn(45.67);
+    #         putStringLn("Hello");
+    #         putBoolLn(true);
+    #         putLn();
+    #     }
+    #     """
+    #     expect = "123\n45.67\nHello\ntrue\n\n"
+    #     self.assertTrue(TestCodeGen.test(input, expect, 566))
+    
+    # def test_61(self):
+    #     input = """
+    #     func main() {
+    #         putIntLn(123 + 456);
+    #         putFloatLn(45.67 * 2.0);
+    #     }
+    #     """
+    #     expect = "579\n91.34\n"
+    #     self.assertTrue(TestCodeGen.test(input, expect, 567))
+    
+    # def test_62(self):
+    #     input = """
+    #     func main() {
+    #         putString("Hello" + " " + "World");
+    #         putLn();
+    #         putBool(10 > 5 && 7 < 9);
+    #     }
+    #     """
+    #     expect = "Hello World\ntrue"
+    #     self.assertTrue(TestCodeGen.test(input, expect, 568))
+    
+    # def test_63(self):
+    #     input = """
+    #     func calculate() int {
+    #         putStringLn("Calculating...");
+    #         return 42;
+    #     }
+        
+    #     func main() {
+    #         putIntLn(calculate());
+    #         putString("Result: ");
+    #         putInt(calculate() * 2);
+    #     }
+    #     """
+    #     expect = "Calculating...\n42\nResult: Calculating...\n84"
+    #     self.assertTrue(TestCodeGen.test(input, expect, 569))
+    
+    # def test_64(self):
+    #     input = """
+    #     func main() {
+    #         var a int = 10;
+    #         var b float = 20.5;
+    #         var c string = "Test";
+    #         var d boolean = false;
+            
+    #         putInt(a);
+    #         putLn();
+    #         putFloat(b);
+    #         putLn();
+    #         putString(c);
+    #         putLn();
+    #         putBool(d);
+    #     }
+    #     """
+    #     expect = "10\n20.5\nTest\nfalse"
+    #     self.assertTrue(TestCodeGen.test(input, expect, 570))
+    
+    # def test_65(self):
+    #     input = """
+    #     func main() {
+    #         putIntLn(sum(10, 20, 30));
+    #         putFloatLn(average(10.5, 20.5, 30.5));
+    #     }
+        
+    #     func sum(a int, b int, c int) int {
+    #         return a + b + c;
+    #     }
+        
+    #     func average(a float, b float, c float) float {
+    #         return (a + b + c) / 3.0;
+    #     }
+    #     """
+    #     expect = "60\n20.5\n"
+    #     self.assertTrue(TestCodeGen.test(input, expect, 571))
+    
+    # def test_66(self):
+    #     input = """
+    #     func main() {
+    #         var arr [5]int = [5]int{10, 20, 30, 40, 50};
+            
+    #         for i := 0; i < 5; i += 1 {
+    #             putInt(arr[i]);
+    #             if (i < 4) {
+    #                 putString(", ");
+    #             }
+    #         }
+    #         putLn();
+            
+    #         var total int = 0;
+    #         for i := 0; i < 5; i += 1 {
+    #             total += arr[i];
+    #         }
+    #         putString("Total: ");
+    #         putInt(total);
+    #     }
+    #     """
+    #     expect = "10, 20, 30, 40, 50\nTotal: 150"
+    #     self.assertTrue(TestCodeGen.test(input, expect, 572))
+    
+    # def test_67(self):
+    #     input = """
+    #     func main() {
+    #         putStringLn("Nested functions:");
+            
+    #         putIntLn(outer(5));
+    #     }
+        
+    #     func outer(x int) int {
+    #         putString("  Outer: ");
+    #         putIntLn(x);
+    #         return inner(x * 2);
+    #     }
+        
+    #     func inner(y int) int {
+    #         putString("    Inner: ");
+    #         putIntLn(y);
+    #         return y * 2;
+    #     }
+    #     """
+    #     expect = "Nested functions:\n  Outer: 5\n    Inner: 10\n20\n"
+    #     self.assertTrue(TestCodeGen.test(input, expect, 573))
+    
+    # def test_68(self):
+    #     input = """
+    #     func main() {
+    #         putStringLn("Testing boolean conditions:");
+            
+    #         var a boolean = true;
+    #         var b boolean = false;
+            
+    #         putString("a && b: ");
+    #         putBoolLn(a && b);
+            
+    #         putString("a || b: ");
+    #         putBoolLn(a || b);
+            
+    #         putString("!a: ");
+    #         putBoolLn(!a);
+            
+    #         putString("!b: ");
+    #         putBoolLn(!b);
+    #     }
+    #     """
+    #     expect = "Testing boolean conditions:\na && b: false\na || b: true\n!a: false\n!b: true\n"
+    #     self.assertTrue(TestCodeGen.test(input, expect, 574))
+
+    def test_69(self):
         input = """
-        
+            var childSize = 2
+            type Person struct {
+                age int
+                name string
+                child Children
+            }
 
-        type Person struct {
-            name string
-            age int
-            car Car
-        }
+            type Children struct {
+                age int
+                name string
+            }
 
-        type Car struct {
-            year int
-            brand string
-        }
+            func (p Person) getChild() {
+                putStringLn(p.name)
+                putIntLn(p.age)
+                for i := 0; i < childSize; i += 1 {
+                    putStringLn(p.child[i].name)
+                    putIntLn(p.child[i].age)
+                }
+            }
 
-        func (c Car) print() {
-            putStringLn(c.brand)
-            putIntLn(c.year)
-        }
-        var arr [3]Person 
+            func main() {
+                var c [2]Children = [2]Children{Children{name: "Hugo", age: 5}, Children{name: "Jerry", age: 3}}
+                var a Person = Person{name: "Tom", age: 21, child: c}
+                a.getChild()
+            }
 
-        func main() { 
-        
-        arr := [3]Person{Person{name: "Doe", car: Car{year: 2021, brand: "Honda"}, age: 25}, Person{name: "Jane", car: Car{year: 2022, brand: "Ford"}, age: 28}, Person{name: "Smith", car: Car{year: 2023, brand: "BMW"}, age: 35}}
-            arr[0].car.print()
-
-        }
         """
-        expect = "Honda\n2021\n"
-        self.assertTrue(TestCodeGen.test(input,expect,550))
+        expect = "Tom\n21\nHugo\n5\nJerry\n3\n"
+        self.assertTrue(TestCodeGen.test(input, expect, 575))
+
+
+
+

@@ -1,0 +1,4 @@
+Nested functions:
+  Outer: 5
+    Inner: 10
+20

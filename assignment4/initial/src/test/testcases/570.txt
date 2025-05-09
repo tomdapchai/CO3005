@@ -1,0 +1,16 @@
+
+        func main() {
+            var a int = 10;
+            var b float = 20.5;
+            var c string = "Test";
+            var d boolean = false;
+            
+            putInt(a);
+            putLn();
+            putFloat(b);
+            putLn();
+            putString(c);
+            putLn();
+            putBool(d);
+        }
+        

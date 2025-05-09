@@ -1,0 +1,19 @@
+
+        func main() {
+            putStringLn("Nested functions:");
+            
+            putIntLn(outer(5));
+        }
+        
+        func outer(x int) int {
+            putString("  Outer: ");
+            putIntLn(x);
+            return inner(x * 2);
+        }
+        
+        func inner(y int) int {
+            putString("    Inner: ");
+            putIntLn(y);
+            return y * 2;
+        }
+        
