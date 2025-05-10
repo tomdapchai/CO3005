@@ -2153,6 +2153,44 @@ class CheckCodeGenSuite(unittest.TestCase):
         expect = "Queue items:\n10\n20\n30\nDequeued item:\n10\nQueue after dequeue:\n20\n30\n"
         self.assertTrue(TestCodeGen.test(input, expect, 600))
 
+    def test_95(self):
+        input = """
+type Speaker interface { speak(); }
+
+type Human struct { name int; }
+
+func (h Human) speak() { putIntLn(h.name); }
+
+func main() {
+    var people [3]Speaker;
+    var a = 1
+    var b = 2
+
+    people[0] := Human {name: 1};
+    people[b - a] := Human {name: 2};
+    people[2] := Human {name: 3};
+
+    people[0].speak(); // Output: 1
+    people[1].speak(); // Output: 2
+    people[2].speak(); // Output: 3
+}
+        """
+        expect = "1\n2\n3\n"
+        self.assertTrue(TestCodeGen.test(input, expect, 601))
+
+    def test_96(self):
+        input = """
+        func main() {
+        
+            var a [2][2]float = [2][2]float{{1.2, 2.3}, {2.5, 3.6}}
+            a[0][1] := 5.6
+            putFloatLn(a[0][1])
+        }
+        
+        """
+        expect = "5.6\n"
+        self.assertTrue(TestCodeGen.test(input, expect, 602))
+
 
 
 

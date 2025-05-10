@@ -1091,7 +1091,7 @@ class CodeGenerator(BaseVisitor,Utils):
 
         if isinstance(ast.lhs, (ArrayCell)):
             self.emit.printout(rhs)
-            self.emit.printout(self.emit.emitASTORE(IntType(), o['frame']))
+            self.emit.printout(self.emit.emitASTORE(lTyp, o['frame']))
         
         elif isinstance(ast.lhs, FieldAccess):
             self.emit.printout(putStatic)
