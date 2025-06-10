@@ -6,4 +6,4 @@ Results:
 - PPL3: 115/125
 - PPL4: 98/101
 
-Not recommend register VoTien PPL course - kinda useless with me.
+Not recommend register VoTien PPL course - kinda useless with me, except some tests in PPL1 and PPL2.
